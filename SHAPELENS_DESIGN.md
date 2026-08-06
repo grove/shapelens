@@ -9,7 +9,7 @@
 **Standards baseline:** SHACL 1.0 source vocabulary and SPARQL 1.1 query target
 **Last reviewed:** 6 August 2026
 
-This document describes the proposed architecture and the decisions that must be settled before a public version 0.1 contract is frozen. It is implementation-ready only for the explicitly scoped semantic spikes in Phase 0. Requirements written as **MUST**, **SHOULD**, and **MAY** are candidate conformance rules: they become release requirements only when copied into `SPEC-0.1.md`, assigned stable requirement IDs, and mapped to tests after the Phase 0 semantics are accepted. Rationale, security guidance, roadmap material, and unresolved questions remain informative here. The project’s canonical domain vocabulary is recorded separately in [`CONTEXT.md`](./CONTEXT.md).
+This document describes the proposed architecture and the decisions that must be settled before a public version 0.1 contract is frozen. It is implementation-ready only for the explicitly scoped semantic spikes in Phase 0. Requirements written as **MUST**, **SHOULD**, and **MAY** are candidate conformance rules: they become release requirements only when copied into `SPEC-0.1.md`, assigned stable requirement IDs, and mapped to tests after the Phase 0 semantics are accepted. Rationale, security guidance, roadmap material, and unresolved questions remain informative here. The project’s canonical domain vocabulary is recorded in [`CONTEXT.md`](./CONTEXT.md), and the current execution sequence is summarized in [`ROADMAP.md`](./ROADMAP.md).
 
 ---
 
