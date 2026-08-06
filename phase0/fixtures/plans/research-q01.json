@@ -1,0 +1,80 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:16:0",
+      "id": "contributor",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:16",
+      "source_lens": "publication-view",
+      "target_entity": "researcher"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:17:0",
+      "id": "venue",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:17",
+      "source_lens": "publication-view",
+      "target_entity": "venue"
+    }
+  ],
+  "entities": [
+    {
+      "binding": null,
+      "id": "publication"
+    },
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://catalog.example.org/ns/lee"
+      },
+      "id": "researcher"
+    },
+    {
+      "binding": null,
+      "id": "venue"
+    }
+  ],
+  "filters": [],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "publication",
+      "id": "publication-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "publication",
+      "id": "publication",
+      "kind": "node"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:14:0",
+      "id": "title",
+      "kind": "field",
+      "lens": "publication-view",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:14",
+      "required": true
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:15:0",
+      "id": "year",
+      "kind": "field",
+      "lens": "publication-view",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:15",
+      "required": true
+    },
+    {
+      "entity": "venue",
+      "id": "venue",
+      "kind": "node"
+    }
+  ],
+  "selectors": [
+    {
+      "entity": "publication",
+      "id": "publication-pop",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:9"
+    }
+  ]
+}

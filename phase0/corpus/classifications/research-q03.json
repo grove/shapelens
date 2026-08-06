@@ -17,7 +17,7 @@
     "declaration_references": ["phase0/overlays/research-projection-contracts.json#research-q03-projection-contract"],
     "affected_lens_uses": ["research-publication-catalog:publication", "research-publication-catalog:researcher"],
     "review_owner": "research-information-office",
-    "semantic_fixture_ids": ["corpus-research-q03"]
+    "semantic_fixture_ids": ["research-q03"]
   },
   "shape_rewriting": {"required": false, "description": null},
   "classified_by": ["phase0-classification-reviewer"],

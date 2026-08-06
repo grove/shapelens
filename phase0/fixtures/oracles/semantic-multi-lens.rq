@@ -1,0 +1,6 @@
+PREFIX ex: <https://example.test/semantic/>
+SELECT ?name ?person WHERE {
+  ?person a ex:Person ;
+    ex:memberOf ex:PaymentsTeam ;
+    ex:displayName ?name .
+}

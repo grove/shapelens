@@ -1,7 +1,7 @@
 # ShapeLens roadmap
 
 **Status:** Execution guide for the current reference design  
-**Current phase:** Phase 0 — validate usefulness and the semantic kernel
+**Current phase:** Phase 0 complete — version 0.1 entry approved
 
 ## Direction
 
@@ -47,4 +47,4 @@ The sequence below is provisional. Phase 0 blocker frequency and application val
 
 ## Immediate next action
 
-Populate the [`phase0/corpus/manifest.json`](./phase0/corpus/manifest.json) and question records by following [`phase0/README.md`](./phase0/README.md). Run the documented `freeze-check` and commit the frozen inputs before adding classifications, choosing a package structure, or writing the semantic kernel.
+Use the accepted behavior and test mappings in [`phase0/DECISION.md`](./phase0/DECISION.md) to begin the post-Phase-0 specification, security-profile, ADR, open-question, and future-design split. Keep the version 0.1 work deterministic and inside the accepted local scope.

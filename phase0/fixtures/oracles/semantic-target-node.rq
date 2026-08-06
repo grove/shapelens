@@ -1,0 +1,5 @@
+PREFIX ex: <https://example.test/semantic/>
+SELECT ?team ?service WHERE {
+  VALUES ?service { ex:PaymentsApi }
+  ?service ex:ownedBy ?team .
+}

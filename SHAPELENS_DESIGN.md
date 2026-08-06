@@ -11,7 +11,7 @@
 
 This document describes candidate architecture and decisions to test before a public version 0.1 contract is frozen. It is implementation-ready only for the explicitly scoped Phase 0 experiments. **No statement in this document is normative:** words such as **MUST**, **SHOULD**, and **MAY** describe proposed rules only. A rule gains conformance force only when observed behavior is accepted after Phase 0, copied into `SPEC-0.1.md`, assigned a stable requirement ID, and mapped to tests. The product hypothesis is in [`VISION.md`](./VISION.md), the experiment protocol in [`PHASE0-EXPERIMENT.md`](./PHASE0-EXPERIMENT.md), canonical domain vocabulary in [`CONTEXT.md`](./CONTEXT.md), and the delivery sequence in [`ROADMAP.md`](./ROADMAP.md).
 
-During Phase 0 this document is a lookup resource, not the active work queue. Change it only when a frozen-corpus blocker, a semantic fixture, or the experiment protocol falsifies or requires clarification of a candidate decision. The working records and commands are in [`phase0/`](./phase0/README.md).
+Phase 0 is complete. This document remains a lookup resource, not the active work queue, until the accepted subset is extracted into the version 0.1 specification and supporting documents. The experiment records and commands are in [`phase0/`](./phase0/README.md).
 
 ---
 

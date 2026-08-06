@@ -1,6 +1,6 @@
 # Phase 0 experiment
 
-**Status:** Ready to instantiate; working files live in [`phase0/`](./phase0/README.md)
+**Status:** Complete; all gates passed in [`phase0/DECISION.md`](./phase0/DECISION.md)
 
 **Purpose:** Test the ShapeLens product thesis and semantic kernel as separate claims
 

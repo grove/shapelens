@@ -1,5 +1,5 @@
 # Fixture records
 
-Copy [`../templates/fixture.json`](../templates/fixture.json) for each semantic conformance case and for each accepted corpus question exercised end to end.
+[`manifest.json`](./manifest.json) freezes 18 accepted corpus-question fixtures, 17 semantic-conformance fixtures, structural cases, both RDFLib adapter modes, and every referenced input under one fixture revision. `semantic_conformance` cases never count toward product coverage.
 
-`semantic_conformance` fixtures cover adversarial feature-matrix cells and do not count as product questions. `corpus_question` fixtures link back to frozen question IDs. Keep RDFLib Graph and Dataset adapter coverage explicit.
+Run `PYTHONPATH=phase0 .venv/bin/python phase0/run_fixtures.py run` from the repository root to verify the revision and all final gates.

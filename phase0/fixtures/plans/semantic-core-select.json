@@ -1,0 +1,60 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:30:0",
+      "id": "owner-edge",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:30",
+      "source_lens": "service-view",
+      "target_entity": "team"
+    }
+  ],
+  "entities": [
+    {
+      "binding": null,
+      "id": "service"
+    },
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://example.test/semantic/PaymentsTeam"
+      },
+      "id": "team"
+    }
+  ],
+  "filters": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:30:0",
+      "id": "owner-filter",
+      "kind": "eq",
+      "lens": "service-view",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:30",
+      "value": {
+        "kind": "iri",
+        "value": "https://example.test/semantic/PaymentsTeam"
+      }
+    }
+  ],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "service",
+      "id": "service-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:15"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "service",
+      "id": "service",
+      "kind": "node"
+    }
+  ],
+  "selectors": [
+    {
+      "entity": "service",
+      "id": "service-pop",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:15"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+ShapeLens normalized plan
+
+kind: select
+entity probe: unbound
+selector population: probe is target node https://example.test/semantic/IdentityProbe
+lens identity: probe uses https://example.test/semantic/IdentityShape
+filter exact-value: identity.lexicalTerm sameTerm "1"^^http://www.w3.org/2001/XMLSchema#integer
+projection answer: probe

@@ -2,6 +2,8 @@
 
 This directory contains the working records for the experiment defined in [`PHASE0-EXPERIMENT.md`](../PHASE0-EXPERIMENT.md). It is experiment infrastructure, not the `shapelens` package or a public API.
 
+**Status:** Complete. The frozen revisions, independent gate results, limitations, and proceed decision are in [`DECISION.md`](./DECISION.md). Run `python3 phase0/validate.py frozen-check` and `.venv/bin/python -m unittest discover -s phase0 -v` from the repository root to recheck it.
+
 ## The sequencing boundary
 
 Phase 0 deliberately separates product inputs from evaluation outputs:

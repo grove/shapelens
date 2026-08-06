@@ -1,0 +1,5 @@
+PREFIX ops: <https://example.test/ops/>
+
+SELECT DISTINCT ?runbook WHERE {
+  ops:CheckoutApi ops:dependsOn ?runbook .
+}

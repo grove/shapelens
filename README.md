@@ -2,7 +2,7 @@
 
 ShapeLens is a proposed Python runtime for asking useful questions of RDF data through the semantic structure already captured in SHACL—without handing unrestricted SPARQL to an application caller or a language model. It turns carefully qualified shapes into a small, typed set of graph operations, validates each requested operation in ordinary code, and returns results alongside the evidence needed to understand why each result appeared. The aim is not to make graph querying look magical; it is to make it bounded, inspectable, and easier to trust in applications where the meaning of a query matters as much as the answer.
 
-The project is in **Phase 0**, where its product assumptions and semantic kernel are being tested. There is not yet a packaged library or a stable public API. This repository contains the reference design, the vocabulary used to discuss it, and an executable experiment workspace that must succeed before a version 0.1 runtime is built.
+**Phase 0 is complete and all eight gates passed.** The deterministic version 0.1 library work is approved but has not started; there is still no packaged library or stable public API. The frozen experiment, executable proof, and bounded decision are recorded in [`phase0/DECISION.md`](./phase0/DECISION.md).
 
 ## Why ShapeLens exists
 
@@ -36,11 +36,11 @@ Capabilities that sound attractive but require stronger semantics—absence clai
 
 ## Project status and next steps
 
-Phase 0 tests two independent questions: whether representative SHACL graphs can support valuable real application questions without excessive rewriting, and whether the accepted operations can be compiled and evidenced correctly. The work uses a frozen corpus of representative shapes and questions, hand-authored typed plans, reviewed semantic-oracle queries, and separate gates for compiler correctness, normalization, shape compatibility, question coverage, overlay burden, inspectability, evidence completeness, and failure honesty. No aggregate score can hide a failed trust or correctness boundary.
+Phase 0 tested two independent questions: whether representative SHACL graphs can support valuable application questions without excessive rewriting, and whether the accepted operations compile and produce complete evidence. Its frozen corpus, hand-authored typed plans, reviewed semantic oracles, and eight independent gates all passed. No aggregate score was used to hide a failed trust or correctness boundary.
 
-Only after those gates pass will ShapeLens move to a version 0.1 Python library. The planned `ShapeQueryEngine` will be deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the initial runtime contract.
+ShapeLens may now move to a version 0.1 Python library. The planned `ShapeQueryEngine` remains deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the initial runtime contract.
 
-The immediate work is corpus collection, not library scaffolding. Start with the [`phase0` workspace](./phase0/README.md), add 20–30 application-owner-authored questions, predeclare the product thresholds, and freeze those inputs before classifying questions or designing typed plans.
+The immediate work is to extract the accepted behavior and test mappings into the version 0.1 specification and supporting security/decision documents before creating the library shell.
 
 ## Learn more
 
@@ -49,6 +49,7 @@ The immediate work is corpus collection, not library scaffolding. Start with the
 - [Domain vocabulary](./CONTEXT.md) defines terms such as Shape Lens, Population Selector, Bound Query Plan, and Query Outcome.
 - [Phase 0 experiment](./PHASE0-EXPERIMENT.md) sets out the validation protocol and decision gates.
 - [Phase 0 workspace](./phase0/README.md) contains the corpus templates, fixture conventions, report template, and validation commands.
+- [Phase 0 decision](./phase0/DECISION.md) reports every gate, raw denominator, limitation, and the approved next boundary.
 - [Roadmap](./ROADMAP.md) describes the milestone-based path from validation to a deterministic runtime and later capabilities.
 
 ## License

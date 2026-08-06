@@ -1,0 +1,63 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:7:0",
+      "id": "owner",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:7",
+      "source_lens": "service-view",
+      "target_entity": "team"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:11:0",
+      "id": "contact",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:11",
+      "source_lens": "team-view",
+      "target_entity": "contact"
+    }
+  ],
+  "entities": [
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://example.test/ops/PaymentsApi"
+      },
+      "id": "service"
+    },
+    {
+      "binding": null,
+      "id": "team"
+    },
+    {
+      "binding": null,
+      "id": "contact"
+    }
+  ],
+  "filters": [],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "service",
+      "id": "service-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5"
+    },
+    {
+      "entity": "team",
+      "id": "team-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:6"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "team",
+      "id": "team",
+      "kind": "node"
+    },
+    {
+      "entity": "contact",
+      "id": "contact",
+      "kind": "node"
+    }
+  ],
+  "selectors": []
+}

@@ -30,8 +30,8 @@ Models choose among approved semantic operations. Deterministic code owns source
 
 ## Document lifecycle
 
-Before Phase 0 completes, [`SHAPELENS_DESIGN.md`](./SHAPELENS_DESIGN.md) remains a non-normative reference design and decision backlog. Its RFC-style words express proposals only.
+Phase 0 is complete, but [`SHAPELENS_DESIGN.md`](./SHAPELENS_DESIGN.md) remains a non-normative reference design and decision backlog until accepted behavior is extracted into the version 0.1 documents. Its RFC-style words express proposals only.
 
-During Phase 0 the package layout, public API, detailed evidence taxonomy, and future architecture are frozen as non-deliverable proposals. Only corpus evidence, semantic fixtures, or a necessary protocol correction justify changing them. Observed coverage, burden, blocker frequency, and comparative value determine later priorities rather than the numeric order of the future roadmap.
+Phase 0 did not stabilize the package layout, public API, detailed evidence taxonomy, or future architecture. Observed coverage, burden, blocker frequency, and comparative value determine later priorities rather than the numeric order of the future roadmap.
 
 After Phase 0, accepted and observed behavior is extracted into `SPEC-0.1.md` with stable requirement IDs and test mappings. Security profiles move to `SECURITY.md`; accepted trade-offs move to `docs/adr/`; unresolved decisions move to `OPEN-QUESTIONS.md`; and later architecture moves to `FUTURE-DESIGN.md`. Normative RFC language belongs only in the specification.

@@ -1,0 +1,25 @@
+@prefix ex: <https://example.test/semantic/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Positive direct and inverse path witnesses.
+ex:PaymentsApi a ex:Service ; ex:ownedBy ex:PaymentsTeam .
+ex:PaymentsTeam a ex:Team .
+
+# This typed service gives an empty positive SELECT for ownedBy PaymentsTeam.
+ex:EmptyService a ex:Service ; ex:ownedBy ex:OtherTeam .
+ex:OtherTeam a ex:Team .
+
+# This typed service gives a false ASK for its ownership by PaymentsTeam.
+ex:NoOwnerService a ex:Service .
+
+# One entity is intentionally covered by two distinct Shape Lenses.
+ex:Priya a ex:Person ;
+  ex:memberOf ex:PaymentsTeam ;
+  ex:displayName "Priya N."^^xsd:string .
+
+# Exact RDF-term identity cases: IRI, datatype, lexical form, and language tag.
+ex:IdentityProbe
+  ex:iriTerm ex:ExactIri ;
+  ex:typedTerm "01"^^xsd:string, "01"^^xsd:integer ;
+  ex:lexicalTerm "01"^^xsd:integer, "1"^^xsd:integer ;
+  ex:languageTerm "colour"@en, "colour"@fr .

@@ -1,0 +1,9 @@
+ShapeLens normalized plan
+
+kind: select
+entity service: unbound
+entity team: https://example.test/semantic/PaymentsTeam
+selector population: service has direct type https://example.test/semantic/Service
+lens ownership: service uses https://example.test/semantic/ServiceShape
+edge owner: team -- https://example.test/semantic/ownedBy --> service
+projection answer: service
