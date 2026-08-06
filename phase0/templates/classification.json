@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "corpus_revision": "replace-with-frozen-revision",
+  "question_id": "q-example",
+  "primary_classification": "direct",
+  "reason_codes": [],
+  "blocker_details": null,
+  "affected_shape_graph_ids": [],
+  "shape_source_trust": "trusted",
+  "semantic_owner_reviewed_by": "application-semantic-owner",
+  "qualification_status": "pending",
+  "required_features": [],
+  "overlay_burden": {
+    "descriptive_declarations": 0,
+    "executable_declarations": 0,
+    "executable_declaration_kinds": [],
+    "declaration_references": [],
+    "affected_lens_uses": [],
+    "review_owner": null,
+    "semantic_fixture_ids": []
+  },
+  "shape_rewriting": {
+    "required": false,
+    "description": null
+  },
+  "classified_by": [
+    "classification-reviewer"
+  ],
+  "reviewed_by": [
+    "independent-reviewer"
+  ],
+  "notes": []
+}

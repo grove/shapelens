@@ -1,0 +1,2 @@
+PREFIX ops: <https://example.test/ops/>
+SELECT ?service WHERE { ?service ops:dependsOn ops:PaymentsApi . }

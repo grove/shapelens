@@ -1,0 +1,10 @@
+PREFIX ex: <https://catalog.example.org/ns/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?publication ?title WHERE {
+  ?publication ex:publicationYear "2025"^^xsd:gYear ;
+    ex:title ?title .
+  FILTER NOT EXISTS {
+    ?publication ex:openAccessDeposit ?deposit .
+    ?deposit ex:depositStatus ex:public .
+  }
+}

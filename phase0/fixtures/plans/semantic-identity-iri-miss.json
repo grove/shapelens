@@ -1,0 +1,45 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [],
+  "entities": [
+    {
+      "binding": null,
+      "id": "probe"
+    }
+  ],
+  "filters": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:26:0",
+      "id": "identity",
+      "kind": "eq",
+      "lens": "identity-view",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:26",
+      "value": {
+        "kind": "iri",
+        "value": "https://example.test/semantic/OtherIri"
+      }
+    }
+  ],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "probe",
+      "id": "identity-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "probe",
+      "id": "probe",
+      "kind": "node"
+    }
+  ],
+  "selectors": [
+    {
+      "entity": "probe",
+      "id": "probe-target",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:12"
+    }
+  ]
+}

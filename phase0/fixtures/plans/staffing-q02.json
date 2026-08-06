@@ -1,0 +1,61 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:1:0",
+      "id": "worked",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:1",
+      "source_lens": "staffing",
+      "target_entity": "project"
+    }
+  ],
+  "entities": [
+    {
+      "binding": null,
+      "id": "employee"
+    },
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://example.org/staffing/project-beacon"
+      },
+      "id": "project"
+    }
+  ],
+  "filters": [],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "employee",
+      "id": "staffing",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1"
+    },
+    {
+      "entity": "employee",
+      "id": "directory",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:0"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "employee",
+      "id": "employee",
+      "kind": "node"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:0:0",
+      "id": "name",
+      "kind": "field",
+      "lens": "directory",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:0",
+      "required": true
+    }
+  ],
+  "selectors": [
+    {
+      "entity": "employee",
+      "id": "employee-pop",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:1"
+    }
+  ]
+}

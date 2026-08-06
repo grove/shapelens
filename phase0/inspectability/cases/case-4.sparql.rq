@@ -1,0 +1,6 @@
+PREFIX ops: <https://example.test/ops/>
+
+SELECT DISTINCT ?service WHERE {
+  ?service a ops:Deployment ;
+    ops:ownedBy ops:PaymentsTeam .
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "fixture_revision": "replace-with-fixture-revision",
+  "corpus_revision": "replace-with-frozen-corpus-revision",
+  "fixture_id": "fixture-example",
+  "kind": "semantic_conformance",
+  "question_ids": [],
+  "features": [
+    "direct_predicate"
+  ],
+  "adapter_modes": [
+    "graph",
+    "dataset"
+  ],
+  "shape_graph_paths": [
+    "phase0/fixtures/artifacts/example-shapes.ttl"
+  ],
+  "data_paths": [
+    "phase0/fixtures/artifacts/example-data.ttl"
+  ],
+  "plan_path": "phase0/fixtures/artifacts/example-plan.json",
+  "semantic_oracle_query_path": "phase0/fixtures/artifacts/example-oracle.rq",
+  "expected_result_path": "phase0/fixtures/artifacts/example-results.json",
+  "expected_support_path": "phase0/fixtures/artifacts/example-support.json",
+  "reviewed_by": [
+    "fixture-reviewer"
+  ],
+  "notes": []
+}

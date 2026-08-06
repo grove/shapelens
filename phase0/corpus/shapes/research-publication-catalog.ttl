@@ -1,0 +1,37 @@
+@prefix ex: <https://catalog.example.org/ns/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:PublicationShape a sh:NodeShape ;
+  sh:targetClass ex:Publication ;
+  sh:property [
+    sh:path ex:title ; sh:minCount 1 ; sh:datatype xsd:string
+  ], [
+    sh:path ex:publicationYear ; sh:minCount 1 ; sh:datatype xsd:gYear
+  ], [
+    sh:path ex:contributor ; sh:minCount 1 ; sh:class ex:Researcher
+  ], [
+    sh:path ex:publishedIn ; sh:minCount 1 ; sh:class ex:Venue
+  ], [
+    sh:path ex:fundedBy ; sh:class ex:Grant
+  ], [
+    sh:path ex:usesDataset ; sh:class ex:Dataset
+  ], [
+    sh:path ex:openAccessDeposit ; sh:class ex:Deposit
+  ] .
+
+ex:ResearcherShape a sh:NodeShape ;
+  sh:targetClass ex:Researcher ;
+  sh:property [
+    sh:path ex:displayName ; sh:minCount 1 ; sh:datatype xsd:string
+  ], [
+    sh:path ex:memberOf ; sh:class ex:Department
+  ] .
+
+ex:GrantShape a sh:NodeShape ;
+  sh:targetClass ex:Grant ;
+  sh:property [ sh:path ex:grantNumber ; sh:minCount 1 ; sh:datatype xsd:string ] .
+
+ex:DepositShape a sh:NodeShape ;
+  sh:targetClass ex:Deposit ;
+  sh:property [ sh:path ex:depositStatus ; sh:minCount 1 ] .

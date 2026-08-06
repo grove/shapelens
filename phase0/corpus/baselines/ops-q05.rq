@@ -1,0 +1,6 @@
+PREFIX ops: <https://example.test/ops/>
+SELECT ?service ?deployment WHERE {
+  ?service ops:ownedBy ops:CommerceTeam ;
+    ops:hasDeployment ?deployment .
+  ?deployment ops:environment ops:Production .
+}

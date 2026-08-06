@@ -1,0 +1,9 @@
+ShapeLens normalized plan
+
+kind: select
+entity service: unbound
+entity team: https://example.test/ops/PaymentsTeam
+selector population: service has direct type https://example.test/ops/Deployment via DeploymentShape
+lens service-view: service uses https://example.test/ops/ServiceShape
+edge owner: service -- https://example.test/ops/ownedBy --> team
+projection answer: service

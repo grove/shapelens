@@ -1,0 +1,55 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:2:0",
+      "id": "expertise",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:2",
+      "source_lens": "staffing",
+      "target_entity": "skill"
+    }
+  ],
+  "entities": [
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://example.org/staffing/employee-omar"
+      },
+      "id": "employee"
+    },
+    {
+      "binding": null,
+      "id": "skill"
+    }
+  ],
+  "filters": [],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "employee",
+      "id": "staffing",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1"
+    },
+    {
+      "entity": "skill",
+      "id": "skill-view",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:3"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "skill",
+      "id": "skill",
+      "kind": "node"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:5:0",
+      "id": "label",
+      "kind": "field",
+      "lens": "skill-view",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:5",
+      "required": true
+    }
+  ],
+  "selectors": []
+}

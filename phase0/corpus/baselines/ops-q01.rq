@@ -1,0 +1,5 @@
+PREFIX ops: <https://example.test/ops/>
+SELECT ?team ?contact WHERE {
+  ops:PaymentsApi ops:ownedBy ?team .
+  ?team ops:onCallContact ?contact .
+}

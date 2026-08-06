@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "ops-q02",
+  "scenario_id": "service-operations",
+  "owner": "platform-operations",
+  "priority": "high",
+  "priority_rationale": "Operators need the team’s operational estate.",
+  "question": "Which services are owned by the Payments team?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Service IRIs."
+  },
+  "dataset_fixture": "phase0/corpus/data/service-operations.ttl",
+  "shape_graph_ids": [
+    "service-operations-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/ops-q02.rq",
+    "reviewed_by": [
+      "platform-operations",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "staffing-q01",
+  "scenario_id": "delivery-staffing",
+  "owner": "workforce-operations",
+  "priority": "high",
+  "priority_rationale": "Identifies immediately usable project contributors.",
+  "question": "Which employees worked on Project Atlas and have artificial-intelligence expertise?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Employee IRI and directory name."
+  },
+  "dataset_fixture": "phase0/corpus/data/staffing-skills.ttl",
+  "shape_graph_ids": [
+    "staffing-skills-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/staffing-q01.rq",
+    "reviewed_by": [
+      "workforce-operations",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

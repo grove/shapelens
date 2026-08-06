@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "ops-q03",
+  "scenario_id": "service-operations",
+  "owner": "platform-operations",
+  "priority": "critical",
+  "priority_rationale": "Removes runbook hunting during an outage.",
+  "question": "What runbook should the incident commander use for Checkout API?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Runbook IRI."
+  },
+  "dataset_fixture": "phase0/corpus/data/service-operations.ttl",
+  "shape_graph_ids": [
+    "service-operations-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/ops-q03.rq",
+    "reviewed_by": [
+      "platform-operations",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

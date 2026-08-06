@@ -2,7 +2,7 @@
 
 ShapeLens is a proposed Python runtime for asking useful questions of RDF data through the semantic structure already captured in SHACL—without handing unrestricted SPARQL to an application caller or a language model. It turns carefully qualified shapes into a small, typed set of graph operations, validates each requested operation in ordinary code, and returns results alongside the evidence needed to understand why each result appeared. The aim is not to make graph querying look magical; it is to make it bounded, inspectable, and easier to trust in applications where the meaning of a query matters as much as the answer.
 
-The project is in **Phase 0**, where its product assumptions and semantic kernel are being tested. There is not yet a packaged library or a stable public API. This repository contains the reference design, the vocabulary used to discuss it, and the experiment plan that must succeed before a version 0.1 runtime is built.
+**Phase 0 is complete and all eight gates passed.** The deterministic version 0.1 library work is approved but has not started; there is still no packaged library or stable public API. The frozen experiment, executable proof, and bounded decision are recorded in [`phase0/DECISION.md`](./phase0/DECISION.md).
 
 ## Why ShapeLens exists
 
@@ -16,7 +16,7 @@ This boundary is particularly important when AI is involved. In ShapeLens’ lat
 
 SHACL is not treated as a complete database schema or as proof that a fact is true. Instead, ShapeLens derives a contextual **Shape Lens** from a primary node shape and, where appropriate, a reviewed application overlay. A lens exposes a small set of permitted operations—such as traversing an approved relationship, matching an exact RDF term, or checking positive existence—and keeps population selection separate from the value contract of a relationship. That separation avoids a common source of subtle graph-query mistakes: assuming that a relationship’s target declaration silently defines the population being queried.
 
-At build time, trusted shape sources are normalized into an immutable, versioned catalog. At query time, a **Bound Query Plan** can refer only to catalog items, supported operations, and validated RDF terms. The runtime validates the plan, applies policy and resource ceilings, executes the resulting query, and records typed evidence. For every positive result row, the intended design creates a Row Support Certificate that maps each selector, relationship, filter, and projection in the plan to its witness evidence or to an explicit unbound optional value. That makes it possible to inspect a result without reverse-engineering a large, opaque query.
+At build time, trusted shape sources are normalized into an immutable, versioned catalog. At query time, a **Bound Query Plan** can refer only to catalog items, supported operations, and validated RDF terms. The runtime validates the plan, applies policy and resource ceilings, executes the resulting query, and records typed evidence. Phase 0 represents positive-row support with a minimal internal Atom-Witness Map covering every selector, relationship, filter, and projection. If that behavior passes the experiment, version 0.1 may expose it through the proposed Row Support Certificate API.
 
 ## Example use cases
 
@@ -30,15 +30,17 @@ At build time, trusted shape sources are normalized into an immutable, versioned
 
 ## Scope and deliberate limits
 
-The first planned runtime is intentionally conservative. Its focus is local RDFLib execution, qualified local shape material, explicit population selectors, direct and inverse predicate paths, connected positive queries, exact RDF-term identity, positive existence, and evidence-backed `SELECT` and `ASK` outcomes. It is not intended to be a general SHACL-to-query translator, a replacement for straightforward application code, a general-purpose GraphRAG stack, or an unrestricted natural-language analytics product.
+The experiment is intentionally conservative. Its fixed execution profile is trusted, in-process RDFLib `Graph` and `Dataset` data with qualified local shape material, explicit population selectors, direct and inverse predicate paths, connected positive queries, exact RDF-term identity, positive existence, and evidence-backed `SELECT` and `ASK` outcomes. It is not intended to be a general SHACL-to-query translator, a replacement for straightforward application code, a general-purpose GraphRAG stack, an authorization solution, or an unrestricted natural-language analytics product.
 
 Capabilities that sound attractive but require stronger semantics—absence claims, aggregation, lexical search, ordered comparisons, stable pagination, remote endpoints, generic row-level authorization, document retrieval, embeddings, and model planning—are deliberately deferred. The project’s position is that these should be added only when their truth conditions, policy boundaries, resource costs, and evidence requirements are specified and tested, not merely because a query engine can render corresponding SPARQL.
 
 ## Project status and next steps
 
-Phase 0 tests two independent questions: whether representative SHACL graphs can support valuable real application questions without excessive rewriting, and whether the accepted operations can be compiled and evidenced correctly. The work uses a frozen corpus of representative shapes and questions, hand-authored typed plans, reviewed reference queries, and separate gates for compiler correctness, normalization, shape compatibility, question coverage, overlay burden, inspectability, evidence completeness, and failure honesty. No aggregate score can hide a failed trust or correctness boundary.
+Phase 0 tested two independent questions: whether representative SHACL graphs can support valuable application questions without excessive rewriting, and whether the accepted operations compile and produce complete evidence. Its frozen corpus, hand-authored typed plans, reviewed semantic oracles, and eight independent gates all passed. No aggregate score was used to hide a failed trust or correctness boundary.
 
-Only after those gates pass will ShapeLens move to a version 0.1 Python library. The planned `ShapeQueryEngine` will be deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the initial runtime contract.
+ShapeLens may now move to a version 0.1 Python library. The planned `ShapeQueryEngine` remains deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the initial runtime contract.
+
+The immediate work is to extract the accepted behavior and test mappings into the version 0.1 specification and supporting security/decision documents before creating the library shell.
 
 ## Learn more
 
@@ -46,6 +48,8 @@ Only after those gates pass will ShapeLens move to a version 0.1 Python library.
 - [Reference design](./SHAPELENS_DESIGN.md) describes the proposed architecture, query algebra, evidence model, and security considerations.
 - [Domain vocabulary](./CONTEXT.md) defines terms such as Shape Lens, Population Selector, Bound Query Plan, and Query Outcome.
 - [Phase 0 experiment](./PHASE0-EXPERIMENT.md) sets out the validation protocol and decision gates.
+- [Phase 0 workspace](./phase0/README.md) contains the corpus templates, fixture conventions, report template, and validation commands.
+- [Phase 0 decision](./phase0/DECISION.md) reports every gate, raw denominator, limitation, and the approved next boundary.
 - [Roadmap](./ROADMAP.md) describes the milestone-based path from validation to a deterministic runtime and later capabilities.
 
 ## License

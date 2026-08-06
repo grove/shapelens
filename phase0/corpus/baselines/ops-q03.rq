@@ -1,0 +1,2 @@
+PREFIX ops: <https://example.test/ops/>
+SELECT ?runbook WHERE { ops:CheckoutApi ops:runbook ?runbook . }

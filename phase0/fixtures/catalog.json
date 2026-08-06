@@ -1,0 +1,636 @@
+{
+  "build_scope": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773",
+  "lenses": [
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:0",
+      "qualified": true,
+      "shape_term": "https://example.org/staffing/EmployeeDirectoryShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1",
+      "qualified": true,
+      "shape_term": "https://example.org/staffing/EmployeeStaffingShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:2",
+      "qualified": true,
+      "shape_term": "https://example.org/staffing/ProjectStaffingShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:3",
+      "qualified": true,
+      "shape_term": "https://example.org/staffing/SkillShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:4",
+      "qualified": true,
+      "shape_term": "https://example.test/ops/DeploymentShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "qualified": true,
+      "shape_term": "https://example.test/ops/ServiceShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:6",
+      "qualified": true,
+      "shape_term": "https://example.test/ops/TeamShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:7",
+      "qualified": true,
+      "shape_term": "https://catalog.example.org/ns/DepositShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:8",
+      "qualified": true,
+      "shape_term": "https://catalog.example.org/ns/GrantShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "qualified": true,
+      "shape_term": "https://catalog.example.org/ns/PublicationShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:10",
+      "qualified": true,
+      "shape_term": "https://catalog.example.org/ns/ResearcherShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:11",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/DirectoryPersonShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/IdentityShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:13",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/IncidentFocusShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:14",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/OperationsPersonShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:15",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/ServiceShape",
+      "trusted": true
+    },
+    {
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:16",
+      "qualified": true,
+      "shape_term": "https://example.test/semantic/TeamShape",
+      "trusted": true
+    }
+  ],
+  "properties": [
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:0:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:0",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:0",
+      "predicate_iri": "https://example.org/staffing/displayName",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb3"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:1:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:1",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1",
+      "predicate_iri": "https://example.org/staffing/workedOn",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb1"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:2:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:2",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1",
+      "predicate_iri": "https://example.org/staffing/expertise",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb2"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:3:0"
+      ],
+      "inverse": true,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:3",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:2",
+      "predicate_iri": "https://example.org/staffing/workedOn",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb4"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:4:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:4",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:2",
+      "predicate_iri": "https://example.org/staffing/title",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb6"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:5:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:5",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:3",
+      "predicate_iri": "https://example.org/staffing/label",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "nf537f19e41ce42e39adae3e910f6b1ecb7"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:6:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:6",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:4",
+      "predicate_iri": "https://example.test/ops/environment",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b6"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:7:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:7",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "predicate_iri": "https://example.test/ops/ownedBy",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b1"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:8:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:8",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "predicate_iri": "https://example.test/ops/runbook",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b2"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:9:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:9",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "predicate_iri": "https://example.test/ops/dependsOn",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b3"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:10:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:10",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "predicate_iri": "https://example.test/ops/hasDeployment",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b4"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:11:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:11",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:6",
+      "predicate_iri": "https://example.test/ops/onCallContact",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n1d236c8b007d4ac088ca313ea5bff202b5"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:12:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:12",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:7",
+      "predicate_iri": "https://catalog.example.org/ns/depositStatus",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb11"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:13:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:13",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:8",
+      "predicate_iri": "https://catalog.example.org/ns/grantNumber",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb10"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:14:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:14",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/title",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb1"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:15:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:15",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/publicationYear",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb2"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:16:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:16",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/contributor",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb3"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:17:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:17",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/publishedIn",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb4"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:18:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:18",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/fundedBy",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb5"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:19:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:19",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/usesDataset",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb6"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:20:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:20",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "predicate_iri": "https://catalog.example.org/ns/openAccessDeposit",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb7"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:21:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:21",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:10",
+      "predicate_iri": "https://catalog.example.org/ns/displayName",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb8"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:22:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:22",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:10",
+      "predicate_iri": "https://catalog.example.org/ns/memberOf",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "n2385f09eba104125ab5d01102fc62fdbb9"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:23:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:23",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:11",
+      "predicate_iri": "https://example.test/semantic/displayName",
+      "qualified": true,
+      "scalar": true,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b6"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:24:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:24",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "predicate_iri": "https://example.test/semantic/lexicalTerm",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b13"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:25:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:25",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "predicate_iri": "https://example.test/semantic/languageTerm",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b14"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:26:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:26",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "predicate_iri": "https://example.test/semantic/iriTerm",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b7"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:27:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:27",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "predicate_iri": "https://example.test/semantic/typedTerm",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b8"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:28:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:28",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:13",
+      "predicate_iri": "https://example.test/semantic/ownedBy",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b4"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:29:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:29",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:14",
+      "predicate_iri": "https://example.test/semantic/memberOf",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b5"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:30:0"
+      ],
+      "inverse": false,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:30",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:15",
+      "predicate_iri": "https://example.test/semantic/ownedBy",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b1"
+    },
+    {
+      "branch_keys": [
+        "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:31:0"
+      ],
+      "inverse": true,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:31",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:16",
+      "predicate_iri": "https://example.test/semantic/ownedBy",
+      "qualified": true,
+      "scalar": false,
+      "source_term": "nb97d1c591ed7424c839d9b06b6521775b2"
+    }
+  ],
+  "revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "selectors": [
+    {
+      "class_iri": "https://example.org/staffing/Employee",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:0",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:0",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.org/staffing/Employee",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:1",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:1",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.org/staffing/Project",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:2",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:2",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.org/staffing/Skill",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:3",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:3",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/ops/Deployment",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:4",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:4",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/ops/Service",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:5",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:5",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/ops/Team",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:6",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:6",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://catalog.example.org/ns/Deposit",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:7",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:7",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://catalog.example.org/ns/Grant",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:8",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:8",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://catalog.example.org/ns/Publication",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:9",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:9",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://catalog.example.org/ns/Researcher",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:10",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:10",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/semantic/Person",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:11",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:11",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": null,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:12",
+      "kind": "target_nodes",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:12",
+      "qualified": true,
+      "target_iris": [
+        "https://example.test/semantic/IdentityProbe"
+      ]
+    },
+    {
+      "class_iri": null,
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:13",
+      "kind": "target_nodes",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:13",
+      "qualified": true,
+      "target_iris": [
+        "https://example.test/semantic/PaymentsApi"
+      ]
+    },
+    {
+      "class_iri": "https://example.test/semantic/Person",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:14",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:14",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/semantic/Service",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:15",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:15",
+      "qualified": true,
+      "target_iris": []
+    },
+    {
+      "class_iri": "https://example.test/semantic/Team",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:16",
+      "kind": "direct_type",
+      "lens_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:16",
+      "qualified": true,
+      "target_iris": []
+    }
+  ]
+}

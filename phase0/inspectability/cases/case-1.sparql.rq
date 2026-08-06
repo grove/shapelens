@@ -1,0 +1,7 @@
+PREFIX ex: <https://example.test/semantic/>
+
+SELECT DISTINCT ?service WHERE {
+  ?service a ex:Service .
+  VALUES ?team { ex:PaymentsTeam }
+  ?team ex:ownedBy ?service .
+}

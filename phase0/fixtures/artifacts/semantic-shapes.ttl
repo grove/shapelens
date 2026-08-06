@@ -1,0 +1,30 @@
+@prefix ex: <https://example.test/semantic/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:ServiceShape a sh:NodeShape ;
+  sh:targetClass ex:Service ;
+  sh:property [ sh:path ex:ownedBy ; sh:class ex:Team ] .
+
+ex:TeamShape a sh:NodeShape ;
+  sh:targetClass ex:Team ;
+  sh:property [ sh:path [ sh:inversePath ex:ownedBy ] ; sh:class ex:Service ] .
+
+ex:IncidentFocusShape a sh:NodeShape ;
+  sh:targetNode ex:PaymentsApi ;
+  sh:property [ sh:path ex:ownedBy ; sh:class ex:Team ] .
+
+ex:OperationsPersonShape a sh:NodeShape ;
+  sh:targetClass ex:Person ;
+  sh:property [ sh:path ex:memberOf ; sh:class ex:Team ] .
+
+ex:DirectoryPersonShape a sh:NodeShape ;
+  sh:targetClass ex:Person ;
+  sh:property [ sh:path ex:displayName ; sh:datatype xsd:string ; sh:maxCount 1 ] .
+
+ex:IdentityShape a sh:NodeShape ;
+  sh:targetNode ex:IdentityProbe ;
+  sh:property [ sh:path ex:iriTerm ; sh:nodeKind sh:IRI ] ;
+  sh:property [ sh:path ex:typedTerm ; sh:or ( [ sh:datatype xsd:string ] [ sh:datatype xsd:integer ] ) ] ;
+  sh:property [ sh:path ex:lexicalTerm ; sh:datatype xsd:integer ] ;
+  sh:property [ sh:path ex:languageTerm ; sh:languageIn ( "en" "fr" ) ] .

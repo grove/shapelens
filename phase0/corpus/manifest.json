@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "corpus_id": "shapelens-phase0-representative-v1",
+  "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
+  "status": "frozen",
+  "corpus_owner": "shapelens-project",
+  "scope": {
+    "statement": "Project-owned representative questions for three materially different trusted-local RDF applications: staffing, service operations, and research cataloging.",
+    "denominator_rule": "All question records frozen with scope=in_scope.",
+    "exclusion_rule": "Exclusions and their reasons are frozen before classification; post-freeze exclusions require a new corpus revision."
+  },
+  "frozen_at": "2026-08-07T01:00:50+02:00",
+  "frozen_by": [
+    "shapelens-project"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "delivery-staffing",
+      "name": "Delivery staffing and skills registry",
+      "owner": "workforce-operations",
+      "description": "Staffing coordinators maintain employee assignments and declared expertise to assemble project teams and audit coverage.",
+      "material_difference": "Workforce allocation and skill discovery over people, projects, and expertise."
+    },
+    {
+      "scenario_id": "service-operations",
+      "name": "Service ownership and incident operations",
+      "owner": "platform-operations",
+      "description": "Incident commanders and platform operators use a service catalog to find accountable teams, runbooks, deployments, and dependencies.",
+      "material_difference": "Operational ownership and incident response over services, teams, deployments, and runbooks."
+    },
+    {
+      "scenario_id": "research-publication-catalog",
+      "name": "Institutional research and publication catalog",
+      "owner": "research-information-office",
+      "description": "Research-information staff maintain publications, contributors, grants, venues, datasets, departments, and deposit states.",
+      "material_difference": "Bibliographic reporting and stewardship over scholarly outputs and research administration."
+    }
+  ],
+  "shape_graphs": [
+    {
+      "shape_graph_id": "staffing-skills-shapes",
+      "scenario_ids": [
+        "delivery-staffing"
+      ],
+      "owner": "workforce-operations",
+      "path": "phase0/corpus/shapes/staffing-skills.ttl",
+      "provenance_kind": "representative",
+      "provenance_description": "Project-owned representative SHACL graph authored from staffing requirements before Phase 0 classification or plan design.",
+      "shape_styles": [
+        "node_shapes_with_inline_property_shapes",
+        "blank_node_property_shapes",
+        "inverse_paths"
+      ],
+      "rewritten_for_experiment": false,
+      "rewrite_description": null,
+      "source_trust": "trusted",
+      "trust_assessed_by": "workforce-operations"
+    },
+    {
+      "shape_graph_id": "service-operations-shapes",
+      "scenario_ids": [
+        "service-operations"
+      ],
+      "owner": "platform-operations",
+      "path": "phase0/corpus/shapes/service-operations.ttl",
+      "provenance_kind": "representative",
+      "provenance_description": "Project-owned representative SHACL graph authored from service-catalog requirements before Phase 0 classification or plan design.",
+      "shape_styles": [
+        "node_shapes_with_inline_property_shapes",
+        "blank_node_property_shapes"
+      ],
+      "rewritten_for_experiment": false,
+      "rewrite_description": null,
+      "source_trust": "trusted",
+      "trust_assessed_by": "platform-operations"
+    },
+    {
+      "shape_graph_id": "research-publication-catalog-shapes",
+      "scenario_ids": [
+        "research-publication-catalog"
+      ],
+      "owner": "research-information-office",
+      "path": "phase0/corpus/shapes/research-publication-catalog.ttl",
+      "provenance_kind": "representative",
+      "provenance_description": "Project-owned representative SHACL graph authored from research-catalog requirements before Phase 0 classification or plan design.",
+      "shape_styles": [
+        "node_shapes_with_inline_property_shapes",
+        "blank_node_property_shapes"
+      ],
+      "rewritten_for_experiment": false,
+      "rewrite_description": null,
+      "source_trust": "trusted",
+      "trust_assessed_by": "research-information-office"
+    }
+  ],
+  "question_files": [
+    "phase0/corpus/questions/staffing-q01.json",
+    "phase0/corpus/questions/staffing-q02.json",
+    "phase0/corpus/questions/staffing-q03.json",
+    "phase0/corpus/questions/staffing-q04.json",
+    "phase0/corpus/questions/staffing-q05.json",
+    "phase0/corpus/questions/staffing-q06.json",
+    "phase0/corpus/questions/staffing-q07.json",
+    "phase0/corpus/questions/ops-q01.json",
+    "phase0/corpus/questions/ops-q02.json",
+    "phase0/corpus/questions/ops-q03.json",
+    "phase0/corpus/questions/ops-q04.json",
+    "phase0/corpus/questions/ops-q05.json",
+    "phase0/corpus/questions/ops-q06.json",
+    "phase0/corpus/questions/ops-q07.json",
+    "phase0/corpus/questions/research-q01.json",
+    "phase0/corpus/questions/research-q02.json",
+    "phase0/corpus/questions/research-q03.json",
+    "phase0/corpus/questions/research-q04.json",
+    "phase0/corpus/questions/research-q05.json",
+    "phase0/corpus/questions/research-q06.json"
+  ],
+  "metric_owners": {
+    "compiler_correctness": "phase0-evaluation-owner",
+    "normalization_correctness": "phase0-evaluation-owner",
+    "shape_authoring_compatibility": "phase0-evaluation-owner",
+    "question_coverage": "phase0-evaluation-owner",
+    "overlay_burden": "phase0-evaluation-owner",
+    "inspectability": "phase0-evaluation-owner",
+    "evidence_completeness": "phase0-evaluation-owner",
+    "failure_honesty": "phase0-evaluation-owner"
+  },
+  "threshold_approvals": {
+    "application_owners": [
+      "workforce-operations",
+      "platform-operations",
+      "research-information-office"
+    ],
+    "metric_owners": [
+      "phase0-evaluation-owner"
+    ]
+  },
+  "product_gates": {
+    "question_coverage": {
+      "minimum_direct_ratio": 0.5,
+      "minimum_direct_plus_overlay_ratio": 0.7,
+      "minimum_scenarios_meeting_combined_threshold": 2
+    },
+    "shape_authoring_compatibility": {
+      "eligible_shape_graph_ids": [
+        "staffing-skills-shapes",
+        "service-operations-shapes",
+        "research-publication-catalog-shapes"
+      ],
+      "pass_rule": "no_shape_blocked_or_rewrite",
+      "minimum_pass_ratio": 0.7
+    },
+    "overlay_burden": {
+      "maximum_median_executable_declarations_per_overlay_question": 1,
+      "maximum_worst_case_executable_declarations_per_overlay_question": 3,
+      "maximum_executable_declarations_per_graph": 10
+    },
+    "inspectability": {
+      "minimum_review_cases": 5,
+      "responsible_artifact_accuracy_min": 1,
+      "median_review_time_ratio_max": 1
+    }
+  },
+  "threshold_notes": "Approved project-owned starting thresholds for the representative benchmark before classification. This experiment demonstrates internal product evidence and does not substitute for validation with external application owners.",
+  "notes": [
+    "All source material is trusted local representative input. No protected-data, production-authorization, or external-application validity claim is made."
+  ]
+}

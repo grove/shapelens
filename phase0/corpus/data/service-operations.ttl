@@ -1,0 +1,30 @@
+@prefix ops: <https://example.test/ops/> .
+
+ops:PaymentsApi a ops:Service ;
+  ops:ownedBy ops:PaymentsTeam ;
+  ops:runbook <https://runbooks.example.test/payments-api> ;
+  ops:dependsOn ops:Ledger ;
+  ops:hasDeployment ops:PaymentsProduction .
+
+ops:CheckoutApi a ops:Service ;
+  ops:ownedBy ops:CommerceTeam ;
+  ops:runbook <https://runbooks.example.test/checkout-api> ;
+  ops:dependsOn ops:PaymentsApi ;
+  ops:hasDeployment ops:CheckoutProduction .
+
+ops:Ledger a ops:Service ;
+  ops:ownedBy ops:FinanceTeam ;
+  ops:runbook <https://runbooks.example.test/ledger> ;
+  ops:hasDeployment ops:LedgerStaging .
+
+ops:PaymentsTeam a ops:Team ; ops:onCallContact ops:Priya .
+ops:CommerceTeam a ops:Team ; ops:onCallContact ops:Mateo .
+ops:FinanceTeam a ops:Team ; ops:onCallContact ops:Lin .
+
+ops:Priya a ops:Person .
+ops:Mateo a ops:Person .
+ops:Lin a ops:Person .
+
+ops:PaymentsProduction a ops:Deployment ; ops:environment ops:Production .
+ops:CheckoutProduction a ops:Deployment ; ops:environment ops:Production .
+ops:LedgerStaging a ops:Deployment ; ops:environment ops:Staging .

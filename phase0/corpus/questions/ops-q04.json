@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "ops-q04",
+  "scenario_id": "service-operations",
+  "owner": "platform-operations",
+  "priority": "high",
+  "priority_rationale": "Identifies immediately affected downstream services.",
+  "question": "Which services directly depend on Payments API?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Dependent service IRIs."
+  },
+  "dataset_fixture": "phase0/corpus/data/service-operations.ttl",
+  "shape_graph_ids": [
+    "service-operations-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/ops-q04.rq",
+    "reviewed_by": [
+      "platform-operations",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

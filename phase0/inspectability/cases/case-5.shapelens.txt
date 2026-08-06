@@ -1,0 +1,8 @@
+ShapeLens normalized plan
+
+kind: select
+entity service: https://example.test/ops/CheckoutApi
+entity runbook: unbound
+lens service-view: service uses https://example.test/ops/ServiceShape
+edge runbook-link: service -- https://example.test/ops/dependsOn --> runbook
+projection answer: runbook

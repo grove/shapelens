@@ -1,0 +1,8 @@
+PREFIX ex: <https://catalog.example.org/ns/>
+SELECT ?researcher ?name ?department ?publication ?title WHERE {
+  ?publication ex:publishedIn ex:journal-a ;
+    ex:contributor ?researcher ;
+    ex:title ?title .
+  ?researcher ex:displayName ?name ;
+    ex:memberOf ?department .
+}

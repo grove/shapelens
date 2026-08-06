@@ -1,0 +1,7 @@
+PREFIX ex: <https://example.test/semantic/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?probe WHERE {
+  VALUES ?probe { ex:IdentityProbe }
+  ?probe ex:iriTerm ?value .
+  FILTER(sameTerm(?value, ex:ExactIri))
+}

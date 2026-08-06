@@ -1,0 +1,17 @@
+@prefix ops: <https://example.test/ops/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ops:ServiceShape a sh:NodeShape ;
+  sh:targetClass ops:Service ;
+  sh:property [ sh:path ops:ownedBy ; sh:class ops:Team ; sh:minCount 1 ] ;
+  sh:property [ sh:path ops:runbook ; sh:nodeKind sh:IRI ; sh:minCount 1 ] ;
+  sh:property [ sh:path ops:dependsOn ; sh:class ops:Service ] ;
+  sh:property [ sh:path ops:hasDeployment ; sh:class ops:Deployment ] .
+
+ops:TeamShape a sh:NodeShape ;
+  sh:targetClass ops:Team ;
+  sh:property [ sh:path ops:onCallContact ; sh:class ops:Person ; sh:minCount 1 ] .
+
+ops:DeploymentShape a sh:NodeShape ;
+  sh:targetClass ops:Deployment ;
+  sh:property [ sh:path ops:environment ; sh:in ( ops:Production ops:Staging ) ; sh:minCount 1 ] .

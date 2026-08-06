@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "question_id": "q-example",
+  "scenario_id": "scenario-example",
+  "owner": "application-owner",
+  "priority": "high",
+  "priority_rationale": "Why this question is valuable to the application.",
+  "question": "The application owner's original question, written before plan design.",
+  "scope": "in_scope",
+  "scope_reason": "Why this question belongs in the frozen denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "What a correct answer contains, without tailoring it to SELECT or ASK."
+  },
+  "dataset_fixture": "phase0/corpus/data/example.ttl",
+  "shape_graph_ids": [
+    "shapes-example"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/q-example.rq",
+    "reviewed_by": [
+      "baseline-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": []
+}

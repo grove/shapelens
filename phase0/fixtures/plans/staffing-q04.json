@@ -1,0 +1,56 @@
+{
+  "catalog_revision": "sha256:6853dd2d3c5c28ea97248fc865ec0c46d048cec31328a4390f5dade45087e08d",
+  "edges": [
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:3:0",
+      "id": "worked-inverse",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:3",
+      "source_lens": "projects",
+      "target_entity": "employee"
+    }
+  ],
+  "entities": [
+    {
+      "binding": null,
+      "id": "project"
+    },
+    {
+      "binding": {
+        "kind": "iri",
+        "value": "https://example.org/staffing/employee-alice"
+      },
+      "id": "employee"
+    }
+  ],
+  "filters": [],
+  "kind": "select",
+  "lenses": [
+    {
+      "entity": "project",
+      "id": "projects",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:lens:2"
+    }
+  ],
+  "projections": [
+    {
+      "entity": "project",
+      "id": "project",
+      "kind": "node"
+    },
+    {
+      "branch_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:branch:4:0",
+      "id": "title",
+      "kind": "field",
+      "lens": "projects",
+      "property_key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:property:4",
+      "required": true
+    }
+  ],
+  "selectors": [
+    {
+      "entity": "project",
+      "id": "project-pop",
+      "key": "sha256:5fdec61e5f2ba00a3e178a2c5accc71e3c357587c7b0346d8ce6d6916b6e0773:selector:2"
+    }
+  ]
+}

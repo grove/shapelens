@@ -2,7 +2,7 @@
 
 ## A typed SHACL-derived query runtime for Python
 
-**Document status:** Reference design and decision backlog; not yet the normative version 0.1 specification
+**Document status:** Frozen reference design and decision backlog; not yet the normative version 0.1 specification
 **Working library name:** `shapelens`
 **Target runtime:** Python 3.11+
 **Primary technologies:** RDF, SHACL, SPARQL, Pydantic, and optional Pydantic AI
@@ -10,6 +10,8 @@
 **Last reviewed:** 6 August 2026
 
 This document describes candidate architecture and decisions to test before a public version 0.1 contract is frozen. It is implementation-ready only for the explicitly scoped Phase 0 experiments. **No statement in this document is normative:** words such as **MUST**, **SHOULD**, and **MAY** describe proposed rules only. A rule gains conformance force only when observed behavior is accepted after Phase 0, copied into `SPEC-0.1.md`, assigned a stable requirement ID, and mapped to tests. The product hypothesis is in [`VISION.md`](./VISION.md), the experiment protocol in [`PHASE0-EXPERIMENT.md`](./PHASE0-EXPERIMENT.md), canonical domain vocabulary in [`CONTEXT.md`](./CONTEXT.md), and the delivery sequence in [`ROADMAP.md`](./ROADMAP.md).
+
+Phase 0 is complete. This document remains a lookup resource, not the active work queue, until the accepted subset is extracted into the version 0.1 specification and supporting documents. The experiment records and commands are in [`phase0/`](./phase0/README.md).
 
 ---
 
@@ -523,7 +525,9 @@ Model-provider failures, authorization failures, cancellation, parser exhaustion
 
 ---
 
-## 13. Evidence and answer semantics
+## 13. Candidate post-Phase-0 evidence and answer semantics
+
+The detailed evidence variants, packet schema, identifiers, certificate statuses, and public outcome models in this section are Phase 1 candidates. Phase 0 implements only minimal result/completion records and an internal Atom-Witness Map whose complete-row semantics can be tested; it does not stabilize this taxonomy or its API.
 
 ### 13.1 Evidence variants
 
@@ -655,7 +659,9 @@ Document access follows the same `AuthorizationScope` as graph access. Every fil
 
 ---
 
-## 15. Public API
+## 15. Candidate post-Phase-0 public API
+
+The examples in this section illustrate a possible version 0.1 facade. They are not Phase 0 deliverables or compatibility commitments, and no package shell is created until the experiment gates pass.
 
 The version 0.1 public facade is `ShapeQueryEngine`. Its primary operation accepts a caller-authored plan and makes no model or natural-language parser implicit. Constructors are synchronous because they assemble configuration and adapters; catalog construction and I/O remain asynchronous. `execute_plan()` returns a `QueryOutcome` and never raises for an expected no-match, policy, unsupported, or execution-failure condition. Programmer errors and unrecoverable initialization defects may still raise documented exceptions.
 
@@ -838,7 +844,7 @@ End-to-end cases record the corpus classification, question, data and shape fixt
 
 ### Phase 0: product and semantic experiments
 
-Before package architecture hardens, Phase 0 tests two separate claims: representative shape graphs yield a useful query abstraction at acceptable overlay and rewriting cost, and the accepted operations compile with correct, inspectable semantics. The corpus audit freezes application-owned questions and product thresholds before classification. The semantic spike then uses local RDFLib fixtures, hand-authored plans and reference queries, multi-lens use of one Entity Variable, blank-node Catalog-Local Keys, direct and inverse predicates, explicit selectors, exact RDF terms, Boolean and empty results, atom-level row support, and interruption cases. It excludes model planning, remote stores, absence, portable blank-node identity, documents, plugins, and production controls. All eight independent gates in `PHASE0-EXPERIMENT.md` must pass; compiler correctness alone is insufficient.
+Before package architecture hardens, Phase 0 tests two separate claims: representative shape graphs yield a useful query abstraction at acceptable overlay and rewriting cost, and the accepted operations compile with correct, inspectable semantics. The corpus audit freezes 20–30 application-owner-authored questions across at least three materially different scenarios, together with product thresholds, before classification. An early structural product gate must pass before the semantic spike. The spike then uses trusted local RDFLib `Graph` and `Dataset` fixtures, hand-authored plans and semantic-oracle queries, multi-lens use of one Entity Variable, blank-node Catalog-Local Keys, direct and inverse predicates, explicit selectors, exact RDF terms, Boolean and empty results, internal Atom-Witness Maps, and interruption cases. It excludes model planning, remote stores, authorization frameworks, absence, portable blank-node identity, documents, plugins, and production controls. All eight independent gates in `PHASE0-EXPERIMENT.md` must pass; compiler correctness alone is insufficient.
 
 ### Phase 1: deterministic kernel and version 0.1
 
@@ -973,7 +979,7 @@ Resolved questions should be removed from this table only after the decision is 
 
 ## 24. Recommendation and references
 
-ShapeLens should proceed only through the Phase 0 corpus and semantic experiments. First measure whether representative shapes and questions produce useful operations at acceptable rewriting and overlay cost. For the accepted kernel, admit trusted and semantically qualified shape material, compile supported SHACL into separate contextual Shape Lenses and Population Selectors, attach several Lens Uses to one Entity Variable, use Catalog-Local Keys for pinned execution, preserve explicit Value Contract Branches, and validate caller-authored plans before compiling conservative SPARQL. Return typed store envelopes and Row Support Certificates whose atom mappings state exactly what supports each positive row.
+ShapeLens should proceed only through the Phase 0 corpus and semantic experiments. First measure whether representative shapes and questions produce useful operations at acceptable rewriting and overlay cost. For the accepted kernel, admit trusted and semantically qualified shape material, compile supported SHACL into separate contextual Shape Lenses and Population Selectors, attach several Lens Uses to one Entity Variable, use Catalog-Local Keys for pinned execution, preserve explicit Value Contract Branches, and validate caller-authored plans before compiling conservative SPARQL. Phase 0 returns minimal result records and internal Atom-Witness Maps; an accepted version 0.1 may wrap those semantics in typed store envelopes and Row Support Certificates.
 
 The initial product should be `ShapeQueryEngine`, a deterministic SHACL-derived query runtime. Add `ShapeRAG`, model planning, and document retrieval only after the runtime demonstrates value and a separate planner benchmark passes; add absence only after named Completeness Profiles exist.
 

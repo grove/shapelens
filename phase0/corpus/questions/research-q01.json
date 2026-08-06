@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "research-q01",
+  "scenario_id": "research-publication-catalog",
+  "owner": "research-information-office",
+  "priority": "high",
+  "priority_rationale": "Supports profile checks and annual review.",
+  "question": "Show Ari Lee's publications, with their title, year, and where they were published.",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Publication, title, year, and venue."
+  },
+  "dataset_fixture": "phase0/corpus/data/research-publication-catalog.ttl",
+  "shape_graph_ids": [
+    "research-publication-catalog-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/research-q01.rq",
+    "reviewed_by": [
+      "research-information-office",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

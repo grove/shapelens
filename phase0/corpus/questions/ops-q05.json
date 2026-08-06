@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "ops-q05",
+  "scenario_id": "service-operations",
+  "owner": "platform-operations",
+  "priority": "high",
+  "priority_rationale": "Supports ownership checks during production change work.",
+  "question": "Which production services are owned by the Commerce team?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Service and production deployment IRIs."
+  },
+  "dataset_fixture": "phase0/corpus/data/service-operations.ttl",
+  "shape_graph_ids": [
+    "service-operations-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/ops-q05.rq",
+    "reviewed_by": [
+      "platform-operations",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

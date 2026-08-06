@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
+  "fixture_revision": "sha256:c35149a9543e911b05599272819fe4759906df4c8ee37a00eff9da3f2153b458",
+  "metric_owner": "phase0-evaluation-owner",
+  "reviewers": {
+    "operations_corpus": "distinct internal AI-assisted project evaluator agent for operations",
+    "research_corpus": "distinct internal AI-assisted project evaluator agent for research"
+  },
+  "protocol": {
+    "clock": "python time.monotonic_ns",
+    "presentation": "One assigned artifact at a time; paired modalities were assigned to different reviewers and counterbalanced across cases.",
+    "blinding": "Reviewers received the intended question and one artifact path, started the clock before opening it, and were instructed not to inspect the paired artifact, other cases, repository history, or answer key.",
+    "time_ratio_formula": "ShapeLens elapsed seconds divided by SPARQL elapsed seconds for each case; report the median of five ratios.",
+    "exclusions": []
+  },
+  "artifact_sha256": {
+    "phase0/inspectability/cases/case-1.shapelens.txt": "a392c7b378d518a92378529b35c519e5a86d727faaac9d3ad7fc83fc0d255886",
+    "phase0/inspectability/cases/case-1.sparql.rq": "b923f46c15e8d5fd9cc57069e331056ab495edea8ddc1e207569181bc938d9ad",
+    "phase0/inspectability/cases/case-2.shapelens.txt": "9f794bfb678265e94110d23bbb5146b5045d2acf359b4820eca333095f745945",
+    "phase0/inspectability/cases/case-2.sparql.rq": "f2c47b095e9cb643a2c3745d9c3431d324d2baece49ddf0f21547ca4222aedaf",
+    "phase0/inspectability/cases/case-3.shapelens.txt": "cb4b8ca18339f4335f3f96b0e92a49057d329c9488160b2d8adaa7f828993156",
+    "phase0/inspectability/cases/case-3.sparql.rq": "b9129ecff91742e10db157d7f91687173a4cf9469ec1b8ba267fed95f6f38e8a",
+    "phase0/inspectability/cases/case-4.shapelens.txt": "8a04eac565aa083b71d85b27b633efc755e74027e8c55b5d9f7499d991f9b45d",
+    "phase0/inspectability/cases/case-4.sparql.rq": "c26540fafb61d82923bde099e03d12baed581e02f627d84c5bb33b06796bc6c2",
+    "phase0/inspectability/cases/case-5.shapelens.txt": "5629febe70ecae55918b6501e628e30238975f13f0428c48e03a32953818608b",
+    "phase0/inspectability/cases/case-5.sparql.rq": "606c83ca9e19f0f936c4ccdeb43b1ac4f4db1a4363497df38e82cf428eb15da5"
+  },
+  "cases": [
+    {
+      "case": 1,
+      "defect": "relationship_direction",
+      "shapelens": {"reviewer":"operations_corpus","start_ns":77175887447583,"end_ns":77182772866333,"elapsed_seconds":6.88541875,"location":"edge owner, line 8","diagnosis":"The ownedBy edge is reversed: PaymentsTeam to service instead of service to PaymentsTeam.","correct":true},
+      "sparql": {"reviewer":"research_corpus","start_ns":77180547045750,"end_ns":77187151616625,"elapsed_seconds":6.604570875,"location":"ownership triple, line 6","diagnosis":"The ownedBy triple direction is reversed.","correct":true},
+      "time_ratio": 1.0425232585606858
+    },
+    {
+      "case": 2,
+      "defect": "exact_rdf_term",
+      "shapelens": {"reviewer":"research_corpus","start_ns":77242061525791,"end_ns":77250121231375,"elapsed_seconds":8.059705584,"location":"filter exact-value, line 7","diagnosis":"The filter uses lexical form 1 instead of exactly 01 with xsd:integer.","correct":true},
+      "sparql": {"reviewer":"operations_corpus","start_ns":77234926004333,"end_ns":77241506995458,"elapsed_seconds":6.580991125,"location":"sameTerm filter, line 7","diagnosis":"The filter uses lexical form 1 instead of exactly 01 with xsd:integer.","correct":true},
+      "time_ratio": 1.2246947961048953
+    },
+    {
+      "case": 3,
+      "defect": "omitted_condition",
+      "shapelens": {"reviewer":"operations_corpus","start_ns":77269602048500,"end_ns":77274887707166,"elapsed_seconds":5.285658666,"location":"after edge deployment, line 10","diagnosis":"The deployment-to-Production environment condition is missing.","correct":true},
+      "sparql": {"reviewer":"research_corpus","start_ns":77275073199291,"end_ns":77280402050625,"elapsed_seconds":5.328851334,"location":"after hasDeployment clause, line 6","diagnosis":"The deployment-to-Production environment condition is missing.","correct":true},
+      "time_ratio": 0.9918945631445156
+    },
+    {
+      "case": 4,
+      "defect": "wrong_population",
+      "shapelens": {"reviewer":"research_corpus","start_ns":77313142698208,"end_ns":77318498360833,"elapsed_seconds":5.355662625,"location":"selector population, line 6","diagnosis":"The service entity is populated from Deployment instead of Service.","correct":true},
+      "sparql": {"reviewer":"operations_corpus","start_ns":77306322151708,"end_ns":77311886379416,"elapsed_seconds":5.564227708,"location":"rdf:type clause, line 4","diagnosis":"The service variable is constrained to Deployment instead of Service.","correct":true},
+      "time_ratio": 0.9625167958708566
+    },
+    {
+      "case": 5,
+      "defect": "wrong_property",
+      "shapelens": {"reviewer":"operations_corpus","start_ns":77335255844916,"end_ns":77340182396458,"elapsed_seconds":4.926551542,"location":"edge runbook-link, line 7","diagnosis":"The edge uses dependsOn instead of runbook.","correct":true},
+      "sparql": {"reviewer":"research_corpus","start_ns":77339052580291,"end_ns":77344975093000,"elapsed_seconds":5.922512709,"location":"runbook triple, line 4","diagnosis":"The triple uses dependsOn instead of runbook.","correct":true},
+      "time_ratio": 0.8318346931554048
+    }
+  ],
+  "shape_lens_localization": {"numerator":5,"denominator":5,"threshold":1.0,"passed":true},
+  "baseline_localization": {"numerator":5,"denominator":5,"reported_comparator":true},
+  "median_review_time_ratio": {"value":0.9918945631445156,"threshold_max":1.0,"passed":true},
+  "minimum_review_cases": {"value":5,"threshold_min":5,"passed":true},
+  "pass": true,
+  "limitations": [
+    "This is an internal AI-assisted evaluator proxy, not validation with external application owners or human end users.",
+    "Elapsed time includes local artifact-read and command latency, and case order was fixed while modality assignment was counterbalanced."
+  ]
+}

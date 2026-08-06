@@ -1,0 +1,26 @@
+{
+  "scenario": {
+    "scenario_id": "scenario-example",
+    "name": "Application scenario name",
+    "owner": "application-owner",
+    "description": "What the application does and who uses these questions.",
+    "material_difference": "Why this scenario differs materially from the others."
+  },
+  "shape_graph": {
+    "shape_graph_id": "shapes-example",
+    "scenario_ids": [
+      "scenario-example"
+    ],
+    "owner": "shape-owner",
+    "path": "phase0/corpus/shapes/example.ttl",
+    "provenance_kind": "independently_authored",
+    "provenance_description": "Where this graph came from and when it was authored.",
+    "shape_styles": [
+      "node_shapes_with_inline_property_shapes"
+    ],
+    "rewritten_for_experiment": false,
+    "rewrite_description": null,
+    "source_trust": "trusted",
+    "trust_assessed_by": "source-admission-owner"
+  }
+}

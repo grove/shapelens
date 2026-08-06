@@ -1,0 +1,2 @@
+PREFIX ops: <https://example.test/ops/>
+ASK { ops:Ledger ops:ownedBy ops:FinanceTeam . }

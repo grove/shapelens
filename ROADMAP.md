@@ -1,7 +1,7 @@
 # ShapeLens roadmap
 
 **Status:** Execution guide for the current reference design  
-**Current phase:** Phase 0 — validate usefulness and the semantic kernel
+**Current phase:** Phase 0 complete — version 0.1 entry approved
 
 ## Direction
 
@@ -9,17 +9,20 @@ ShapeLens first tests whether representative SHACL graphs can support a valuable
 
 This roadmap is milestone-based rather than date-based. Complexity is earned one capability at a time; semantics, policy boundaries, evidence, and tests advance together.
 
+The reference design is frozen as a decision backlog during Phase 0. New design work is justified only by an observed corpus blocker, a failed semantic fixture, or a necessary clarification of the experiment protocol.
+
 ## Phase 0 — validate usefulness and the semantic kernel
 
 | Milestone | Deliverable | Exit check |
 |---|---|---|
-| 0.0 Corpus and question audit | Versioned representative shape graphs, application questions, baselines, classifications, overlay/rewrite burden, metric owners, and predeclared product thresholds | Every in-scope question is classified; direct and overlay coverage, compatibility, and burden are reported without hidden rewrites |
-| 0.1 Fixtures and oracle | Local RDFLib datasets, hand-authored plans, reviewed reference queries, and structural fixtures | Cases cover selection, joins, multi-lens use of one entity, blank-node Catalog-Local Keys, direct/inverse orientation, Boolean and empty results, atom support, and interruption |
-| 0.2 Typed semantics | Minimal Entity Variable, Selector Use, Lens Use, RDF-term, normalization, result-envelope, and support-certificate types | Invalid, ambiguous, or unsupported inputs fail explicitly; declared equivalent plans normalize identically and near misses remain distinct |
+| 0.0a Corpus freeze | Freeze 20–30 owner-authored questions, representative shape graphs, application baselines, metric formulas and owners, exclusions, and product thresholds before classification or plan design | At least three materially different application scenarios are represented and the dependency-free `freeze-check` passes with no classifications present |
+| 0.0b Classification and product gate | Classifications, structural no-rewrite compatibility, overlay/rewrite burden, and blocker distribution against the frozen denominator | Every in-scope question is classified; the direct, combined, compatibility, and burden thresholds pass before semantic-spike work begins |
+| 0.1 Fixtures and oracle | Local RDFLib datasets, hand-authored plans, reviewed semantic-oracle queries, qualification fixtures, and structural fixtures kept separate from the product-question corpus | Cases cover selection, joins, multi-lens use of one entity, blank-node Catalog-Local Keys, direct/inverse orientation, Boolean and empty results, atom support, and interruption |
+| 0.2 Typed semantics | Minimal Entity Variable, Selector Use, Lens Use, RDF-term, normalization, result-record, and internal Atom-Witness Map types | Invalid, ambiguous, or unsupported inputs fail explicitly; declared equivalent plans normalize identically and near misses remain distinct |
 | 0.3 Compiler and local execution | Deterministic SPARQL compiler plus the RDFLib adapter | Compiled plans execute without accepting raw model- or caller-authored SPARQL |
-| 0.4 Differential and inspection proof | Automated solution-mapping comparison, row support validation, seeded-defect review, and failure-honesty cases | Every non-negotiable gate passes and each predeclared product threshold is met |
+| 0.4 Differential and inspection proof | Automated solution-mapping comparison, Atom-Witness Map validation, compiler-backed compatibility, seeded-defect review, and failure-honesty cases | Every non-negotiable gate passes and each predeclared product threshold is met |
 
-Phase 0 deliberately excludes AI planning, remote databases, absence claims, stable pagination, portable blank-node identity, generic row-level authorization, documents, plugins, and production scaling. It permits revision-scoped Catalog-Local Keys for blank-node shapes because runtime usability and cross-revision identity are separate questions.
+Phase 0 is fixed to in-process RDFLib `Graph` and `Dataset` execution with trusted local data and explicit fixture inputs for Shape Source Trust and Semantic Qualification. It makes no protected-data or generic authorization claim and performs no network I/O. It deliberately excludes AI planning, remote databases, absence claims, stable pagination, portable blank-node identity, documents, plugins, and production scaling. It permits revision-scoped Catalog-Local Keys for blank-node shapes because runtime usability and cross-revision identity are separate questions.
 
 **Gate:** use the eight independent gates in `PHASE0-EXPERIMENT.md`: compiler correctness, normalization correctness, shape authoring compatibility, question coverage, overlay burden, inspectability, evidence completeness, and failure honesty. No aggregate score or compiler-only success can authorize Phase 1.
 
@@ -31,7 +34,9 @@ After Phase 0, split the reference design by responsibility: `SPEC-0.1.md` conta
 
 **Gate:** release 0.1 only when caller-authored plans work end to end, untrusted or unqualified semantics cannot become executable, every positive row maps its complete Row Atom Set exactly once, result and evidence states cannot contradict each other, and the conformance suite passes.
 
-## Later phases
+## Candidate later phases
+
+The sequence below is provisional. Phase 0 blocker frequency and application value determine which semantic capability is considered next; richer traversal is not an automatic next step.
 
 | Phase | Outcome | Starts when |
 |---|---|---|
@@ -42,4 +47,4 @@ After Phase 0, split the reference design by responsibility: `SPEC-0.1.md` conta
 
 ## Immediate next action
 
-Instantiate the corpus manifest and question classifications defined in `PHASE0-EXPERIMENT.md` before choosing a package structure or writing the semantic kernel. Freeze the questions and product thresholds before measuring coverage so the experiment tests ShapeLens rather than examples tailored to it.
+Use the accepted behavior and test mappings in [`phase0/DECISION.md`](./phase0/DECISION.md) to begin the post-Phase-0 specification, security-profile, ADR, open-question, and future-design split. Keep the version 0.1 work deterministic and inside the accepted local scope.

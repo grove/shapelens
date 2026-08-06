@@ -110,6 +110,10 @@ _Avoid_: SPARQL fragment, evidence item
 The mechanically derived set containing every Selector Use, edge, filter, and projection occurrence in a normalized SelectPlan for each positive row. Optional projections remain members even when unbound.
 _Avoid_: Relevant atoms, cited atoms, planner-selected support
 
+**Atom-Witness Map**:
+A row-specific exact mapping from every member of a Row Atom Set to supporting physical observations, entity bindings, deterministic derivations, or an explicit optional-unbound state.
+_Avoid_: Evidence list, citation list, public evidence API
+
 **Authorization Scope**:
 The trusted boundary describing which semantic operations and data a requester may use.
 _Avoid_: Shape Lens, prompt role, query preference
@@ -145,7 +149,7 @@ The bounded, versioned collection of evidence and limitations supplied to Query 
 _Avoid_: Model context, untyped result set
 
 **Row Support Certificate**:
-A row-specific, exact mapping from the Row Atom Set to witness evidence, deterministic derivations, or an explicit unbound state for an optional projection, together with the row’s Entity Variable bindings.
+An identity-bearing record that binds an Atom-Witness Map to one execution, plan, query, result row, and set of evidence identities.
 _Avoid_: Evidence list, citation list, negative proof
 
 **Grounded Claim**:
