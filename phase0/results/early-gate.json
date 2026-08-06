@@ -1,0 +1,93 @@
+{
+  "blocker_distribution": {
+    "algebra.absence": 1,
+    "algebra.aggregate": 1
+  },
+  "checks": {
+    "combined_coverage": true,
+    "direct_coverage": true,
+    "median_overlay_burden": true,
+    "scenario_coverage": true,
+    "shape_compatibility": true,
+    "worst_graph_overlay_burden": true,
+    "worst_question_overlay_burden": true
+  },
+  "classification_counts": {
+    "algebra_blocked": 2,
+    "direct": 18
+  },
+  "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
+  "direct_plus_overlay_ratio": 0.9,
+  "direct_ratio": 0.9,
+  "exclusions": [],
+  "metric_owners": {
+    "compiler_correctness": "phase0-evaluation-owner",
+    "evidence_completeness": "phase0-evaluation-owner",
+    "failure_honesty": "phase0-evaluation-owner",
+    "inspectability": "phase0-evaluation-owner",
+    "normalization_correctness": "phase0-evaluation-owner",
+    "overlay_burden": "phase0-evaluation-owner",
+    "question_coverage": "phase0-evaluation-owner",
+    "shape_authoring_compatibility": "phase0-evaluation-owner"
+  },
+  "overlay_burden": {
+    "graph_worst": 0,
+    "question_median": 0,
+    "question_worst": 0
+  },
+  "pass": true,
+  "question_count": 20,
+  "scenario_results": {
+    "delivery-staffing": {
+      "combined_ratio": 1.0,
+      "denominator": 7,
+      "direct": 7,
+      "direct_plus_overlay": 7
+    },
+    "research-publication-catalog": {
+      "combined_ratio": 0.6666666666666666,
+      "denominator": 6,
+      "direct": 4,
+      "direct_plus_overlay": 4
+    },
+    "service-operations": {
+      "combined_ratio": 1.0,
+      "denominator": 7,
+      "direct": 7,
+      "direct_plus_overlay": 7
+    }
+  },
+  "scenarios_meeting_combined_threshold": 2,
+  "shape_compatibility_ratio": 1.0,
+  "shape_graph_results": {
+    "research-publication-catalog-shapes": true,
+    "service-operations-shapes": true,
+    "staffing-skills-shapes": true
+  },
+  "thresholds": {
+    "inspectability": {
+      "median_review_time_ratio_max": 1,
+      "minimum_review_cases": 5,
+      "responsible_artifact_accuracy_min": 1
+    },
+    "overlay_burden": {
+      "maximum_executable_declarations_per_graph": 10,
+      "maximum_median_executable_declarations_per_overlay_question": 1,
+      "maximum_worst_case_executable_declarations_per_overlay_question": 3
+    },
+    "question_coverage": {
+      "minimum_direct_plus_overlay_ratio": 0.7,
+      "minimum_direct_ratio": 0.5,
+      "minimum_scenarios_meeting_combined_threshold": 2
+    },
+    "shape_authoring_compatibility": {
+      "eligible_shape_graph_ids": [
+        "staffing-skills-shapes",
+        "service-operations-shapes",
+        "research-publication-catalog-shapes"
+      ],
+      "minimum_pass_ratio": 0.7,
+      "pass_rule": "no_shape_blocked_or_rewrite"
+    }
+  }
+}

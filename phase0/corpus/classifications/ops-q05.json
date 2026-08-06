@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
+  "question_id": "ops-q05",
+  "primary_classification": "direct",
+  "reason_codes": [],
+  "blocker_details": null,
+  "affected_shape_graph_ids": ["service-operations-shapes"],
+  "shape_source_trust": "trusted",
+  "semantic_owner_reviewed_by": "platform-operations",
+  "qualification_status": "pending",
+  "required_features": ["direct_type_population_selector", "direct_predicate_path", "connected_positive_join", "exact_iri_identity", "node_projection", "select", "blank_node_property_shape_catalog_local_key"],
+  "overlay_burden": {"descriptive_declarations": 0, "executable_declarations": 0, "executable_declaration_kinds": [], "declaration_references": [], "affected_lens_uses": [], "review_owner": null, "semantic_fixture_ids": []},
+  "shape_rewriting": {"required": false, "description": null},
+  "classified_by": ["phase0-classification-reviewer"],
+  "reviewed_by": ["phase0-rdf-reviewer"],
+  "notes": ["A Service direct-type selector, ownedBy identity condition, and hasDeployment-to-environment positive join are all shape-derived."]
+}
