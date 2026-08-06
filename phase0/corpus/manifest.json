@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "corpus_id": "",
+  "corpus_revision": null,
+  "status": "draft",
+  "corpus_owner": "",
+  "scope": {
+    "statement": "",
+    "denominator_rule": "All question records frozen with scope=in_scope.",
+    "exclusion_rule": "Exclusions and their reasons are frozen before classification; post-freeze exclusions require a new corpus revision."
+  },
+  "frozen_at": null,
+  "frozen_by": [],
+  "scenarios": [],
+  "shape_graphs": [],
+  "question_files": [],
+  "metric_owners": {
+    "compiler_correctness": "",
+    "normalization_correctness": "",
+    "shape_authoring_compatibility": "",
+    "question_coverage": "",
+    "overlay_burden": "",
+    "inspectability": "",
+    "evidence_completeness": "",
+    "failure_honesty": ""
+  },
+  "product_gates": {
+    "question_coverage": {
+      "minimum_direct_ratio": 0.5,
+      "minimum_direct_plus_overlay_ratio": 0.7,
+      "minimum_scenarios_meeting_combined_threshold": 2
+    },
+    "shape_authoring_compatibility": {
+      "eligible_shape_graph_ids": [],
+      "pass_rule": "no_shape_blocked_or_rewrite",
+      "minimum_pass_ratio": 0.7
+    },
+    "overlay_burden": {
+      "maximum_median_executable_declarations_per_overlay_question": 1,
+      "maximum_worst_case_executable_declarations_per_overlay_question": 3,
+      "maximum_executable_declarations_per_graph": 10
+    },
+    "inspectability": {
+      "minimum_review_cases": 5,
+      "responsible_artifact_accuracy_min": 1.0,
+      "median_review_time_ratio_max": 1.0
+    }
+  },
+  "threshold_notes": "Starting hypotheses only while status is draft; application owners must approve them before freeze.",
+  "notes": []
+}
