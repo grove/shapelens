@@ -25,6 +25,7 @@ Focused conformance cases must not be added to the product-question corpus. They
 - `fixtures/` receives semantic and corpus-question fixture records based on `templates/fixture.json`.
 - `REPORT-TEMPLATE.md` preserves the independent gates and reporting denominators.
 - `validate.py` performs only the dependency-free corpus freeze and drift checks needed for milestone 0.0a.
+- `test_validate.py` exercises a complete temporary freeze, drift detection, and malformed boundary values; run it with `python3 -m unittest discover -s phase0 -v`.
 
 Paths stored in records are repository-relative. Keep application-owned source material unchanged where possible; record rewrites explicitly rather than replacing the original.
 
@@ -32,7 +33,7 @@ Paths stored in records are repository-relative. Keep application-owned source m
 
 Copy `templates/question.json` into `corpus/questions/<question-id>.json` for each question and add its path to `manifest.json`. Populate 20–30 questions across at least three materially different scenarios. Add the referenced SHACL, RDF, and reviewed baseline files under `corpus/` or point to their repository-relative locations.
 
-The manifest contains starting product thresholds for this experiment. They remain proposals while `status` is `draft`; metric and application owners must review them before freezing. The supported shape-compatibility rule, `no_shape_blocked_or_rewrite`, counts an eligible graph as passing when no in-scope question that references it is `shape_blocked` or requires a rewrite. List every graph referenced by an in-scope question as eligible so the denominator cannot be chosen after results are known.
+The manifest contains starting product thresholds for this experiment. They remain proposals while `status` is `draft`; every represented scenario owner and metric owner must review them and be recorded in `threshold_approvals` before freezing. The supported shape-compatibility rule, `no_shape_blocked_or_rewrite`, counts an eligible graph as passing when no in-scope question that references it is `shape_blocked` or requires a rewrite. List every graph referenced by an in-scope question as eligible so the denominator cannot be chosen after results are known.
 
 Run the draft check as often as needed:
 

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "research-q06",
+  "scenario_id": "research-publication-catalog",
+  "owner": "research-information-office",
+  "priority": "high",
+  "priority_rationale": "Supports annual departmental reporting.",
+  "question": "How many 2025 publications does each department have?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "One publication count per department."
+  },
+  "dataset_fixture": "phase0/corpus/data/research-publication-catalog.ttl",
+  "shape_graph_ids": [
+    "research-publication-catalog-shapes"
+  ],
+  "baseline": {
+    "kind": "application_code",
+    "path": "phase0/corpus/baselines/research-q06.py",
+    "reviewed_by": [
+      "research-information-office",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

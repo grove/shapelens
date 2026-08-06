@@ -54,7 +54,11 @@ def nonempty(value: Any) -> bool:
 
 
 def string_list(value: Any) -> list[str]:
-    if isinstance(value, list) and all(nonempty(item) for item in value):
+    if (
+        isinstance(value, list)
+        and all(nonempty(item) for item in value)
+        and len(value) == len(set(value))
+    ):
         return value
     return []
 
@@ -65,6 +69,23 @@ def ratio(value: Any) -> bool:
         and isinstance(value, (int, float))
         and math.isfinite(value)
         and 0 <= value <= 1
+    )
+
+
+def schema_version(value: Any) -> bool:
+    return type(value) is int and value == 1
+
+
+def nonnegative_integer(value: Any) -> bool:
+    return type(value) is int and value >= 0
+
+
+def positive_number(value: Any) -> bool:
+    return (
+        not isinstance(value, bool)
+        and isinstance(value, (int, float))
+        and math.isfinite(value)
+        and value > 0
     )
 
 
@@ -94,12 +115,11 @@ def validate(mode: str) -> tuple[dict[str, Any], set[Path], int, list[str]]:
     manifest = read_json(MANIFEST_PATH, errors)
     if not manifest:
         return manifest, artifacts, 0, errors
-    if manifest.get("schema_version") != 1:
+    if not schema_version(manifest.get("schema_version")):
         errors.append("manifest.schema_version: expected 1")
-    if mode == "freeze-check" and manifest.get("status") != "draft":
-        errors.append("manifest.status: freeze-check requires draft")
-    if mode == "frozen-check" and manifest.get("status") != "frozen":
-        errors.append("manifest.status: frozen-check requires frozen")
+    expected_status = "frozen" if mode == "frozen-check" else "draft"
+    if manifest.get("status") != expected_status:
+        errors.append(f"manifest.status: {mode} requires {expected_status}")
 
     scenarios = manifest.get("scenarios")
     shapes = manifest.get("shape_graphs")
@@ -165,7 +185,7 @@ def validate(mode: str) -> tuple[dict[str, Any], set[Path], int, list[str]]:
         question = read_json(path, errors)
         artifacts.add(path)
         question_id = question.get("question_id")
-        if question.get("schema_version") != 1 or not nonempty(question_id):
+        if not schema_version(question.get("schema_version")) or not nonempty(question_id):
             errors.append(f"{path.relative_to(ROOT)}: schema or question ID invalid")
         elif question_id in question_ids:
             errors.append(f"{path.relative_to(ROOT)}: duplicate question ID")
@@ -222,6 +242,26 @@ def validate(mode: str) -> tuple[dict[str, Any], set[Path], int, list[str]]:
         ):
             errors.append("manifest.metric_owners: all eight named owners required")
         represented = {item.get("scenario_id") for item in in_scope}
+        approvals = manifest.get("threshold_approvals")
+        application_approvals = set(string_list(
+            approvals.get("application_owners") if isinstance(approvals, dict) else None
+        ))
+        metric_approvals = set(string_list(
+            approvals.get("metric_owners") if isinstance(approvals, dict) else None
+        ))
+        expected_application_approvals = {
+            item.get("owner") for item in scenarios
+            if isinstance(item, dict)
+            and item.get("scenario_id") in represented
+            and nonempty(item.get("owner"))
+        }
+        expected_metric_approvals = {
+            owner for owner in owners.values() if nonempty(owner)
+        } if isinstance(owners, dict) else set()
+        if not expected_application_approvals <= application_approvals:
+            errors.append("manifest.threshold_approvals.application_owners: every represented scenario owner must approve")
+        if not expected_metric_approvals <= metric_approvals:
+            errors.append("manifest.threshold_approvals.metric_owners: every metric owner must approve")
         referenced_shapes = {
             shape_id for item in in_scope for shape_id in string_list(item.get("shape_graph_ids"))
         }
@@ -241,7 +281,7 @@ def validate(mode: str) -> tuple[dict[str, Any], set[Path], int, list[str]]:
         ):
             errors.append("product_gates.question_coverage: invalid ratios")
         minimum_scenarios = coverage.get("minimum_scenarios_meeting_combined_threshold")
-        if not isinstance(minimum_scenarios, int) or not 2 <= minimum_scenarios <= len(represented):
+        if type(minimum_scenarios) is not int or not 2 <= minimum_scenarios <= len(represented):
             errors.append("product_gates.question_coverage: invalid scenario threshold")
         if set(string_list(compatibility.get("eligible_shape_graph_ids"))) != referenced_shapes:
             errors.append("product_gates.shape_authoring_compatibility: eligible graph set is incomplete")
@@ -254,21 +294,23 @@ def validate(mode: str) -> tuple[dict[str, Any], set[Path], int, list[str]]:
             overlay.get("maximum_worst_case_executable_declarations_per_overlay_question"),
             overlay.get("maximum_executable_declarations_per_graph"),
         )
-        if not all(isinstance(value, int) and value >= 0 for value in limits) or limits[1] < limits[0]:
+        if not all(map(nonnegative_integer, limits)) or limits[1] < limits[0]:
             errors.append("product_gates.overlay_burden: invalid limits")
-        if inspectability.get("responsible_artifact_accuracy_min") != 1.0:
+        responsible_accuracy = inspectability.get("responsible_artifact_accuracy_min")
+        if not ratio(responsible_accuracy) or responsible_accuracy != 1.0:
             errors.append("product_gates.inspectability: responsible-artifact accuracy is fixed at 1.0")
-        if not isinstance(inspectability.get("minimum_review_cases"), int) or inspectability.get(
+        if not nonnegative_integer(inspectability.get("minimum_review_cases")) or inspectability.get(
             "minimum_review_cases", 0
-        ) < 1 or not isinstance(inspectability.get("median_review_time_ratio_max"), (int, float)) or inspectability.get(
-            "median_review_time_ratio_max", 0
-        ) <= 0:
+        ) < 1 or not positive_number(inspectability.get("median_review_time_ratio_max")):
             errors.append("product_gates.inspectability: review count and positive time ratio required")
 
     if mode == "freeze-check":
         if manifest.get("corpus_revision") is not None or manifest.get("frozen_at") is not None or manifest.get("frozen_by") != []:
             errors.append("manifest: revision and freeze fields must be empty before freeze")
-        if list(CLASSIFICATIONS.glob("*.json")):
+        if any(
+            path.is_file() and path.suffix.lower() == ".json"
+            for path in CLASSIFICATIONS.rglob("*")
+        ):
             errors.append("freeze-check: classifications already exist")
     if mode == "frozen-check":
         if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(manifest.get("corpus_revision"))):

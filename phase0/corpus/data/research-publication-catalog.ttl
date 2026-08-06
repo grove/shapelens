@@ -1,0 +1,45 @@
+@prefix ex: <https://catalog.example.org/ns/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:paper-1 a ex:Publication ;
+  ex:title "Coastal Change Mapping" ;
+  ex:publicationYear "2025"^^xsd:gYear ;
+  ex:contributor ex:lee ;
+  ex:publishedIn ex:journal-a ;
+  ex:fundedBy ex:grant-nord-42 ;
+  ex:usesDataset ex:coast-data ;
+  ex:openAccessDeposit ex:deposit-1 .
+
+ex:paper-2 a ex:Publication ;
+  ex:title "Sea-Level Methods" ;
+  ex:publicationYear "2025"^^xsd:gYear ;
+  ex:contributor ex:lee, ex:patel ;
+  ex:publishedIn ex:journal-b ;
+  ex:fundedBy ex:grant-nord-42 ;
+  ex:usesDataset ex:coast-data .
+
+ex:paper-3 a ex:Publication ;
+  ex:title "Reproducible Sensor Pipelines" ;
+  ex:publicationYear "2024"^^xsd:gYear ;
+  ex:contributor ex:patel ;
+  ex:publishedIn ex:journal-a ;
+  ex:fundedBy ex:grant-data-7 ;
+  ex:openAccessDeposit ex:deposit-2 .
+
+ex:lee a ex:Researcher ;
+  ex:displayName "Ari Lee" ;
+  ex:memberOf ex:earth-sciences .
+
+ex:patel a ex:Researcher ;
+  ex:displayName "Sam Patel" ;
+  ex:memberOf ex:data-science .
+
+ex:grant-nord-42 a ex:Grant ; ex:grantNumber "NORD-42" .
+ex:grant-data-7 a ex:Grant ; ex:grantNumber "DATA-7" .
+ex:journal-a a ex:Venue ; ex:name "Journal A" .
+ex:journal-b a ex:Venue ; ex:name "Journal B" .
+ex:coast-data a ex:Dataset ; ex:name "Coastal Data" .
+ex:earth-sciences a ex:Department ; ex:name "Earth Sciences" .
+ex:data-science a ex:Department ; ex:name "Data Science" .
+ex:deposit-1 a ex:Deposit ; ex:depositStatus ex:public .
+ex:deposit-2 a ex:Deposit ; ex:depositStatus ex:draft .

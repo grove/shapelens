@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "question_id": "research-q02",
+  "scenario_id": "research-publication-catalog",
+  "owner": "research-information-office",
+  "priority": "high",
+  "priority_rationale": "Supports recurring funder reporting.",
+  "question": "Which publications are recorded as funded by grant NORD-42?",
+  "scope": "in_scope",
+  "scope_reason": "Representative recurring application question in the frozen product denominator.",
+  "expected_answer": {
+    "form": "records",
+    "description": "Publication, title, year, and contributors."
+  },
+  "dataset_fixture": "phase0/corpus/data/research-publication-catalog.ttl",
+  "shape_graph_ids": [
+    "research-publication-catalog-shapes"
+  ],
+  "baseline": {
+    "kind": "direct_sparql",
+    "path": "phase0/corpus/baselines/research-q02.rq",
+    "reviewed_by": [
+      "research-information-office",
+      "phase0-rdf-reviewer"
+    ],
+    "not_meaningful_reason": null
+  },
+  "authored_before_plan_design": true,
+  "notes": [
+    "Project-owned representative question; authored and frozen before classification or plan design."
+  ]
+}

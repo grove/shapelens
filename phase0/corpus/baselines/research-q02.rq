@@ -1,0 +1,8 @@
+PREFIX ex: <https://catalog.example.org/ns/>
+SELECT ?publication ?title ?year ?contributor WHERE {
+  ?grant ex:grantNumber "NORD-42" .
+  ?publication ex:fundedBy ?grant ;
+    ex:title ?title ;
+    ex:publicationYear ?year ;
+    ex:contributor ?contributor .
+}

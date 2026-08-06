@@ -1,0 +1,7 @@
+PREFIX ex: <https://example.org/staffing/>
+SELECT ?employee ?name WHERE {
+  ?employee a ex:Employee ;
+    ex:displayName ?name ;
+    ex:workedOn ex:project-atlas ;
+    ex:expertise ex:skill-ai .
+}

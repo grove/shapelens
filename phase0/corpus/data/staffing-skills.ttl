@@ -1,0 +1,29 @@
+@prefix ex: <https://example.org/staffing/> .
+
+ex:employee-alice a ex:Employee ;
+  ex:displayName "Alice Nguyen" ;
+  ex:workedOn ex:project-atlas ;
+  ex:expertise ex:skill-ai, ex:skill-kubernetes .
+
+ex:employee-omar a ex:Employee ;
+  ex:displayName "Omar Diallo" ;
+  ex:workedOn ex:project-atlas ;
+  ex:expertise ex:skill-ai .
+
+ex:employee-priya a ex:Employee ;
+  ex:displayName "Priya Shah" ;
+  ex:workedOn ex:project-beacon ;
+  ex:expertise ex:skill-cloud-architecture, ex:skill-cybersecurity .
+
+ex:employee-noor a ex:Employee ;
+  ex:displayName "Noor Hansen" ;
+  ex:workedOn ex:project-atlas, ex:project-beacon ;
+  ex:expertise ex:skill-cloud-architecture, ex:skill-cybersecurity .
+
+ex:project-atlas a ex:Project ; ex:title "Project Atlas" .
+ex:project-beacon a ex:Project ; ex:title "Project Beacon" .
+
+ex:skill-ai a ex:Skill ; ex:label "Artificial intelligence" .
+ex:skill-kubernetes a ex:Skill ; ex:label "Kubernetes" .
+ex:skill-cloud-architecture a ex:Skill ; ex:label "Cloud architecture" .
+ex:skill-cybersecurity a ex:Skill ; ex:label "Cybersecurity" .

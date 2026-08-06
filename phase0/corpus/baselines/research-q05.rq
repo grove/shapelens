@@ -1,0 +1,7 @@
+PREFIX ex: <https://catalog.example.org/ns/>
+SELECT ?publication ?title ?year ?contributor WHERE {
+  ?publication ex:usesDataset ex:coast-data ;
+    ex:title ?title ;
+    ex:publicationYear ?year ;
+    ex:contributor ?contributor .
+}
