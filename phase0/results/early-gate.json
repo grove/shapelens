@@ -14,11 +14,12 @@
   },
   "classification_counts": {
     "algebra_blocked": 2,
-    "direct": 18
+    "direct": 14,
+    "overlay": 4
   },
   "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
   "direct_plus_overlay_ratio": 0.9,
-  "direct_ratio": 0.9,
+  "direct_ratio": 0.7,
   "exclusions": [],
   "metric_owners": {
     "compiler_correctness": "phase0-evaluation-owner",
@@ -31,9 +32,9 @@
     "shape_authoring_compatibility": "phase0-evaluation-owner"
   },
   "overlay_burden": {
-    "graph_worst": 0,
-    "question_median": 0,
-    "question_worst": 0
+    "graph_worst": 4,
+    "question_median": 1.0,
+    "question_worst": 1
   },
   "pass": true,
   "question_count": 20,
@@ -47,7 +48,7 @@
     "research-publication-catalog": {
       "combined_ratio": 0.6666666666666666,
       "denominator": 6,
-      "direct": 4,
+      "direct": 0,
       "direct_plus_overlay": 4
     },
     "service-operations": {

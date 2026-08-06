@@ -111,6 +111,23 @@ def early_gate() -> tuple[dict[str, Any], list[str]]:
             errors.append(f"{path.relative_to(ROOT)}: overlay requires executable declarations")
         elif primary != "overlay" and burden["executable_declarations"] != 0:
             errors.append(f"{path.relative_to(ROOT)}: non-overlay question cannot charge executable overlay")
+        if isinstance(burden, dict):
+            overlay_lists = (
+                "executable_declaration_kinds", "declaration_references",
+                "affected_lens_uses", "semantic_fixture_ids",
+            )
+            if primary == "overlay" and (
+                any(not string_array(burden.get(key)) for key in overlay_lists)
+                or burden.get("executable_declarations") != len(burden.get("declaration_references", ()))
+                or not isinstance(burden.get("review_owner"), str)
+                or not burden["review_owner"].strip()
+            ):
+                errors.append(f"{path.relative_to(ROOT)}: overlay declarations require references, lenses, fixtures, and review")
+            if primary != "overlay" and any(burden.get(key) for key in overlay_lists):
+                errors.append(f"{path.relative_to(ROOT)}: non-overlay question has executable overlay metadata")
+            for reference in burden.get("declaration_references", ()):
+                if not (ROOT / reference.split("#", 1)[0]).is_file():
+                    errors.append(f"{path.relative_to(ROOT)}: missing overlay declaration {reference}")
         if not isinstance(rewriting, dict) or not isinstance(rewriting.get("required"), bool):
             errors.append(f"{path.relative_to(ROOT)}: invalid shape rewriting record")
         elif rewriting["required"] and not isinstance(rewriting.get("description"), str):
@@ -208,7 +225,9 @@ def early_gate() -> tuple[dict[str, Any], list[str]]:
             "graph_worst": worst_graph_overlay,
         },
         "blocker_distribution": dict(sorted(Counter(
-            code for record in records.values() for code in record["reason_codes"]
+            code for record in records.values()
+            if record["primary_classification"] in {"algebra_blocked", "shape_blocked", "ordinary_code"}
+            for code in record["reason_codes"]
         ).items())),
         "checks": checks,
         "pass": all(checks.values()),

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "corpus_revision": "sha256:eb5f404fa730af7348b156d15813271925f5175cb973e8a076a97127054d9fa6",
+  "owner": "research-information-office",
+  "declarations": [
+    {
+      "declaration_id": "research-q01-projection-contract",
+      "kind": "projection_contract_bundle",
+      "question_id": "research-q01",
+      "single_valued_fields": ["PublicationShape/title", "PublicationShape/publicationYear"],
+      "semantic_fixture_id": "corpus-research-q01"
+    },
+    {
+      "declaration_id": "research-q02-projection-contract",
+      "kind": "projection_contract_bundle",
+      "question_id": "research-q02",
+      "single_valued_fields": ["PublicationShape/title", "PublicationShape/publicationYear"],
+      "semantic_fixture_id": "corpus-research-q02"
+    },
+    {
+      "declaration_id": "research-q03-projection-contract",
+      "kind": "projection_contract_bundle",
+      "question_id": "research-q03",
+      "single_valued_fields": ["PublicationShape/title", "ResearcherShape/displayName"],
+      "semantic_fixture_id": "corpus-research-q03"
+    },
+    {
+      "declaration_id": "research-q05-projection-contract",
+      "kind": "projection_contract_bundle",
+      "question_id": "research-q05",
+      "single_valued_fields": ["PublicationShape/title", "PublicationShape/publicationYear"],
+      "semantic_fixture_id": "corpus-research-q05"
+    }
+  ],
+  "reviewed_by": ["research-information-office", "phase0-rdf-reviewer"]
+}
