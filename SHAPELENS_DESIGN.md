@@ -2,366 +2,271 @@
 
 ## A SHACL-native, typed GraphRAG architecture for Python
 
-**Document status:** Proposed design  
-**Working library name:** `shapelens`  
-**Target runtime:** Python 3.11+  
-**Primary technologies:** RDF, SHACL, SPARQL, Pydantic, Pydantic AI  
-**Compatibility baseline:** SHACL 1.0 and SPARQL 1.1, with capability-gated support for SHACL 1.2 and SPARQL 1.2 features
+**Document status:** Revised proposal
+**Working library name:** `shapelens`
+**Target runtime:** Python 3.11+
+**Primary technologies:** RDF, SHACL, SPARQL, Pydantic, and optional Pydantic AI
+**Standards baseline:** SHACL 1.0 source vocabulary and SPARQL 1.1 query target
+**Last reviewed:** 6 August 2026
+
+This document describes the proposed architecture and the decisions that must be settled before implementation. It uses **MUST** for a correctness or security requirement, **SHOULD** for a strong default that an adapter may override with an explicit reason, and **MAY** for optional behavior. The project’s canonical domain vocabulary is recorded separately in [`CONTEXT.md`](./CONTEXT.md).
 
 ---
 
 ## Contents
 
-- **Foundations:** [Executive summary](#1-executive-summary) · [Problem](#2-problem-statement) · [Goals](#3-goals-and-non-goals) · [Principles](#4-design-principles) · [Shape Lenses](#5-the-novel-abstraction-shape-lenses) · [Standards](#6-standards-and-compatibility-strategy)
-- **API and architecture:** [User experience](#7-user-facing-experience) · [Architecture](#8-high-level-architecture) · [Domain model](#9-core-domain-model) · [Query representations](#10-query-representations) · [Evidence models](#11-evidence-and-answer-models) · [Catalog build](#12-catalog-build-lifecycle) · [Schema retrieval](#13-schema-indexing-and-retrieval) · [Workflow](#14-question-time-workflow)
-- **Planning and execution:** [Entity resolution](#15-entity-resolution) · [Pydantic AI planner](#16-pydantic-ai-planner) · [Plan validation](#17-plan-validation) · [SPARQL compiler](#18-deterministic-sparql-compiler) · [Optimization](#19-query-optimization) · [Graph stores](#20-graph-store-abstraction) · [Execution and repair](#21-execution-diagnosis-and-repair)
-- **Grounding and answers:** [Evidence construction](#22-evidence-construction) · [Hybrid RAG](#23-hybrid-graph-and-document-rag) · [Evidence validation](#24-result-and-evidence-validation) · [Answer synthesis](#25-answer-synthesis-with-pydantic-ai) · [`ShapeRAG` facade](#26-the-shaperag-facade)
-- **Engineering:** [Extensibility](#27-extensibility-architecture) · [Package layout](#28-proposed-package-layout) · [Configuration](#29-configuration-model) · [Security](#30-security-design) · [Observability](#31-observability) · [Performance](#32-performance-design) · [Testing](#33-testing-strategy)
-- **Delivery:** [End-to-end example](#34-detailed-end-to-end-example) · [Roadmap](#35-development-roadmap) · [Initial scope](#36-recommended-initial-feature-subset) · [Risks](#37-risks-and-mitigations) · [ADRs](#38-key-architectural-decisions) · [Future directions](#39-future-directions) · [Recommendation](#40-final-recommendation) · [References](#41-standards-and-implementation-references)
+1. [Executive summary](#1-executive-summary)
+2. [Assessment of the design](#2-assessment-of-the-design)
+3. [Problem, goals, and boundaries](#3-problem-goals-and-boundaries)
+4. [Semantic assumptions and system invariants](#4-semantic-assumptions-and-system-invariants)
+5. [Shape Lenses](#5-shape-lenses)
+6. [A small end-to-end example](#6-a-small-end-to-end-example)
+7. [Architecture and lifecycle](#7-architecture-and-lifecycle)
+8. [Catalog construction](#8-catalog-construction)
+9. [Schema retrieval and entity resolution](#9-schema-retrieval-and-entity-resolution)
+10. [The version 0.1 query algebra](#10-the-version-01-query-algebra)
+11. [Planning and plan validation](#11-planning-and-plan-validation)
+12. [Compilation, execution, and repair](#12-compilation-execution-and-repair)
+13. [Evidence and answer semantics](#13-evidence-and-answer-semantics)
+14. [Hybrid graph and document retrieval](#14-hybrid-graph-and-document-retrieval)
+15. [Public API](#15-public-api)
+16. [Extensibility and package boundaries](#16-extensibility-and-package-boundaries)
+17. [Security and privacy](#17-security-and-privacy)
+18. [Operations, observability, and performance](#18-operations-observability-and-performance)
+19. [Testing and evaluation](#19-testing-and-evaluation)
+20. [Delivery plan](#20-delivery-plan)
+21. [Risks and mitigations](#21-risks-and-mitigations)
+22. [Architectural decisions](#22-architectural-decisions)
+23. [Open questions](#23-open-questions)
+24. [Recommendation and references](#24-recommendation-and-references)
 
 ---
 
 ## 1. Executive summary
 
-This document proposes **ShapeLens GraphRAG**, a Python library that uses SHACL as an executable semantic interface between natural-language questions and SPARQL-accessible knowledge graphs.
+ShapeLens GraphRAG is a proposed Python library for answering natural-language questions over RDF graphs without allowing a language model to invent unrestricted SPARQL. The library compiles selected SHACL shapes into **Shape Lenses**, which are query-oriented semantic views of a graph. A planner chooses operations exposed by those lenses and returns a typed `BoundQueryPlan`; ordinary Python validates that plan, compiles it into a small and controlled SPARQL subset, executes it under policy and resource limits, and turns the result into typed evidence. A deterministic renderer or a separately constrained answer model then produces an answer whose citations refer to that evidence.
 
-The central idea is to compile every useful SHACL node shape and property shape into a **Shape Lens**. A Shape Lens is simultaneously:
+The architecture is deliberately compiler-like. The model decides which known semantic operations match the question, but it never becomes the authority for schema, access, query syntax, or factual truth. Shape catalog construction, schema retrieval, entity resolution, authorization, plan validation, SPARQL rendering, endpoint policy, result normalization, provenance handling, and citation checks remain explicit program logic. This separation makes a failed run inspectable: the caller can see the retrieved lenses, entity candidates, bound plan, generated queries, execution diagnostics, evidence, and answer outcome without seeing or depending on private chain-of-thought.
 
-1. a compact semantic document that can be retrieved for an LLM;
-2. a set of legal query operations derived from the shape's paths, classes, datatypes, cardinalities, and constraints;
-3. a collection of join points that tells the planner how concepts connect;
-4. a result contract that can validate returned RDF terms and evidence;
-5. a provenance anchor that records exactly which schema knowledge justified a query.
-
-The language model does **not** generate unrestricted SPARQL by default. It produces a typed Pydantic `BoundQueryPlan` whose fields reference known Shape Lens and property IDs. A deterministic compiler validates the plan, chooses a SPARQL dialect, safely renders RDF terms, applies a query policy, and produces SPARQL. The endpoint executes the query under limits. The returned bindings are converted into an `EvidencePacket`, optionally enriched with linked document chunks, validated, and passed to a second typed agent that returns claims with explicit evidence references.
-
-This yields a system that is:
-
-- **easy to use:** a high-level `ShapeRAG.ask()` API works with an RDFLib graph or remote SPARQL endpoint;
-- **generic:** the core is driven by SHACL and protocols rather than a fixed domain ontology;
-- **flexible:** stores, indexes, models, query dialects, validation strategies, and document retrievers are replaceable;
-- **efficient:** schema processing is performed once, retrieval is bounded, SPARQL is compiled deterministically, and model retries are limited;
-- **safe and inspectable:** the library can show the chosen shapes, typed plan, generated query, evidence, and diagnostics for every answer.
-
-The recommended implementation has a deterministic outer workflow with two narrowly scoped LLM roles:
-
-- a **planner** that selects and binds schema-backed operations;
-- an **answerer** that turns verified evidence into natural language.
-
-Everything between those roles—schema indexing, plan checking, query compilation, endpoint policy, result typing, provenance assembly, and citation validation—is ordinary Python code.
+The first release is intentionally narrower than the long-term architecture. Version 0.1 proves the central idea with direct-type and target-node lenses, direct and inverse predicate paths, conjunctive joins, RDF-term identity and existence filters, entity and field projections, `SELECT` and `ASK`, bounded `NOT EXISTS`, an RDFLib store, and typed graph-match evidence. Sequence and alternative paths may be parsed for diagnostics but are not queryable in version 0.1; lexical text search, ordered comparison, aggregation, grouping, full SHACL class semantics, formal focused SHACL validation, remote endpoints, document retrieval, embeddings, and dialect plugins arrive only after the typed algebra and evidence semantics have been validated. Narrowing the release in this way keeps the safety claims honest and makes the value of Shape Lenses independently measurable.
 
 ---
 
-## 2. Problem statement
+## 2. Assessment of the design
 
-Natural-language-to-SPARQL systems commonly fail for four related reasons:
+The design’s strongest idea is the typed boundary between natural-language interpretation and graph execution. Keeping schema retrieval separate from evidence retrieval, compiling a small plan instead of accepting raw SPARQL, treating evidence as a first-class artifact, and diagnosing empty results without silently dropping user constraints are all sound choices. The proposed structural expansion of retrieved lenses is particularly useful because an embedding search can find the concepts named by a question but miss the relationship that connects them. The design also correctly recognizes that validation of a deliberately partial evidence graph is not equivalent to validation of the source dataset.
 
-1. **Schema hallucination.** The model invents classes, predicates, inverse directions, or graph names that look plausible but do not exist.
-2. **Semantic ambiguity.** A user phrase such as “worked with,” “expert,” or “active project” may correspond to several graph patterns or domain rules.
-3. **Unsafe or inefficient queries.** Generated SPARQL can contain updates, unrestricted federation, expensive property paths, accidental Cartesian products, or unbounded result sets.
-4. **Weak grounding.** Even a syntactically valid query may return data that is incomplete, non-conformant, insufficiently provenanced, or poorly connected to the generated answer.
+The original proposal nevertheless overclaimed in four important places. First, it sometimes treated SHACL as if it were an exhaustive database schema, although a SHACL shape is a constraint applied to selected focus nodes and does not by itself establish authorization, completeness, or real-world truth. Second, the advertised query features exceeded the semantics represented by `BoundQueryPlan`; boolean queries, grouping, aggregate operands, nested Boolean filters, pagination, and optional-edge behavior were either missing or ambiguous. Third, a single `FactEvidence` type could not honestly describe asserted triples, property-path reachability, absence under `NOT EXISTS`, aggregate derivations, and validation findings. Fourth, lens allowlists and graph scopes did not provide a complete authorization model because filtering, joining, aggregation, auxiliary queries, and document retrieval could still leak protected information.
 
-SHACL already contains much of the information needed to address these problems: target classes, property paths, value classes, datatypes, cardinalities, logical constraints, labels, descriptions, messages, and—in SHACL 1.2—agent-oriented intent text. However, a SHACL graph is not directly a natural-language query grammar, and an arbitrary SHACL constraint is not generally invertible into a user query.
-
-The library therefore needs an intermediate layer that turns SHACL into **query affordances**, not a naïve “shape-to-SPARQL translator.”
+This revision addresses those weaknesses directly. Every derived lens field records whether it came from a normative SHACL constraint, a trusted application overlay, an ontology hint, or sampled data, and only the first two categories may authorize query operations by default. A run pins immutable catalog, policy, capability, and Dataset Scope descriptions from retrieval through answering. Version 0.1 has a deliberately small query algebra with explicit `SELECT` and `ASK` plans and precisely defined conjunctive semantics. Evidence is a discriminated family whose members describe their proof strength and query scope. Authorization constraints are trusted inputs that the planner cannot remove, and the public result is a typed outcome rather than a string plus an underspecified error field.
 
 ---
 
-## 3. Goals and non-goals
+## 3. Problem, goals, and boundaries
 
-### 3.1 Goals
+Natural-language-to-SPARQL systems fail in recurring ways. A model may invent plausible classes or predicates, reverse the direction of a relation, bind a phrase to the wrong entity, generate an expensive or unsafe query, or produce fluent prose from results that do not support it. Even valid SPARQL can be misleading when the queried dataset is incomplete, an endpoint applies an unexpected entailment regime, a named-graph scope differs from the user’s assumption, or an empty result is phrased as a statement about the real world. These failures are related: they arise when semantic interpretation, query authority, execution, and evidence are collapsed into one model call.
 
-The library should:
+SHACL contains useful local knowledge for separating those responsibilities. Node and property shapes can describe targets, paths, value classes, datatypes, cardinalities, labels, descriptions, and constraints. That information can guide a planner toward schema-backed operations, but it is not automatically a natural-language query grammar and an arbitrary constraint is not invertible into a useful retrieval operation. ShapeLens therefore compiles a conservative, provenance-aware query interface from supported shape features rather than claiming to translate every shape into SPARQL.
 
-- answer natural-language questions over RDF graphs using SPARQL;
-- use SHACL as the primary schema and constraint source;
-- support graph-only RAG and hybrid graph-plus-document RAG;
-- use Pydantic models for every boundary where untrusted or model-generated data enters the system;
-- offer a first-class Pydantic AI implementation without making the deterministic core depend on a particular model provider;
-- work with local RDFLib datasets and remote SPARQL endpoints;
-- preserve named-graph and provenance information when the backend can expose it;
-- support a portable SPARQL 1.1 subset and capability-gated extensions;
-- expose plans, queries, evidence, validation issues, and traces for debugging;
-- remain useful when embeddings are unavailable by providing a lexical schema index;
-- provide escape hatches through explicit plugins rather than unrestricted model output.
+The library’s primary goals are to answer questions over local and remote RDF stores, make SHACL the principal source of query affordances, provide useful behavior without embeddings, preserve RDF identity and available provenance, expose typed debug artifacts, and keep model-provider integrations replaceable. It should support graph-only answers first and graph-guided document retrieval later. Pydantic models protect every boundary where model output, endpoint output, plugin output, or untrusted configuration enters the deterministic core.
 
-### 3.2 Non-goals
-
-The initial library should not:
-
-- attempt to infer a complete ontology from arbitrary RDF data;
-- automatically convert every SHACL-SPARQL constraint into a retrieval query;
-- allow the model to issue SPARQL Update operations;
-- silently relax user constraints merely to obtain non-empty results;
-- require fine-tuning before it is useful;
-- assume that SHACL validation alone proves real-world truth;
-- hide endpoint-specific behavior behind claims of perfect portability;
-- make a vector database mandatory for small or medium shape catalogs.
+Several concerns are explicitly outside the initial boundary. ShapeLens will not infer a complete ontology from arbitrary data, turn every SHACL-SPARQL constraint into a query, generate SPARQL Update, accept model-authored query fragments, silently relax a question to get non-empty results, or claim that SHACL conformance proves real-world truth. It will not treat a context-specific lens as an authorization boundary by itself, and it will not promise perfect portability across SPARQL implementations. Fine-tuning, unrestricted federation, and a mandatory vector database are also non-goals.
 
 ---
 
-## 4. Design principles
+## 4. Semantic assumptions and system invariants
 
-### 4.1 SHACL is the contract; SPARQL is the execution language
+### 4.1 SHACL is a local contract, not a complete world model
 
-SHACL describes what properties mean in a local shape context, what values they may have, and how concepts connect. SPARQL retrieves exact graph evidence. The model's role is to choose among known contracts, not to invent an execution language from scratch.
+A Shape Lens is compiled from SHACL, but its meaning is narrower than “the schema of a class.” A shape constrains focus nodes selected for a particular validation or application context. It may describe only part of a resource, may coexist with other shapes for the same class, and may encode data-quality expectations rather than query semantics. The catalog MUST preserve this context and MUST NOT merge every shape for a class into one universal lens. A shape with no executable target may still define a nested value contract, but it MUST NOT become an enumerable global query source unless a trusted application overlay supplies that meaning.
 
-### 4.2 The model emits references, not schema strings
+Each derived statement in a lens carries one of the following origins. This origin controls how the statement may be used, rather than merely documenting where it came from.
 
-A plan should refer to `employee.worked_on`, represented internally by a stable property-lens ID, instead of emitting `http://example.org/workedOn` or a raw triple pattern. This allows deterministic lookup, validation, compilation, and migration.
+| Origin | Meaning | May authorize an operation by default? |
+|---|---|---:|
+| `normative_shape` | Directly derived from a supported SHACL constraint or target | Yes |
+| `trusted_overlay` | Supplied by application configuration reviewed as part of policy | Yes |
+| `ontology_hint` | Inferred from labels, `rdfs:domain`, `rdfs:range`, or similar ontology terms | No; ranking and explanation only |
+| `sampled_hint` | Inferred from bounded inspection of instance data or statistics | No; ranking and cost estimation only |
 
-### 4.3 Deterministic outside, agentic inside bounded boxes
+This rule prevents an `rdfs:range` statement or a sample of current data from silently expanding the query surface. A deployment MAY explicitly promote an ontology mapping into a trusted overlay, but that promotion is a policy change with a revision, audit record, and tests.
 
-The workflow is an explicit state machine. Model calls occur only where semantic judgment is needed. Retries have fixed budgets. Empty results and endpoint errors are diagnosed by code before another model call is considered.
+### 4.2 Absence is always relative to a Dataset Scope
 
-### 4.4 Separate schema retrieval from evidence retrieval
+RDF normally follows an open-world interpretation, so the absence of a triple is not proof that the corresponding real-world relationship does not exist. ShapeLens may answer questions such as “Which projects have no recorded manager?” by using `NOT EXISTS`, but the claim means “no matching statement was found in the queried Dataset Scope under the stated entailment and consistency assumptions.” Every absence claim MUST carry a `DatasetScope` record containing the active graphs, default-graph behavior, entailment regime, dataset revision when available, consistency level, and the policy that permits or forbids absence claims. The answer renderer MUST use wording that preserves this distinction.
 
-There are two different retrieval problems:
+### 4.3 Every run observes pinned revisions
 
-- **schema retrieval:** find the relevant shapes, paths, and constraints;
-- **evidence retrieval:** find graph facts and linked text that answer the question.
+At the beginning of a run, the engine obtains immutable handles or immutable descriptions for the catalog revision, query-policy revision, Authorization Scope, endpoint-capability revision, compiler version, and Dataset Scope. All later stages use those pinned values, including retries, probes, label lookups, provenance lookups, validation queries, document retrieval, and cache keys. Catalog rebuilds publish a new revision atomically and never mutate an object used by an in-flight run. When a store cannot provide snapshot consistency across multiple queries, the evidence packet records that limitation instead of implying that all enrichment came from one snapshot.
 
-They should use separate indexes, scoring logic, and data models. A vector index over documents must not be treated as a substitute for discovering legal graph paths.
+### 4.4 The trust boundary is explicit
 
-### 4.5 Every claim should point to machine-identifiable evidence
+The planner may select only catalog operations shown in its candidate context or retrieved through a typed inspection tool. It cannot create IRIs, property paths, authorization predicates, graph scopes, functions, or raw query fragments. The plan validator checks semantic references and policy, the SPARQL compiler accepts only validated models, and a second parser and policy pass checks the rendered query. Endpoint results are parsed into RDF terms before use. The answerer receives only a bounded evidence packet and cannot invent citation identifiers or source URLs.
 
-The answerer returns structured claims whose `evidence_ids` refer to graph facts, result rows, source graphs, or document chunks in an `EvidencePacket`. Rendering human-friendly citations is a final presentation step.
+### 4.5 Evidence strength is not the same as citation validity
 
-### 4.6 Portable baseline, explicit capabilities
-
-The default compiler emits conservative SPARQL 1.1. Endpoint features—SPARQL 1.2 constructs, full-text search, geospatial functions, federation, entailment, statement-level provenance, query hints—are represented in an `EndpointCapabilities` object and used only when enabled.
-
-### 4.7 Graceful degradation
-
-The same API should support:
-
-- a local graph with ten shapes and no embeddings;
-- a remote enterprise endpoint with thousands of shapes and a vector index;
-- graph-only answers;
-- graph-guided document retrieval;
-- a caller-supplied plan with no LLM at all.
+A citation is referentially valid when its ID exists, but that alone does not establish that the cited item supports a claim. ShapeLens distinguishes four levels of answer checking: ID existence, compatibility between evidence and claim type, deterministic support for template-rendered claims, and optional semantic support assessment for free prose. The library MUST describe which level was applied. It MUST NOT label a claim “verified” merely because the model returned an existing evidence ID.
 
 ---
 
-## 5. The novel abstraction: Shape Lenses
+## 5. Shape Lenses
 
-A **Shape Lens** is a compiled, query-oriented representation of one semantic view of the graph.
+A **Shape Lens** is an immutable, versioned semantic view compiled from one primary SHACL node shape that has a supported target or a trusted overlay supplying an executable application target. An overlay may augment that primary shape but does not merge several shapes into one lens; a future composite-lens feature would need separate identity and conflict rules. The lens tells retrieval what the view is about, tells the planner which property operations are available, tells validation which values are compatible with those operations, and provides source references that explain every derived field. A **Property Lens** is an operation-bearing property within a Shape Lens; property shapes that are not independently targetable remain Property Lenses or nested contracts rather than top-level Shape Lenses.
 
-A single RDF class can have multiple lenses. For example, an `Employee` may have:
+One RDF class may have several Shape Lenses. An employee might have a public-directory lens, a project-staffing lens, and a data-quality lens. These lenses may expose different properties and may carry different policy tags, but those tags do not themselves enforce security. Enforcement occurs through the authorization and query-policy layers across every primary and auxiliary operation.
 
-- a public-directory lens;
-- an HR lens containing sensitive fields;
-- a project-staffing lens;
-- a data-quality validation lens.
+The central objects have distinct responsibilities. A `ShapeCatalog` is the immutable, serializable build artifact for one revision. It contains Shape Lenses, Property Lenses, source references, logical constraints, and the directed join graph. A `ShapeRegistry` is the runtime lookup interface over one catalog revision. A `ShapeIndex` is a replaceable retrieval structure built from that catalog. These names are not interchangeable: the catalog owns data, the registry exposes lookup behavior, and an index returns ranked candidates.
 
-This context sensitivity is important. Global ontology labels alone do not tell the planner which properties are permitted, relevant, or safe in a specific application.
+### 5.1 Lens contents
 
-### 5.1 Lens components
+Each Shape Lens has a stable logical key, an immutable revision digest, the original shape term, the shapes-graph identity, labels and descriptions by language, executable targets, focus classes, property lenses, query and policy tags, a compact retrieval card, and exact source references. A Property Lens has its own logical key and revision digest, a canonical path, a branch-preserving value contract, allowed operations, possible join targets, expected cardinality, evidence requirements, and origin metadata for every derived field.
 
-Each lens contains:
+The value contract MUST preserve logical correlations. For example, `sh:or` branches cannot be flattened into independent sets of datatypes and classes because doing so could create combinations that no branch permits. The normalized representation is therefore a small Boolean constraint expression whose leaves describe node kind, datatype, class, allowed values, patterns, cardinality, and nested shapes. Unsupported expressions remain attached as validation-only source material and cannot authorize query operations.
 
-- **identity:** stable ID, original shape node, shapes-graph ID, version digest;
-- **semantic text:** labels, comments, `sh:name`, `sh:description`, `sh:intent`, messages, aliases, path local names;
-- **focus contract:** target classes, target nodes, target subjects/objects, or explicit application targets;
-- **property affordances:** canonical SHACL path, expected node kind, value class, datatype, cardinality, allowed filter operators, aggregation suitability, and sensitivity policy;
-- **join ports:** connections from a property to another lens based on `sh:class`, `sh:node`, target classes, or configured mappings;
-- **validation contract:** constraints that can be checked on plan values or returned RDF terms;
-- **query metadata:** estimated selectivity, path cost, preferred label path, graph scope, and supported dialect features;
-- **retrieval document:** compact text used by lexical and embedding indexes;
-- **source references:** the exact triples or shape subgraph from which the lens was compiled.
+### 5.2 Canonical paths and affordances
 
-### 5.2 Query affordances
+SHACL property paths are parsed once into a cycle-safe abstract syntax tree. Version 0.1 renders direct predicates and inverse predicates only. Sequence, alternative, zero-or-more, one-or-more, and zero-or-one paths are recognized so the catalog can report them accurately, but they are marked `validation_only` until their planning, cost, and evidence-witness semantics are implemented. This is intentionally more conservative than accepting any path simply because SPARQL can render it.
 
-A property lens exposes only operations compatible with its contract. Examples:
+An affordance is an operation that a planner may request. In the long-term design, a string-valued property can expose lexical matching, an ordered literal can expose comparisons, an IRI-valued property can expose a join or entity identity, and a supported property can expose existence or scoped absence. Version 0.1 implements exact RDF-term identity, joins, existence, and scoped absence. Lexical matching and ordered comparison wait for typed nodes with portable language, datatype, normalization, collation, and error semantics. Cardinality informs validation and result shape but does not decide query semantics on its own. A complex custom constraint adds no affordance unless a trusted plugin implements normalization, validation, compilation, evidence construction, and tests for the complete trust chain.
 
-| SHACL information | Derived affordances |
-|---|---|
-| `sh:datatype xsd:string` | equals, contains, prefix, language-aware match; regex only when policy allows |
-| numeric datatype | equals, comparison, range, min/max/average/sum |
-| date or date-time datatype | before, after, between, date-part grouping |
-| `sh:class ex:Project` | traverse or join to a Project lens, entity equality, existence |
-| `sh:maxCount 1` | scalar projection without aggregation; optionality still depends on `sh:minCount` |
-| unbounded cardinality | set projection, `COUNT`, `EXISTS`, `NOT EXISTS` |
-| `sh:in (...)` | equality or membership restricted to known values |
-| `sh:or (...)` | typed union of supported alternatives |
-| inverse or sequence `sh:path` | deterministic traversal using the canonical path AST |
+### 5.3 Identity
 
-The compiler does not claim that every constraint is a query affordance. A complex SHACL-SPARQL constraint may remain validation-only unless a plugin explicitly knows how to turn it into a safe retrieval operation.
+ShapeLens separates logical identity from content identity. An IRI-backed shape receives a catalog-scoped `lens_key` derived from the shapes-graph key and shape IRI, while `lens_revision` is a digest of its normalized, relevant source and compiler settings. A blank-node shape receives a catalog-local occurrence key plus a content revision produced with the W3C RDFC-1.0 canonicalization algorithm over an extracted subdataset. OQ-008 must define that extraction boundary and its migration guarantee before blank-node keys are stable public contracts. Property Lenses use the owning lens key and the property-shape occurrence key, so a shared property shape used in different contexts does not collapse those contexts accidentally.
 
-### 5.3 Evidence contract
-
-The same lens that permits a plan operation also defines what evidence is expected back. If a plan traverses an employee's `workedOn` property to a project, the evidence contract can require:
-
-- an employee IRI;
-- a project IRI;
-- the connecting predicate or property path;
-- a display label if available;
-- source graph or provenance metadata when configured;
-- conformance warnings when returned values violate the shape.
-
-This unifies schema grounding, query generation, result validation, and answer citation.
-
-### 5.4 Why this is preferable to direct NL-to-SPARQL
-
-Direct generation treats SPARQL as model-authored code. Shape Lenses instead make the model choose from a typed, versioned semantic API. This resembles compiling a high-level language into a database query rather than asking the model to hand-write arbitrary query text.
+RDFC-1.0 can be computationally expensive for adversarial blank-node structures. Catalog construction therefore applies byte, triple, blank-node, recursion, and time budgets and reports a hard failure when canonicalization exceeds them. Logical keys for blank-node occurrences are stable only within the declared source boundary unless an author gives the property shape an IRI. The documentation and migration tooling should encourage stable IRI-backed shapes when plans need to survive independent catalog rebuilds.
 
 ---
 
-## 6. Standards and compatibility strategy
+## 6. A small end-to-end example
 
-### 6.1 Stable baseline
+Assume a staffing graph contains employees, projects, and skills. Its SHACL graph has an employee staffing shape with direct properties for `ex:name`, `ex:workedOn`, and `ex:expertise`; project and skill shapes provide target classes and labels. The catalog produces three Shape Lenses, two joinable Property Lenses from employee to project and skill, and a scalar name property. The question “Which employees worked on Project X and have artificial-intelligence expertise?” retrieves those lenses and resolves the two quoted concepts to type-compatible IRIs.
 
-The first production profile should require only:
+The planner returns a `SelectPlan` that contains an unbound employee node, a project node bound to `ex:project-x`, a skill node bound to `ex:skill-ai`, two required edges, and projections for the employee IRI and optional employee name. The plan contains only catalog keys and parsed RDF terms; it contains no predicate IRI, variable name, or SPARQL fragment supplied by the model. Plan validation proves that both edges start from the employee lens, that their target contracts accept the resolved entities, that the projected employee is connected to every constraint, and that the user’s two requested conditions are both represented.
 
-- RDF 1.1-compatible terms and datasets;
-- SHACL Core concepts available in the 2017 Recommendation;
-- SPARQL 1.1 query features;
-- standard SPARQL Results JSON for remote `SELECT` and `ASK` queries;
-- RDF serialization for `CONSTRUCT` queries.
+The deterministic compiler can then produce a query equivalent to the following:
 
-### 6.2 Optional SHACL 1.2 features
+```sparql
+PREFIX ex: <https://example.org/>
 
-When present, the compiler and indexer should recognize:
+SELECT DISTINCT ?employee ?employee_name
+WHERE {
+  VALUES ?project { <https://example.org/id/project-x> }
+  VALUES ?skill { <https://example.org/id/skill-ai> }
 
-- `sh:intent` as high-value semantic text for agent guidance;
-- `sh:ShapesGraph`, `rdfs:isDefinedBy`, `rdfs:member`, and `owl:imports` for packaging and dependency tracking;
-- `sh:usedShapesGraph`, `sh:usedDataGraph`, and related validation provenance terms;
-- supported node expressions and `sh:values` as computed property lenses;
-- SHACL 1.2 path and value-type additions that the local feature profile enables.
+  ?employee a ex:Employee ;
+            ex:workedOn ?project ;
+            ex:expertise ?skill .
 
-These are enhancements, not prerequisites. A `FeatureProfile` records what was seen and what the library actually supports.
-
-### 6.3 Optional SPARQL 1.2 features
-
-The endpoint adapter may discover or be configured with support for SPARQL 1.2. The compiler can then enable features such as triple terms or version announcements. The default remains a conservative 1.1-compatible query unless the plan requires and the endpoint advertises a newer feature.
-
-### 6.4 Shape profiles
-
-The library should define implementation profiles such as:
-
-- `portable-core`: simple targets, standard paths, core datatypes, basic logical constraints;
-- `portable-advanced`: additional SHACL paths and selected advanced constraints;
-- `endpoint-native`: custom functions and vendor capabilities;
-- `strict-safe`: excludes expensive recursive or unbounded constructs;
-- `full`: all installed plugins.
-
-A catalog build reports unsupported shape features rather than silently ignoring them.
-
----
-
-## 7. User-facing experience
-
-The simplest local use should look like this:
-
-```python
-from rdflib import Graph
-from shapelens import ShapeRAG
-
-rag = ShapeRAG.from_rdflib(
-    data=Graph().parse("data.ttl"),
-    shapes=Graph().parse("shapes.ttl"),
-    model="openai:gpt-5.2",
-)
-
-result = await rag.ask(
-    "Which employees worked on Project X and are experts in artificial intelligence?"
-)
-
-print(result.answer)
-for claim in result.claims:
-    print(claim.text, claim.evidence_ids)
+  OPTIONAL { ?employee ex:name ?employee_name . }
+}
+LIMIT 100
 ```
 
-A remote configuration should remain explicit but compact:
+If the endpoint returns Alice and Omar, the evidence builder records the triple-pattern matches that connect each employee to the project and skill, the result rows, the query and catalog revisions, and any available graph provenance or entailment status. A deterministic renderer can produce “Alice and Omar match both conditions” and associate each name with its two connecting matches. If the query returns no rows, bounded probes may show that both entities exist but no employee has both relationships. The outcome is then `NoMatch`, worded as “No employees matched both conditions in the queried data,” rather than a relaxed query that silently drops expertise.
 
-```python
-from shapelens import ShapeRAG, ShapeRAGConfig
-from shapelens.stores import SPARQLEndpointStore
-from shapelens.shapes import RDFShapeSource
-
-rag = ShapeRAG(
-    graph=SPARQLEndpointStore(
-        query_url="https://kg.example/sparql",
-        timeout_seconds=20,
-        default_graphs=["urn:graph:production"],
-    ),
-    shapes=RDFShapeSource("company-shapes.ttl"),
-    config=ShapeRAGConfig(
-        planner_model="openai:gpt-5.2",
-        answer_model="openai:gpt-5.2",
-        planning_mode="fast",
-    ),
-)
-
-result = await rag.ask("Which projects have no assigned project manager?")
-```
-
-Advanced callers can stop at any layer:
-
-```python
-candidates = await rag.retrieve_schema(question)
-plan = await rag.plan(question, candidates=candidates)
-compiled = rag.compile(plan)
-rows = await rag.execute(compiled)
-evidence = await rag.build_evidence(plan, rows)
-answer = await rag.answer(question, evidence)
-```
-
-The public facade should also expose:
-
-- `rag.explain(question)` for a dry-run explanation;
-- `rag.ask_stream(question)` for stage and answer events;
-- `rag.validate_catalog()` for shape diagnostics;
-- `rag.inspect_lens(lens_id)` for debugging;
-- `rag.ask(..., return_debug=True)` for plans, SPARQL, timings, and validation reports.
+This example also shows what version 0.1 does not attempt. It does not interpret a sequence path, compute an aggregate, prove the real-world absence of an assignment, or search documents. Those capabilities require additional algebra and evidence types and are introduced only in later phases.
 
 ---
 
-## 8. High-level architecture
+## 7. Architecture and lifecycle
+
+ShapeLens has two lifecycles. Catalog build time ingests trusted shapes and optional ontology material, normalizes supported constructs, records unsupported constructs, compiles lenses, builds the join graph, creates lexical retrieval documents, and publishes an immutable catalog revision. Question time pins that revision, normalizes the question, retrieves a small connected lens subgraph, resolves mentioned entities, creates and validates a plan, injects trusted authorization constraints, compiles and checks SPARQL, executes it under a shared deadline, constructs evidence, and renders or synthesizes a typed outcome.
 
 ```mermaid
 flowchart LR
-    U[User question] --> N[Question normalizer]
-    N --> SR[Schema retriever]
-    SR --> ER[Entity resolver]
-    ER --> PA[Pydantic AI planner]
-    PA --> PV[Typed plan validator]
-    PV --> QC[Deterministic SPARQL compiler]
-    QC --> QP[Query policy and dialect check]
-    QP --> GS[Graph store]
-    GS --> EB[Evidence builder]
-    EB --> DV[Result and evidence validation]
-    DV --> DR[Optional document retriever]
-    DR --> AA[Pydantic AI answerer]
-    AA --> AV[Claim-to-evidence validator]
-    AV --> R[AskResult]
+    SH[SHACL and trusted overlays] --> SC[Shape compiler]
+    SC --> CAT[Immutable ShapeCatalog]
+    CAT --> IDX[Lexical and optional vector indexes]
 
-    SH[SHACL shapes] --> SC[Shape compiler]
-    ONT[Ontology and labels] --> SC
-    SC --> REG[Shape Lens registry]
-    REG --> IDX[Lexical and optional vector index]
-    IDX --> SR
-    REG --> PV
-    REG --> QC
-    REG --> DV
+    Q[Question] --> RET[Schema retrieval]
+    IDX --> RET
+    RET --> ER[Entity resolution]
+    ER --> PL[Typed planner]
+    PL --> VAL[Plan and policy validation]
+    CAT --> VAL
+    VAL --> AUTH[Inject authorization scope]
+    AUTH --> SPC[SPARQL compiler and policy check]
+    SPC --> STORE[Graph store]
+    STORE --> EV[Evidence builder]
+    EV --> ANS[Deterministic renderer or typed answerer]
+    ANS --> OUT[Typed AskOutcome]
 ```
 
-There are two lifecycles:
+The workflow is an explicit state machine even if the implementation uses ordinary functions rather than a graph library. Every model call and I/O operation consumes a centrally managed `RunBudget`, observes the same absolute deadline, and supports cancellation. Optional enrichments such as labels, provenance, or documents may run concurrently after core rows are available, but their failures produce a degraded outcome with issues rather than erasing valid core evidence. Retries are classified and bounded; there is no open-ended agent tool loop.
 
-1. **catalog build time:** ingest shapes and ontology data, compile lenses, build indexes and join metadata;
-2. **question time:** retrieve lenses, resolve entities, plan, compile, execute, validate, gather evidence, and answer.
-
-The catalog can be built eagerly at startup, loaded from a serialized artifact, or refreshed incrementally.
+The main trust transitions are easy to name. Untrusted shape and ontology content becomes a catalog only after bounded parsing and compilation. Untrusted model output becomes executable only after structural, semantic, authorization, capability, and complexity validation. Endpoint bytes become evidence only after content-type, size, parser, RDF-term, and result-contract checks. Model-authored prose becomes a public answer only after evidence-reference and claim-policy validation.
 
 ---
 
-## 9. Core domain model
+## 8. Catalog construction
 
-All public and model-generated data should use frozen or carefully validated Pydantic models. Internally mutable runtime state may use dataclasses where appropriate.
+### 8.1 Loading, imports, and profiles
 
-### 9.1 RDF terms
+Catalog sources may be RDFLib graphs or datasets, local files, trusted byte streams, or an application-provided `ShapeSource`. Remote URL loading, `owl:imports`, JSON-LD remote contexts, SHACL-JS, and arbitrary extension execution are disabled by default. When network loading is enabled, the application supplies allowed schemes and hosts, redirect limits, byte and triple limits, timeouts, content-type rules, and an import-depth budget. Imports are resolved into a recorded closure whose source digests contribute to the catalog revision.
 
-SPARQL bindings should not be converted immediately into ambiguous Python primitives. Preserve RDF identity first:
+The source-vocabulary baseline is the 2017 SHACL Recommendation, while the queryable subset is the explicit ShapeLens feature matrix below and must not be mistaken for full SHACL query equivalence. SHACL 1.2 material is treated as a capability-gated extension because, as of this review, SHACL 1.2 Core remains a W3C Working Draft. The catalog records both features observed and features actually implemented; seeing a version label never activates behavior. Unsupported syntax is never silently ignored. It either fails the build because safe normalization is impossible or remains preserved as validation-only metadata with a diagnostic.
+
+### 8.2 Normative version 0.1 feature matrix
+
+The following table is the implementation contract for the first release. “Queryable” means a supported construct may create an affordance. “Contract only” means it can restrict or describe a value but does not create a new query operation. “Diagnostic only” means it is parsed or preserved, but any lens that depends on it for the requested operation is rejected.
+
+| SHACL construct | Version 0.1 treatment | Query meaning |
+|---|---|---|
+| `sh:targetClass` | Queryable in the `direct_type` profile | Enumerate nodes with a direct `rdf:type` pattern; do not claim full SHACL instance semantics |
+| `sh:targetNode` | Queryable | Enumerate only the declared node or nodes |
+| `sh:targetSubjectsOf` | Deferred | Diagnostic only until target selection is specified and tested |
+| `sh:targetObjectsOf` | Deferred | Diagnostic only until target selection is specified and tested |
+| Shape without a target | Contract only | Nested validation contract; never an independent scan |
+| Direct predicate path | Queryable | One triple pattern |
+| Inverse predicate path | Queryable | One reversed triple pattern |
+| Sequence or alternative path | Deferred | Diagnostic only |
+| Repeating path | Deferred | Diagnostic only |
+| `sh:datatype`, `sh:nodeKind` | Contract only | Restrict values and derive exact identity compatibility |
+| `sh:class` | Contract only in the `direct_type` profile | Require direct class compatibility; subclass-aware SHACL instance semantics are deferred |
+| `sh:minCount`, `sh:maxCount` | Contract only | Validate values and guide optional projection; no completeness claim |
+| `sh:in` | Contract only | Permit equality only to a declared RDF term |
+| `sh:or` | Contract only | Preserve branches; no Boolean query union in version 0.1 |
+| `sh:node` | Contract only | Retain a nested contract with cycle detection |
+| SHACL-SPARQL and custom components | Deferred | Validation-only unless a trusted plugin implements the full chain |
+| `sh:intent` from SHACL 1.2 | Retrieval metadata | Weighted semantic text only; never an instruction |
+
+Catalog meta-validation and ShapeLens compilation are separate checks. An optional pySHACL adapter may establish that a shapes graph conforms to the chosen SHACL profile, while the ShapeLens compiler establishes whether this library can safely turn selected constructs into its query contracts. Parse-only operation, when pySHACL is absent, guarantees only bounded parsing and ShapeLens feature checks; it does not establish SHACL meta-conformance.
+
+The `direct_type` profile is deliberately narrower than SHACL’s definition of a SHACL instance. `sh:targetClass ex:Employee` selects only nodes matched by `?node rdf:type ex:Employee`; it does not follow `rdfs:subClassOf` and MUST be reported as direct-type behavior in catalog diagnostics. The same limitation applies when `sh:class` is used to establish value compatibility. A later `shacl_instance` profile may use a pinned entailment regime or compile subclass-aware patterns, but it must specify cost and evidence behavior and pass subclass-only differential fixtures. A `sh:targetNode` lens selects its declared nodes with `VALUES` and does not acquire a type pattern merely because the lens has descriptive focus-class metadata. If a shape has several supported targets, version 0.1 takes their union, matching SHACL target selection; constraints on the focus node remain separate from target enumeration.
+
+### 8.3 Normalization and join construction
+
+Normalization resolves display prefixes while retaining full IRIs, converts RDF lists to bounded tuples, parses paths into a canonical AST, preserves Boolean constraint branches, records language-tagged labels, detects recursion, and attaches source references to every derived field. Ontology labels may enrich retrieval text, while ontology domains, ranges, and sampled instance types remain non-authorizing hints. Custom overlays can supply aliases, targets, policy tags, preferred labels, or join mappings, but each overlay is versioned and classified as trusted configuration.
+
+The join graph is a directed multigraph whose vertices are Shape Lenses and whose edges are Property Lenses that can accept nodes described by another lens. A `sh:class` or supported nested `sh:node` constraint can establish a normative candidate join. Ontology range and sampled type information can increase a retrieval score but cannot create an executable join unless promoted by an overlay. Multiple context-specific target lenses remain separate candidates; retrieval and policy decide which may participate in a run.
+
+### 8.4 Publication and incremental rebuild
+
+A catalog revision is a digest over normalized source revisions, import closure, trusted overlays, feature settings, canonicalization profile, and ShapeLens compiler version. A rebuild creates a complete candidate artifact, validates it, warms required indexes, and publishes it atomically. If publication fails, the previous revision remains active. Incremental implementation may reuse unchanged lens and index fragments internally, but the externally visible catalog is immutable and complete.
+
+Multi-worker deployments need one publisher or a compare-and-swap publication protocol, artifact checksums, compatibility checks, and rollback to a known-good revision. These operational choices are not required for the local prototype, but the artifact format must reserve a schema version and refuse unknown incompatible versions rather than loading them optimistically.
+
+---
+
+## 9. Schema retrieval and entity resolution
+
+Schema retrieval answers “which semantic views and relationships can express this question?” while entity resolution answers “which graph nodes or literal values do the phrases refer to?” They are different tasks and use different indexes and diagnostics. A document embedding index is not a substitute for either one.
+
+The first implementation uses a field-weighted in-memory lexical index over labels, aliases, local names, descriptions, and trusted intent text. When every eligible compact lens card fits the configured context budget, the system SHOULD include all of them rather than introduce retrieval error. Larger catalogs use ranked lexical retrieval, optional embedding fusion, and bounded structural expansion through the join graph. The selection threshold is based on packed context size and policy, not a hard number of shapes.
+
+Structural expansion begins with semantically strong lens hits, searches for bounded connecting paths in the join graph, adds the minimal bridge lenses, and prunes candidates by authorization, path support, estimated cost, and context budget. Diagnostics record the lexical, vector, and structural contributions, the catalog revision, selected and discarded candidates, and any bridge that was added even though its label did not appear in the question.
+
+Entity resolution recognizes explicit IRIs or CURIEs, exact and normalized labels, aliases, local indexes, and later endpoint-native search. Expected lens keys constrain the candidate type. Version 0.1 binds automatically only when one candidate passes a configured dominance threshold and is type-compatible. Material ambiguity produces an `Ambiguous` outcome with candidates; it does not use a vague “candidate set” whose implicit union could change the answer. A later algebra may add an explicit `one_of` binding when the user or application requests union semantics.
+
+Literal-versus-entity interpretation is governed by the Property Lens. A string contract expects a literal, an IRI-valued class contract expects a resolved entity, and a preserved union requires an explicit supported branch. If the catalog cannot distinguish the intended branch or operation, the correct outcome is `Unsupported` or `Ambiguous`, not a guessed filter.
+
+---
+
+## 10. The version 0.1 query algebra
+
+The query algebra is the most important executable contract in the design. It is intentionally smaller than SPARQL and has a precise meaning independent of any model provider. Version 0.1 supports two query kinds: `SelectPlan`, which returns entity or field rows, and `AskPlan`, which returns whether at least one solution exists. Both use a connected conjunction of required positive edges, scoped absent edges, and filters. There is no general Boolean expression, union, subquery, grouping, aggregation, offset, cursor, arbitrary expression, or raw graph pattern in this version.
+
+The following models are illustrative names for the normative semantics; final field validators may refine their Python syntax without changing their meaning.
 
 ```python
 from typing import Annotated, Literal
@@ -373,3053 +278,529 @@ class IriTerm(BaseModel):
     value: str
 
 
-class BlankNodeTerm(BaseModel):
-    kind: Literal["bnode"] = "bnode"
-    value: str
-
-
 class LiteralTerm(BaseModel):
     kind: Literal["literal"] = "literal"
     value: str
     datatype: str | None = None
     language: str | None = None
-    direction: str | None = None
 
 
-class TripleTerm(BaseModel):
-    kind: Literal["triple"] = "triple"
-    subject: "RDFTerm"
-    predicate: IriTerm
-    object: "RDFTerm"
+RDFTerm = Annotated[IriTerm | LiteralTerm, Field(discriminator="kind")]
 
 
-RDFTerm = Annotated[
-    IriTerm | BlankNodeTerm | LiteralTerm | TripleTerm,
+class UnboundBinding(BaseModel):
+    kind: Literal["unbound"] = "unbound"
+
+
+class IriBinding(BaseModel):
+    kind: Literal["iri"] = "iri"
+    iri: IriTerm
+
+
+NodeBinding = Annotated[
+    UnboundBinding | IriBinding,
     Field(discriminator="kind"),
 ]
-```
-
-`TripleTerm` is capability-gated. A SPARQL 1.1 endpoint adapter will never produce it.
-
-A second conversion layer may expose Python-native values after checking datatypes against a `ValueContract`.
-
-### 9.2 Canonical SHACL path AST
-
-Never hand raw blank-node path structures to the model. Normalize them once:
-
-```python
-class PredicatePath(BaseModel):
-    kind: Literal["predicate"] = "predicate"
-    iri: str
-
-
-class InversePath(BaseModel):
-    kind: Literal["inverse"] = "inverse"
-    path: "PathExpr"
-
-
-class SequencePath(BaseModel):
-    kind: Literal["sequence"] = "sequence"
-    items: tuple["PathExpr", ...]
-
-
-class AlternativePath(BaseModel):
-    kind: Literal["alternative"] = "alternative"
-    items: tuple["PathExpr", ...]
-
-
-class ZeroOrMorePath(BaseModel):
-    kind: Literal["zero_or_more"] = "zero_or_more"
-    path: "PathExpr"
-
-
-class OneOrMorePath(BaseModel):
-    kind: Literal["one_or_more"] = "one_or_more"
-    path: "PathExpr"
-
-
-class ZeroOrOnePath(BaseModel):
-    kind: Literal["zero_or_one"] = "zero_or_one"
-    path: "PathExpr"
-
-
-PathExpr = Annotated[
-    PredicatePath
-    | InversePath
-    | SequencePath
-    | AlternativePath
-    | ZeroOrMorePath
-    | OneOrMorePath
-    | ZeroOrOnePath,
-    Field(discriminator="kind"),
-]
-```
-
-The path parser must be cycle-safe and enforce configurable maximum depth. The SPARQL renderer only renders path ASTs originating from the catalog or a trusted plugin.
-
-### 9.3 Constraints and value contracts
-
-```python
-class Cardinality(BaseModel):
-    min_count: int | None = None
-    max_count: int | None = None
-
-
-class ValueContract(BaseModel):
-    node_kinds: frozenset[str] = Field(default_factory=frozenset)
-    datatypes: frozenset[str] = Field(default_factory=frozenset)
-    classes: frozenset[str] = Field(default_factory=frozenset)
-    allowed_values: tuple[RDFTerm, ...] = ()
-    patterns: tuple[str, ...] = ()
-    language_ranges: tuple[str, ...] = ()
-    cardinality: Cardinality = Field(default_factory=Cardinality)
-    nested_shape_ids: tuple[str, ...] = ()
-    validation_only_features: tuple[str, ...] = ()
-```
-
-This model is deliberately lossy relative to the entire SHACL graph. The complete source subgraph remains available in the registry. `ValueContract` contains the subset needed for common planning, compilation, and result validation.
-
-### 9.4 Property lens
-
-```python
-class OperatorSet(BaseModel):
-    equality: bool = True
-    ordering: bool = False
-    string_search: bool = False
-    regex: bool = False
-    membership: bool = False
-    exists: bool = True
-    aggregate: frozenset[str] = Field(default_factory=frozenset)
-
-
-class PropertyLens(BaseModel):
-    id: str
-    source_shape_id: str
-    original_shape_term: RDFTerm
-    path: PathExpr
-    names: dict[str, str] = Field(default_factory=dict)
-    descriptions: dict[str, str] = Field(default_factory=dict)
-    intents: tuple[str, ...] = ()
-    aliases: tuple[str, ...] = ()
-    value: ValueContract
-    operators: OperatorSet
-    target_lens_ids: tuple[str, ...] = ()
-    required_for_complete_evidence: bool = False
-    sensitive: bool = False
-    estimated_fanout: float | None = None
-    source_digest: str
-```
-
-### 9.5 Shape Lens
-
-```python
-class ShapeTarget(BaseModel):
-    kind: Literal[
-        "class", "node", "subjects_of", "objects_of", "explicit", "none"
-    ]
-    value: RDFTerm | None = None
-
-
-class ShapeLens(BaseModel):
-    id: str
-    original_shape_term: RDFTerm
-    shapes_graph_id: str | None = None
-    version_iri: str | None = None
-    labels: dict[str, str] = Field(default_factory=dict)
-    comments: dict[str, str] = Field(default_factory=dict)
-    intents: tuple[str, ...] = ()
-    aliases: tuple[str, ...] = ()
-    targets: tuple[ShapeTarget, ...] = ()
-    focus_classes: frozenset[str] = Field(default_factory=frozenset)
-    properties: tuple[PropertyLens, ...]
-    retrieval_text: str
-    feature_profile: frozenset[str] = Field(default_factory=frozenset)
-    source_digest: str
-```
-
-Collection and nested-model defaults use `Field(default_factory=...)` so the examples are safe to lift into production code.
-
-### 9.6 Stable IDs
-
-IRI-backed shapes use a catalog-scoped identifier derived from the IRI and shapes-graph version. Blank-node shapes require deterministic skolem IDs. The recommended algorithm is:
-
-1. extract the shape's bounded description, following SHACL list and path blank nodes;
-2. canonicalize triples using a deterministic RDF dataset canonicalization strategy or a stable local canonicalizer;
-3. hash the canonical bytes;
-4. emit an internal ID such as `lens:sha256:<digest>`;
-5. retain the original blank-node term and source graph for diagnostics.
-
-IDs are not intended to become public ontology IRIs. They are stable registry keys.
-
-### 9.7 Join graph
-
-The registry maintains a directed multigraph:
-
-- vertices are Shape Lenses;
-- edges are Property Lenses whose values can match another lens;
-- edge metadata includes direction, path, cardinality, fanout, graph scope, and policy tags.
-
-The schema retriever can expand an initial set of semantically relevant lenses along this graph to discover bridge relationships that the question does not name explicitly.
-
----
-
-## 10. Query representations
-
-The system benefits from two related intermediate representations.
-
-### 10.1 Semantic intent IR
-
-`SemanticIntent` is schema-independent. It captures what the user appears to ask without committing to RDF paths.
-
-```python
-class Mention(BaseModel):
-    text: str
-    role: Literal["entity", "class", "property", "value", "time", "unknown"]
-    quoted: bool = False
-
-
-class RequestedAnswer(BaseModel):
-    kind: Literal["entities", "values", "boolean", "count", "table", "summary"]
-    concept: str | None = None
-
-
-class SemanticConstraint(BaseModel):
-    subject_concept: str
-    relation_text: str
-    object_text: str | None = None
-    comparison: str | None = None
-    negated: bool = False
-
-
-class SemanticIntent(BaseModel):
-    original_question: str
-    normalized_question: str
-    language: str | None = None
-    answer: RequestedAnswer
-    mentions: tuple[Mention, ...] = ()
-    constraints: tuple[SemanticConstraint, ...] = ()
-    requested_sort: tuple[str, ...] = ()
-    requested_limit: int | None = None
-```
-
-This layer is useful in `robust` planning mode, in evaluation datasets, and when the schema binder is deterministic or separately replaceable. It is not required for the lowest-latency `fast` mode.
-
-### 10.2 Bound query plan
-
-`BoundQueryPlan` references only catalog IDs and validated RDF values.
-
-```python
-class EntityBinding(BaseModel):
-    kind: Literal["iri", "candidate_set", "unbound"]
-    values: tuple[IriTerm, ...] = ()
-    resolution_text: str | None = None
 
 
 class PlanNode(BaseModel):
     id: str
-    lens_id: str
-    binding: EntityBinding = EntityBinding(kind="unbound")
+    lens_key: str
+    binding: NodeBinding
 
 
-class PlanEdge(BaseModel):
+class RequiredEdge(BaseModel):
+    kind: Literal["required"] = "required"
     id: str
     source_node: str
-    property_lens_id: str
+    property_lens_key: str
     target_node: str
-    quantifier: Literal["any", "none"] = "any"
-    optional: bool = False
 
 
-class ScalarValue(BaseModel):
-    term: RDFTerm
+class AbsentEdge(BaseModel):
+    kind: Literal["absent"] = "absent"
+    id: str
+    source_node: str
+    property_lens_key: str
+    target: IriTerm | None = None
+
+
+PlanEdge = Annotated[RequiredEdge | AbsentEdge, Field(discriminator="kind")]
 
 
 class FieldRef(BaseModel):
     node_id: str
-    property_lens_id: str
+    property_lens_key: str
 
 
 class EqFilter(BaseModel):
     kind: Literal["eq"] = "eq"
     field: FieldRef
-    value: ScalarValue
-
-
-class InFilter(BaseModel):
-    kind: Literal["in"] = "in"
-    field: FieldRef
-    values: tuple[ScalarValue, ...]
-
-
-class CompareFilter(BaseModel):
-    kind: Literal["compare"] = "compare"
-    field: FieldRef
-    operator: Literal["lt", "lte", "gt", "gte"]
-    value: ScalarValue
-
-
-class TextFilter(BaseModel):
-    kind: Literal["text"] = "text"
-    field: FieldRef
-    operator: Literal["equals", "contains", "starts_with", "regex"]
-    text: str
-    language: str | None = None
+    value: RDFTerm
 
 
 class ExistsFilter(BaseModel):
     kind: Literal["exists"] = "exists"
     field: FieldRef
-    exists: bool = True
+    exists: bool
 
 
 FilterExpr = Annotated[
-    EqFilter | InFilter | CompareFilter | TextFilter | ExistsFilter,
+    EqFilter | ExistsFilter,
     Field(discriminator="kind"),
 ]
 
 
-class Projection(BaseModel):
+class NodeProjection(BaseModel):
     id: str
-    kind: Literal["node", "field", "count", "min", "max", "sum", "avg"]
+    kind: Literal["node"] = "node"
     node_id: str
-    property_lens_id: str | None = None
-    label: str | None = None
-    distinct: bool = False
 
 
-class SortSpec(BaseModel):
-    projection_id: str
-    direction: Literal["asc", "desc"] = "asc"
+class FieldProjection(BaseModel):
+    id: str
+    kind: Literal["field"] = "field"
+    node_id: str
+    property_lens_key: str
+    required: bool = False
 
 
-class EvidenceRequest(BaseModel):
-    include_connecting_facts: bool = True
-    include_labels: bool = True
-    include_source_graphs: bool = True
-    include_linked_documents: bool = True
-    neighborhood_depth: int = 0
+Projection = Annotated[
+    NodeProjection | FieldProjection,
+    Field(discriminator="kind"),
+]
 
 
-class BoundQueryPlan(BaseModel):
+class SelectPlan(BaseModel):
+    kind: Literal["select"] = "select"
     question: str
     nodes: tuple[PlanNode, ...]
     edges: tuple[PlanEdge, ...] = ()
     filters: tuple[FilterExpr, ...] = ()
     projections: tuple[Projection, ...]
-    sort: tuple[SortSpec, ...] = ()
     limit: int | None = None
-    distinct: bool = True
-    evidence: EvidenceRequest = Field(default_factory=EvidenceRequest)
-    selected_lens_ids: tuple[str, ...] = ()
-    planner_notes: tuple[str, ...] = ()
+    exhaustive: bool = False
+
+
+class AskPlan(BaseModel):
+    kind: Literal["ask"] = "ask"
+    question: str
+    nodes: tuple[PlanNode, ...]
+    edges: tuple[PlanEdge, ...] = ()
+    filters: tuple[FilterExpr, ...] = ()
+
+
+BoundQueryPlan = Annotated[SelectPlan | AskPlan, Field(discriminator="kind")]
 ```
 
-The production model should add validators for unique IDs, reference integrity, and non-empty projections.
+All edges and filters are conjoined. `RequiredEdge` means that a matching path must exist. `AbsentEdge` means that no matching path exists in the pinned Dataset Scope and compiles to a correlated `FILTER NOT EXISTS`; its source node must belong to the positive outer component. A present `target` restricts the absent pattern to that validated IRI, while an omitted target means that no value may exist for the property. The target is a term on the negative edge rather than a separate plan node, so connectivity validation does not force a negation-local binding into the positive component. Field projections are optional by default and use `OPTIONAL`, while `required=True` makes the field part of the required graph pattern. Filters always require the field to be bound, except `ExistsFilter(exists=False)`, which compiles to a correlated absence test.
 
-### 10.3 Why keep the plan smaller than SPARQL
+`EqFilter` means RDF-term identity and compiles with `sameTerm`, not SPARQL value equality. Literals therefore match only when lexical form, datatype, and language tag identify the same RDF term; numeric coercion, language fallback, case folding, Unicode normalization, and collation are outside version 0.1. This strict meaning is portable and makes datatype errors predictable. Lexical text search and ordered value comparison will require their own typed filters when their semantics are agreed.
 
-The plan intentionally omits arbitrary subqueries, expressions, `SERVICE`, graph updates, user-authored variables, and free-form query fragments. It covers common analytical questions through a safe algebra. Additional capabilities are introduced as typed plan nodes and compiler plugins, not as strings.
+The first release supports only one unambiguous use of each field reference from a node. If a later plan needs the same property in two independently bound traversals, the algebra will add explicit traversal references instead of guessing which occurrence a filter means. Every projected node and every node used by the positive outer pattern must belong to one connected component; an absent edge correlates through its source without adding a negative-only plan node.
 
-Examples of future typed additions include:
+A version 0.1 `SelectPlan` always applies `DISTINCT` to the complete internal answer tuple, which contains the public projections plus hidden node identities needed to distinguish resources and construct evidence. A many-valued field is flattened into separate rows, while equal lexical fields belonging to different resource identities remain distinct internal rows. The compiler obtains an answer page before optional evidence enrichment so hidden evidence variables cannot multiply rows or change a limit. Version 0.1 has no ordering operation, so a limited page is an explicitly unordered and potentially different subset across executions. The compiler requests one row beyond the effective limit when possible to detect another page; this behavior and the absence of stable ordering are recorded in the evidence packet and prevent claims of reproducible page membership.
 
-- `UnionGroup` and `OptionalGroup`;
-- `AllValuesFilter` for universal quantification;
-- temporal overlap predicates;
-- geospatial relations;
-- full-text search expressions;
-- federated source bindings with endpoint allowlists;
-- path-length constraints;
-- grouped aggregations and `HAVING`;
-- caller-defined computed projections.
+`SelectPlan.exhaustive=True` requires `limit=None` and asks for the entire answer set allowed by policy. If the store or policy cannot provide it, the run returns `PolicyLimited` rather than silently narrowing the request. With `exhaustive=False`, the plan’s limit or the policy default defines a presentation page, and answer wording cannot imply that the page contains every match unless the extra-row check establishes that no more rows exist.
 
-### 10.4 Plan modes
-
-The library exposes three planning modes:
-
-| Mode | Model calls | Behavior | Intended use |
-|---|---:|---|---|
-| `fast` | normally 1 planner call | retrieve lenses and ask the model for a bound plan directly | interactive applications |
-| `robust` | normally 2 calls | extract semantic intent, then bind it to lenses | difficult schemas, evaluation, explainability |
-| `deterministic` | 0 | caller supplies a plan or uses application rules | regulated workflows, tests, repeated queries |
-
-All modes converge on the same `BoundQueryPlan`, validator, compiler, executor, and evidence pipeline.
+Aggregation is intentionally deferred. When introduced, an aggregate node will explicitly name its operand, distinctness, grouping keys, empty-input semantics, and optional `HAVING` expression. Deferring it avoids pretending that a `Projection(kind="count")` is sufficient to define correct SPARQL in the presence of many-valued joins.
 
 ---
 
-## 11. Evidence and answer models
+## 11. Planning and plan validation
 
-### 11.1 Graph facts
+### 11.1 Planner roles
+
+The default fast planner receives the question, candidate lens cards, legal operations, entity-resolution results, endpoint restrictions relevant to semantics, and non-sensitive policy constraints. It returns a `BoundQueryPlan` in one structured model call under a fixed output-retry budget. Pydantic AI is the recommended adapter because it supports typed dependencies, structured output, tools, and output validation, but the deterministic core depends on a small `Planner` protocol rather than the framework itself. Model identifiers and provider configuration belong to the application and examples MUST NOT bake in a supposedly current model name.
+
+An optional robust mode first produces a schema-unbound `SemanticIntent`, then binds each intent item to candidate lenses. That intermediate representation is useful only if it includes stable intent-item IDs and the bound plan records a coverage mapping from each item to an edge, filter, projection, or explicit unsupported reason. Without that trace, claims that the system checked “every user constraint” would be heuristic. Deterministic application rules may also produce the same plan type with no model call.
+
+The planner may inspect a candidate lens, search for additional lenses, or resolve an entity through typed tools. It never receives a general SPARQL execution tool. Any future probe tool accepts a typed plan and passes through the same validation, authorization, policy, and budget path as the main query.
+
+### 11.2 Validation layers
+
+Structural validation checks discriminated variants, bounded collection sizes, unique IDs, reference integrity, and field formats. Catalog validation then proves that every lens and property key belongs to the pinned revision, every property belongs to the source node’s lens, every target is compatible with the preserved value-contract branch, and every referenced lens appeared in the candidate context or a recorded inspection result. Operator validation checks that the property’s contract and origin permit the requested operation.
+
+Connectivity validation rejects accidental Cartesian products by requiring every projected or bound node to belong to one connected positive component. Absence groups must be correlated with that component. Intent coverage validation, when robust mode is active, proves that every extracted constraint has a recorded representation and that the plan introduced no extra restrictive business condition. Capability validation proves that the pinned store and compiler profile can implement the plan without a semantic substitution.
+
+### 11.3 Authorization and policy
+
+Authorization is a trusted input, not a planner suggestion. A request produces an `AuthorizationScope` that may include allowed lens operations, allowed graphs, endpoint credential identity, tenant partitions, mandatory subject or value restrictions, document-source restrictions, and minimum cohort rules. Mandatory restrictions are represented as a trusted query fragment in the library’s internal AST or are guaranteed by endpoint-native credentials or graph partitioning. They are injected after semantic planning, cannot be removed by repair, apply to every auxiliary and diagnostic query, and participate in all cache keys.
+
+`QueryPolicy` is a separate safety ceiling that controls query forms, graph and function allowlists, path features, regex, limits, maximum plan and AST complexity, deadlines, result bytes, and whether absence claims are permitted. Filtering a lens card out of the planner context is useful defense in depth but is never the sole enforcement mechanism. Policy rejection produces a typed `PolicyLimited` outcome and is not sent to the model as an invitation to find a workaround.
+
+---
+
+## 12. Compilation, execution, and repair
+
+### 12.1 Deterministic SPARQL compilation
+
+The SPARQL compiler resolves catalog keys, allocates stable internal variables, creates type and edge patterns, applies entity bindings with `VALUES`, compiles filters and correlated absence, adds projections, injects authorization constraints, applies graph scope, and produces a small library-owned SPARQL AST. User text never becomes a variable name or syntax fragment. RDF terms are parsed and rendered by trusted codecs; there is no assumption that remote SPARQL offers relational-style prepared statements.
+
+After conservative rewrites, a dialect renderer produces SPARQL 1.1 text. The library parses that text again and checks that the query form, constants, functions, graph IRIs, structural complexity, and limits correspond to the validated plan, trusted catalog, authorization scope, and policy. This second pass protects against compiler and plugin defects. Version 0.1 emits `SELECT` and `ASK`; it does not emit `DESCRIBE`, `CONSTRUCT`, `SERVICE`, update operations, custom functions, or property-path repetition.
+
+Type selection follows the target profile rather than a global “always add a type” rule. A `direct_type` target-class lens emits an explicit `rdf:type` pattern, while a target-node lens emits `VALUES` and no implicit type pattern. A later subclass-aware strategy may use a broader pattern or omit it only when the pinned `DatasetScope` names an entailment regime that the adapter proves equivalent. Named-graph provenance is similarly explicit: the compiler MUST NOT rewrite a default-union query as `GRAPH ?g` unless the store’s Dataset Scope makes that transformation valid.
+
+The compiler emits an `EvidenceMap` together with each query and obtains any hidden node identities required for row keys as part of the core answer relation. After the page is fixed, it may issue a bounded evidence query keyed by those identities to retrieve edge endpoints and provenance without changing answer multiplicity or limit semantics. Hidden bindings count against row and byte budgets. `TripleMatchEvidence` always records physical RDF triple orientation, so an inverse Property Lens reverses the plan traversal when it writes the evidence item.
+
+### 12.2 Graph store contract
+
+All store operations receive the pinned run context so deadline, cancellation, authorization identity, graph scope, response limits, and trace identity remain consistent. A local RDFLib adapter and a remote endpoint adapter implement the same semantic contract even though only the latter speaks the SPARQL Protocol.
 
 ```python
-class FactEvidence(BaseModel):
-    id: str
-    subject: RDFTerm
-    predicate_path: PathExpr
-    object: RDFTerm
-    source_graph: IriTerm | None = None
-    source_document_ids: tuple[str, ...] = ()
-    lens_ids: tuple[str, ...] = ()
-    query_execution_id: str
-
-
-class RowEvidence(BaseModel):
-    id: str
-    bindings: dict[str, RDFTerm]
-    fact_ids: tuple[str, ...]
-
-
-class TextChunkEvidence(BaseModel):
-    id: str
-    text: str
-    document_id: str
-    title: str | None = None
-    entity_ids: tuple[str, ...] = ()
-    source_locator: str | None = None
-    score: float | None = None
+class GraphStore(Protocol):
+    async def capabilities(self, *, context: RunContext) -> EndpointCapabilities: ...
+    async def select(
+        self,
+        query: CompiledQuery,
+        *,
+        context: RunContext,
+        max_rows: int,
+        max_bytes: int,
+    ) -> SelectResult: ...
+    async def ask(
+        self,
+        query: CompiledQuery,
+        *,
+        context: RunContext,
+        max_bytes: int,
+    ) -> bool: ...
 ```
 
-A fact ID should be a deterministic hash over canonical subject, canonical path, object, source graph, and dataset/version identity. Row IDs can hash ordered binding IDs plus the query execution ID.
+The remote adapter uses an injected asynchronous HTTP client, read-only credentials, connection pooling, content negotiation, compressed and uncompressed byte limits, streaming parsers where practical, and normalized errors. Authentication refresh, `Retry-After`, jitter, and transport retries are adapter concerns governed by a shared retry classification. The local adapter restricts parser and query features that could read files or network resources when data is untrusted.
 
-### 11.2 Evidence packet
+### 12.3 Diagnosis and bounded repair
+
+Syntax failure after local parsing normally indicates a dialect or renderer defect. The engine first classifies the endpoint error, compares the query with pinned capabilities, and applies only semantics-preserving deterministic rewrites. A planner repair is considered only when the operation itself cannot be implemented as bound. Timeout and result-limit failures may move labels to a secondary query, request fewer hidden variables, or reorder selective patterns, but they cannot drop a user constraint. Lowering a presentation limit is not called semantics-preserving; it is allowed only for a non-exhaustive plan and is disclosed.
+
+An empty result is a valid result. Within a small query budget, the engine may confirm that resolved entities exist, run conjunct probes to find the eliminating condition, and inspect literal datatype or language mismatches. A single semantic repair is allowed only when those probes support a different binding. Otherwise the run returns `NoMatch` with Dataset Scope wording. An explicit future relaxation policy may offer alternatives, but every relaxed condition would have to be listed and the relaxed answer kept separate from the original result.
+
+Model-provider failures, authorization failures, cancellation, parser exhaustion, optional enrichment failures, and inconsistent split-query observations are represented in a stage result envelope. Optional enrichment failure may produce an answered-but-degraded outcome; core query or authorization failure cannot. Circuit breakers are scoped by endpoint and credential or tenant boundary so one failing deployment does not suppress unrelated traffic.
+
+---
+
+## 13. Evidence and answer semantics
+
+### 13.1 Evidence variants
+
+Evidence is a family of typed observations, not a bag of strings called facts. Endpoint terms are first normalized into a discriminated union of IRIs, blank nodes, literals, and capability-gated triple terms instead of being coerced immediately into ambiguous Python primitives; the narrower plan-value union in section 10 deliberately excludes blank nodes and triple terms. The evidence type says what the engine observed and prevents a query-level result from being presented as a source assertion.
+
+| Evidence type | Meaning |
+|---|---|
+| `QueryResultEvidence` | A completed `ASK` result or the presence or absence of `SELECT` solutions, with query digest, Dataset Scope, Authorization Scope digest, execution identity, and completeness. It does not identify any particular edge. |
+| `TripleMatchEvidence` | A subject, predicate, and object satisfied a direct triple pattern. Its assertion status is `unknown` unless an adapter-specific proof establishes `asserted` or `entailed`; a source graph is present only when established. |
+| `RowEvidence` | A normalized answer row plus the evidence IDs that support the row. |
+| `PathReachabilityEvidence` | Two terms matched a catalog path, with an explicit indication of whether intermediate witness triples were materialized. This is deferred beyond version 0.1. |
+| `AbsenceEvidence` | A correlated pattern had no match under a precise Dataset Scope, Authorization Scope, revision, and execution. |
+| `AggregateEvidence` | An operator was applied to a declared operand and source row set with explicit distinctness, grouping, and truncation semantics. This is introduced with the future aggregate algebra. |
+| `ValidationFindingEvidence` | A value-contract or SHACL validation operation produced a stated finding. |
+| `TextChunkEvidence` | A bounded document excerpt was retrieved from a recorded source under a document policy. |
+
+Version 0.1 always creates `QueryResultEvidence`. A false `ASK` or empty `SELECT` means that the complete validated query had no solution; it does not manufacture an `AbsenceEvidence` for any individual edge. A true `ASK` supports the deterministic statement that the query found a solution in the Dataset Scope. If an application needs edge-level positive evidence, the compiler runs a bounded witness `SELECT` under the same plan, scope, and budget. Direct and inverse predicate queries may also create triple-match evidence, and `NOT EXISTS` may create scoped absence evidence when the active completeness profile allows it. Triple-match items use physical RDF subject-predicate-object orientation even when the Property Lens traverses the predicate in reverse.
+
+The safe assertion status for ordinary SPARQL results is `unknown`. An adapter may emit `asserted` only when a provenance-aware operation establishes that the physical triple occurs in the selected graph, and it may emit `entailed` only when the store can distinguish an entailed match from an assertion. A projected label is presentation evidence and does not replace the resource IRI as identity. Evidence and row IDs are deterministic within the Dataset Scope and execution identity declared by the packet, while source responses may be retained in protected debug storage subject to policy.
 
 ```python
-class ValidationIssue(BaseModel):
-    code: str
-    severity: Literal["info", "warning", "error"]
-    message: str
-    lens_id: str | None = None
-    focus_node: RDFTerm | None = None
-    path: PathExpr | None = None
+class DatasetScope(BaseModel):
+    graph_scope: tuple[str, ...]
+    default_graph_mode: str
+    entailment_regime: str | None = None
+    dataset_revision: str | None = None
+    consistency: Literal["snapshot", "single_query", "best_effort"]
+    absence_claims_allowed: bool = False
 
 
 class EvidencePacket(BaseModel):
     execution_id: str
     question: str
+    catalog_revision: str
+    policy_revision: str
+    authorization_scope_digest: str
+    capability_revision: str
+    dataset_scope: DatasetScope
     plan_digest: str
-    query_digest: str
-    dataset_revision: str | None = None
-    selected_lens_ids: tuple[str, ...]
-    facts: tuple[FactEvidence, ...] = ()
-    rows: tuple[RowEvidence, ...] = ()
-    chunks: tuple[TextChunkEvidence, ...] = ()
+    query_digests: tuple[str, ...]
+    evidence: tuple[EvidenceItem, ...]
     issues: tuple[ValidationIssue, ...] = ()
-    truncated: bool = False
+    execution_complete: bool
+    page_complete: bool
+    answer_set_completeness: Literal["complete", "incomplete", "unknown"]
+    ordering: Literal["unordered"] = "unordered"
+    enrichment_complete: bool
 ```
 
-The packet is the only factual context supplied to the answerer by default. The raw endpoint response may be retained in debug storage but should not be pasted indiscriminately into the model prompt.
+`execution_complete` means that the core query completed without a transport, parser, byte, row, or deadline interruption. `page_complete` means that every row belonging to the requested presentation page was returned. `answer_set_completeness` is `complete` only for an accepted exhaustive plan or when the extra-row check establishes that the answer set ends within the page; it does not mean that the dataset describes the whole real world. `enrichment_complete` concerns optional labels, provenance, validation, and documents. When a store lacks revision metadata, a limited query is unordered, or split queries are not snapshot-consistent, the packet records that limitation and result caching is disabled by default unless an application explicitly accepts the weaker semantics.
 
-### 11.3 Grounded answer
+### 13.2 Validation taxonomy
 
-```python
-class GroundedClaim(BaseModel):
-    text: str
-    evidence_ids: tuple[str, ...]
-    confidence: Literal["high", "medium", "low"] = "high"
+Result validation first parses endpoint bindings into RDF terms and checks each projection’s term kind, datatype, requiredness, and source mapping. Evidence validation then checks that evidence items correspond to compiler-produced evidence maps and the pinned query scope. Optional focused SHACL validation may later fetch the properties required for a selected shape and focus node before invoking pySHACL; running a minimum-cardinality shape over a partial result subgraph would otherwise create false failures. Answer validation finally checks evidence IDs, claim/evidence compatibility, completeness language, policy-sensitive locators, and any deterministic claim templates.
 
+These stages have different guarantees and should not be collapsed under the word “validation.” Value-contract validation can show that an endpoint value contradicts the compiled contract. Focused SHACL validation can show conformance within the fetched closure and selected shapes. Citation validation can show that a claim refers to existing compatible evidence. None of them alone proves real-world truth.
 
-class GroundedAnswer(BaseModel):
-    direct_answer: str
-    claims: tuple[GroundedClaim, ...]
-    limitations: tuple[str, ...] = ()
-    no_answer_reason: str | None = None
+### 13.3 Typed outcomes
 
+The public result is a discriminated outcome so applications can respond without parsing prose. `Answered` contains a grounded answer and evidence. `NoMatch` contains valid empty-result evidence and scope wording. `Ambiguous` contains unresolved entity or schema candidates. `PolicyLimited` identifies the disallowed operation or incomplete exhaustive request without exposing protected details. `Unsupported` identifies a semantic feature the algebra or endpoint cannot represent. `Failed` contains a safe normalized failure for provider, store, parser, or internal errors. An answered outcome may also be marked degraded when optional enrichment failed.
 
-class AskResult(BaseModel):
-    answer: str
-    claims: tuple[GroundedClaim, ...]
-    evidence: EvidencePacket
-    plan: BoundQueryPlan
-    sparql: str | None = None
-    diagnostics: dict[str, object] = Field(default_factory=dict)
-```
-
-An output validator must reject claims that cite unknown evidence IDs. A stricter policy can require every non-trivial sentence in `direct_answer` to be represented by a claim.
+A grounded claim has text, evidence IDs, a claim kind, and the validation level applied. Simple booleans, entity lists, and tables SHOULD use deterministic rendering so the mapping from row evidence to claim is exact. A model answerer is useful for explanation and summarization, but it receives only the evidence packet, must preserve graph-versus-text distinctions, and must mention truncation, ambiguity, missing provenance, or best-effort consistency.
 
 ---
 
-## 12. Catalog build lifecycle
+## 14. Hybrid graph and document retrieval
 
-Catalog construction transforms one or more RDF shapes graphs into an immutable, versioned `ShapeCatalog`.
+Document retrieval is optional and subordinate to the graph plan. In the recommended late-fusion flow, the core SPARQL query identifies answer entities and document IDs, a `DocumentLinkResolver` converts those graph results into filters, and a retriever searches only the linked documents. Graph evidence determines set membership and numerical results; text can explain those graph observations or support separately labeled text-only claims. Applications may prohibit text-only claims entirely.
 
-```mermaid
-flowchart LR
-    A[Load RDF sources] --> B[Resolve permitted imports]
-    B --> C[Validate and normalize shapes]
-    C --> D[Parse paths and constraints]
-    D --> E[Compile Shape Lenses]
-    E --> F[Build join graph]
-    F --> G[Generate retrieval documents]
-    G --> H[Build lexical index]
-    G --> I[Optional embedding index]
-    F --> J[Optional graph statistics]
-    H --> K[Serialize catalog]
-    I --> K
-    J --> K
-```
+Early fusion is permitted only for entity discovery. A document or entity embedding may suggest candidate IRIs when a phrase is absent from the graph’s label index, but those candidates still pass type checks, ambiguity policy, plan validation, authorization, and graph confirmation before they become evidence. Retrieved chunks are untrusted data, not instructions, and include stable IDs, source locators, linked entities, scores, and source-policy tags.
 
-### 12.1 Source loading
-
-Supported inputs should include:
-
-- an RDFLib `Graph` or `Dataset`;
-- local RDF files;
-- a trusted in-memory byte stream;
-- a configured SPARQL query that returns the shapes graph;
-- a custom `ShapeSource` implementation.
-
-Remote URL loading and `owl:imports` must be disabled by default for untrusted inputs. When enabled, they use an allowlist, byte limit, content-type checks, redirect limits, and network policy.
-
-### 12.2 Shapes-graph identity and versioning
-
-The loader records:
-
-- graph IRI or synthetic source ID;
-- `owl:versionIRI` and other available version metadata;
-- source digest;
-- import closure and dependency digests;
-- feature profile;
-- build timestamp and compiler version.
-
-A catalog revision is a digest over all normalized shapes-graph revisions plus compiler settings. Query and evidence caches include this revision in their keys.
-
-### 12.3 Shape well-formedness
-
-Catalog build performs two distinct checks:
-
-1. **syntactic support check:** can this library parse the shape and all property paths it needs?
-2. **SHACL meta-validation:** is the shapes graph well-formed according to the selected SHACL profile?
-
-`pySHACL` is the recommended optional implementation for meta-validation and data validation. Catalog construction should still work without it in a reduced “parse-only” mode, clearly reporting that formal shape validation was skipped.
-
-### 12.4 Normalization
-
-Normalization should:
-
-- resolve prefixes for display while retaining full IRIs internally;
-- canonicalize SHACL paths into `PathExpr`;
-- flatten safe RDF lists into tuples;
-- preserve logical structure rather than naïvely merging incompatible alternatives;
-- create stable IDs for blank-node shapes;
-- collect language-tagged labels and descriptions;
-- inherit or join ontology labels for classes and properties;
-- preserve source triple references for every derived field;
-- mark unsupported constraints as validation-only metadata;
-- detect recursion without expanding it infinitely.
-
-### 12.5 Semantic text extraction
-
-Retrieval text should be assembled from, in descending default importance:
-
-1. `sh:intent` when available;
-2. property-local `sh:name`;
-3. node-shape `rdfs:label` and property labels;
-4. configured aliases and SKOS alternative labels;
-5. `sh:description` and `rdfs:comment`;
-6. `sh:message` values;
-7. target-class labels;
-8. local names of path IRIs;
-9. labels of value classes and nested shapes;
-10. property-group labels.
-
-The source fields remain separately weighted in the lexical index; the concatenated retrieval text is mainly for embeddings and prompt cards.
-
-### 12.6 Affordance derivation
-
-The `ShapeCompiler` derives operators conservatively.
-
-Examples:
-
-- ordering is enabled only for compatible numeric, date, time, or explicitly ordered datatypes;
-- string search is enabled for string-like literals;
-- regex is available only if both the value type and query policy permit it;
-- aggregation is based on value type and cardinality;
-- entity traversal requires an IRI-capable value and a resolvable target lens or explicit class;
-- `sh:in` values become an enum-like value domain;
-- `sh:closed` affects catalog diagnostics and optional plan restrictions but does not by itself forbid reading unknown graph properties outside that lens;
-- custom constraints never create query operations unless a `ConstraintPlugin` recognizes them.
-
-### 12.7 Join graph construction
-
-Candidate target lenses for a property are inferred from:
-
-- `sh:class` values;
-- `sh:node` and supported nested shape references;
-- classes in `sh:or` alternatives;
-- ontology `rdfs:range` as a lower-confidence fallback;
-- explicit application mappings;
-- sampled data typing, only when enabled and clearly marked as inferred.
-
-When multiple lenses target the same class, all remain candidates. Security tags, active profiles, and query context determine which are usable.
-
-### 12.8 Optional statistics
-
-A `GraphProfiler` can collect bounded statistics for optimization and retrieval:
-
-- approximate instance counts per target class;
-- property presence frequency;
-- distinct value counts;
-- average and percentile fanout where affordable;
-- common datatypes and languages;
-- named-graph distribution;
-- label coverage;
-- validation-conformance metadata.
-
-Statistics are advisory. They must carry dataset revision, sample method, and staleness information. Catalog build must not issue expensive full scans unless explicitly requested.
-
-### 12.9 Retrieval-document generation
-
-A compact lens card should be understandable without raw Turtle. For example:
-
-```text
-Lens: Employee / project staffing
-Focus type: Employee
-Meaning: An employee who may work on projects and have areas of expertise.
-Properties:
-- name: string, at most one
-- worked on: Project, zero or more; joins to Project lens
-- expertise: Skill, zero or more; joins to Skill lens
-Useful intents:
-- Find employees assigned to a project.
-- Find employees with a given expertise.
-Source shapes: ex:EmployeeStaffingShape
-```
-
-The model receives lens cards, stable IDs, and only the source snippets needed for ambiguous cases.
-
-### 12.10 Incremental rebuild
-
-Incremental catalog updates should be content-addressed:
-
-1. compare source and import digests;
-2. recompile only changed shapes and dependents;
-3. update affected join-graph edges;
-4. update lexical index rows;
-5. recompute embeddings only when retrieval text changed;
-6. invalidate cached plans that reference changed lens versions.
+Document access follows the same `AuthorizationScope` as graph access. Every filter, chunk, cache entry, prompt, citation, and trace is partitioned by tenant and policy scope. A model provider receives document or evidence content only when the application has explicitly configured provider transmission, data residency, retention, and redaction rules.
 
 ---
 
-## 13. Schema indexing and retrieval
+## 15. Public API
 
-### 13.1 Index implementations
-
-The core defines a `ShapeIndex` protocol:
+The high-level API should be easy for local use while keeping every stage inspectable. Constructors are synchronous because they assemble configuration and adapters; catalog construction and I/O remain asynchronous. `ask()` returns a typed outcome and never raises for an expected ambiguity, no-match, policy, or unsupported condition. Programmer errors and unrecoverable initialization defects may still raise documented exceptions.
 
 ```python
-class ShapeIndex(Protocol):
-    async def search(
-        self,
-        query: str,
-        *,
-        limit: int,
-        language: str | None,
-        required_profiles: frozenset[str] = frozenset(),
-    ) -> list["LensHit"]: ...
-```
+from rdflib import Graph
+from shapelens import ShapeRAG
 
-Recommended implementations:
-
-- `MemoryShapeIndex`: token, trigram, and field-weighted scoring; ideal for small catalogs;
-- `SQLiteShapeIndex`: FTS5-backed persistent lexical index;
-- `HybridShapeIndex`: lexical results fused with an embedding backend;
-- user adapters for PostgreSQL, OpenSearch, Qdrant, Weaviate, or other systems.
-
-### 13.2 No-vector fast path
-
-For roughly tens of shapes, include all eligible compact lens cards if they fit the schema-context budget. This is usually simpler and more reliable than embedding retrieval.
-
-For hundreds or thousands of shapes, use retrieval. Embeddings remain optional because field-aware lexical matching is especially strong for ontology terms, abbreviations, labels, and identifiers.
-
-### 13.3 Hybrid scoring
-
-A default score can combine:
-
-- weighted BM25 or FTS score over labels, aliases, intents, descriptions, and path names;
-- embedding cosine similarity;
-- exact phrase and quoted-mention boosts;
-- class/property role compatibility;
-- active-profile and access-policy eligibility;
-- graph-connectivity bonus;
-- stale-statistics or unsupported-feature penalties.
-
-Use reciprocal-rank fusion or a normalized weighted sum rather than assuming lexical and vector scores share a scale.
-
-### 13.4 Structural expansion
-
-Top semantic hits may not include the bridge property needed to connect them. After initial retrieval:
-
-1. identify likely concept lenses from the top hits;
-2. find bounded shortest paths in the lens join graph;
-3. add bridge property lenses and intermediate node lenses;
-4. prune by policy, path cost, and context budget;
-5. diversify so one large shape family does not consume all candidates.
-
-This is a major advantage over embedding-only schema retrieval.
-
-### 13.5 Context packing
-
-The `LensContextPacker` chooses what to send to the planner:
-
-- full compact cards for top lenses;
-- minimal signatures for bridge lenses;
-- source Turtle only for ambiguous or unsupported features;
-- stable IDs and allowed operators for every candidate;
-- entity-resolution results separately from schema descriptions.
-
-The packer uses an estimated token budget but stores the untruncated candidate set in dependencies so tools can inspect additional lenses if needed.
-
-### 13.6 Retrieval diagnostics
-
-Every query records:
-
-- search terms and normalized language;
-- lexical, vector, and structural score components;
-- selected and discarded lenses;
-- context-budget decisions;
-- catalog revision.
-
-This makes schema retrieval independently evaluable.
-
----
-
-## 14. Question-time workflow
-
-The robust workflow is a typed state machine. An implementation may use `pydantic-graph` internally, but the public API should not require users to understand graph orchestration.
-
-```mermaid
-stateDiagram-v2
-    [*] --> NormalizeQuestion
-    NormalizeQuestion --> RetrieveSchema
-    RetrieveSchema --> ResolveEntities
-    ResolveEntities --> Plan
-    Plan --> ValidatePlan
-    ValidatePlan --> Compile: valid
-    ValidatePlan --> RepairPlan: recoverable semantic issue
-    RepairPlan --> ValidatePlan
-    ValidatePlan --> Fail: retry budget exhausted
-    Compile --> CheckPolicy
-    CheckPolicy --> Execute: permitted
-    CheckPolicy --> Fail: rejected
-    Execute --> BuildEvidence: success
-    Execute --> DiagnoseExecution: error or empty
-    DiagnoseExecution --> Compile: deterministic rewrite
-    DiagnoseExecution --> RepairPlan: semantic repair allowed
-    DiagnoseExecution --> BuildEvidence: valid empty answer
-    BuildEvidence --> ValidateEvidence
-    ValidateEvidence --> RetrieveDocuments
-    RetrieveDocuments --> SynthesizeAnswer
-    SynthesizeAnswer --> ValidateAnswer
-    ValidateAnswer --> [*]: valid
-    ValidateAnswer --> SynthesizeAnswer: bounded output retry
-```
-
-### 14.1 Pipeline state
-
-```python
-class RunState(BaseModel):
-    run_id: str
-    question: str
-    normalized_question: str | None = None
-    schema_hits: tuple[object, ...] = ()
-    entity_candidates: dict[str, tuple[object, ...]] = Field(default_factory=dict)
-    semantic_intent: SemanticIntent | None = None
-    plan: BoundQueryPlan | None = None
-    compiled_query: object | None = None
-    raw_result: object | None = None
-    evidence: EvidencePacket | None = None
-    answer: GroundedAnswer | None = None
-    issues: tuple[ValidationIssue, ...] = ()
-    repair_count: int = 0
-```
-
-Large graphs and raw result bodies should be referenced through runtime handles rather than embedded in persisted state.
-
-### 14.2 Stage events
-
-`ask_stream()` should emit typed events such as:
-
-- `QuestionNormalized`;
-- `SchemaCandidatesSelected`;
-- `EntitiesResolved`;
-- `PlanCreated`;
-- `PlanRejected`;
-- `QueryCompiled`;
-- `QueryStarted` and `QueryFinished`;
-- `EvidenceBuilt`;
-- `DocumentChunksRetrieved`;
-- `AnswerDelta`;
-- `RunCompleted`.
-
-Events support user interfaces, tracing, and audit logging without exposing hidden model reasoning.
-
----
-
-## 15. Entity resolution
-
-Schema retrieval determines *which kinds of things and relations* are relevant. Entity resolution determines *which graph nodes* phrases such as “Project X,” “AI,” or “Oslo office” refer to.
-
-### 15.1 Resolver protocol
-
-```python
-class EntityCandidate(BaseModel):
-    iri: str
-    label: str | None = None
-    lens_ids: tuple[str, ...] = ()
-    match_kind: Literal[
-        "exact_iri", "exact_label", "alias", "normalized", "full_text", "embedding"
-    ]
-    score: float
-    supporting_terms: tuple[str, ...] = ()
-
-
-class EntityResolver(Protocol):
-    async def resolve(
-        self,
-        text: str,
-        *,
-        expected_lens_ids: tuple[str, ...],
-        limit: int,
-    ) -> list[EntityCandidate]: ...
-```
-
-### 15.2 Resolution strategies
-
-A composite resolver can use:
-
-1. explicit IRI or CURIE recognition;
-2. exact labels from a local entity index;
-3. normalized case, punctuation, and Unicode matching;
-4. aliases and SKOS labels;
-5. endpoint full-text search through a dialect plugin;
-6. bounded SPARQL label search;
-7. embeddings over entity descriptions when configured.
-
-Expected lens IDs restrict candidates by type or shape. The resolver should return several candidates when ambiguity is material rather than choosing silently.
-
-### 15.3 Ambiguity handling
-
-The default policy is:
-
-- bind automatically when one candidate is clearly dominant and type-compatible;
-- pass a small candidate set into the plan when alternatives are semantically equivalent for the question;
-- return an ambiguity result when the choice would materially change the answer and no contextual evidence resolves it.
-
-The library may expose an application hook for interactive clarification, but the core pipeline must also be able to complete with a structured ambiguity explanation.
-
-### 15.4 Literal versus entity values
-
-A phrase may be either a literal label filter or an entity reference. The lens contract decides what is legal:
-
-- a property with `sh:datatype xsd:string` expects a literal filter;
-- a property with `sh:class ex:Project` normally expects an entity binding;
-- a union contract may allow either, but the plan must record which interpretation was selected.
-
----
-
-## 16. Pydantic AI planner
-
-Pydantic AI is a strong fit because the planner has typed dependencies, a structured output type, tools, and asynchronous output validation.
-
-### 16.1 Planner dependencies
-
-```python
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class PlannerDeps:
-    registry: "ShapeRegistry"
-    candidates: "CandidateLensSet"
-    entity_candidates: dict[str, tuple[EntityCandidate, ...]]
-    policy: "QueryPolicy"
-    endpoint_capabilities: "EndpointCapabilities"
-    plan_validator: "PlanValidator"
-```
-
-Dependencies are passed at run time, which keeps the agent reusable and testable.
-
-### 16.2 Agent definition
-
-Illustrative implementation:
-
-```python
-from pydantic_ai import Agent, ModelRetry, RunContext
-
-planner_agent = Agent(
-    model="openai:gpt-5.2",
-    deps_type=PlannerDeps,
-    output_type=BoundQueryPlan,
-    retries={"output": 1},
-    instructions=(
-        "Create a graph query plan using only the supplied lens IDs, property-lens "
-        "IDs, operators, and resolved RDF values. Do not invent schema terms. "
-        "Preserve every user constraint. Prefer the smallest connected plan that "
-        "answers the question."
-    ),
+rag = ShapeRAG.from_rdflib(
+    data=Graph().parse("data.ttl"),
+    shapes=Graph().parse("shapes.ttl"),
+    planner=planner,
 )
 
-
-@planner_agent.output_validator
-async def validate_output(
-    ctx: RunContext[PlannerDeps],
-    plan: BoundQueryPlan,
-) -> BoundQueryPlan:
-    issues = await ctx.deps.plan_validator.validate(
-        plan,
-        candidates=ctx.deps.candidates,
-        policy=ctx.deps.policy,
-        endpoint=ctx.deps.endpoint_capabilities,
-    )
-    errors = [issue for issue in issues if issue.severity == "error"]
-    if errors:
-        message = "\n".join(f"{e.code}: {e.message}" for e in errors)
-        raise ModelRetry(message)
-    return plan
+await rag.build_catalog()
+outcome = await rag.ask(
+    "Which employees worked on Project X and have AI expertise?",
+    context=request_context,
+)
 ```
 
-The actual model ID is application configuration, not a library constant.
-
-### 16.3 Planner tools
-
-Default `fast` mode should minimize tool loops by giving the planner a compact candidate set up front. Optional tools include:
-
-- `inspect_lens(lens_id) -> LensCard`;
-- `search_more_lenses(query, limit) -> list[LensCard]`;
-- `resolve_entity(text, expected_lens_ids) -> list[EntityCandidate]`;
-- `inspect_path(property_lens_id) -> PathExplanation`.
-
-The planner should **not** receive a general `execute_sparql(query: str)` tool. Execution belongs to the controlled outer pipeline. A typed `probe_plan(plan)` tool may be enabled in advanced configurations, but it still passes through validation and policy.
-
-### 16.4 Prompt construction
-
-Planner input should contain:
-
-- original and normalized question;
-- answer type requested or inferred;
-- compact candidate lens cards;
-- explicit list of legal property IDs and operators;
-- entity candidates with scores and types;
-- endpoint limitations relevant to planning;
-- policy constraints such as sensitive fields or maximum result size;
-- one or two generic examples of the plan JSON shape, not domain-specific answers.
-
-Do not flood the model with the full ontology or an entire shapes graph.
-
-### 16.5 Robust two-stage planner
-
-In `robust` mode:
-
-1. an intent agent returns `SemanticIntent` without seeing schema details beyond terminology hints;
-2. a binder receives the intent and candidate lenses and returns `BoundQueryPlan`;
-3. the plan validator checks that every semantic constraint is represented.
-
-This separation enables a coverage check: each extracted intent constraint must map to at least one plan edge or filter. It also provides better error messages when the schema cannot express part of the question.
-
-### 16.6 Deterministic plan generation
-
-Applications may register rules such as:
+A remote store uses the same facade but an explicit adapter:
 
 ```python
-@rag.plan_rule(question_type="employee_by_project_and_skill")
-def employee_rule(args: EmployeeQueryArgs, catalog: ShapeCatalog) -> BoundQueryPlan:
-    ...
+rag = ShapeRAG.from_endpoint(
+    endpoint_url="https://kg.example/sparql",
+    shapes="company-shapes.ttl",
+    credentials=read_only_credentials,
+    planner=planner,
+)
 ```
 
-These rules use the same lens IDs and compiler. They are useful for common high-volume intents and can be selected before the LLM planner.
-
----
-
-## 17. Plan validation
-
-Plan validation is the most important trust boundary. It has several layers.
-
-### 17.1 Pydantic structural validation
-
-Pydantic checks:
-
-- discriminated union variants;
-- required fields;
-- ID formats;
-- literal types;
-- numeric ranges;
-- duplicate or dangling references through model validators;
-- maximum list sizes.
-
-### 17.2 Catalog reference validation
-
-The validator ensures:
-
-- every `lens_id` exists in the active catalog revision;
-- every property belongs to the source node's lens or an explicitly compatible lens;
-- edge direction matches the property path;
-- target node lens is compatible with the property's value contract;
-- the plan uses only lenses included in the candidate context or explicitly inspected by a tool;
-- deactivated or policy-restricted shapes are not used.
-
-Restricting plans to retrieved or inspected lenses prevents a model from guessing IDs that happen to exist elsewhere in the catalog.
-
-### 17.3 Operator compatibility
-
-Examples:
-
-- ordering comparisons require an ordered value type;
-- text operations require a string-like literal;
-- regex requires policy permission;
-- aggregate functions must be supported for the value type;
-- entity values must match an IRI-capable property;
-- literal datatypes and language tags must satisfy the value contract;
-- `none` quantification must compile to a connected `NOT EXISTS`, not an unbound negation.
-
-### 17.4 Connectivity validation
-
-All projected variables must be connected to the plan's constrained component unless an explicit cross-product node is enabled. This prevents accidental Cartesian products.
-
-The validator should compute connected components over plan nodes and edges and report exactly which projection or filter is disconnected.
-
-### 17.5 Constraint coverage
-
-In robust mode, the validator compares `SemanticIntent` to the plan:
-
-- every entity mention is bound or explained;
-- every positive relation is represented by an edge or field filter;
-- every negation is represented by a negated/existence construct;
-- requested aggregation, sort, and limit are preserved;
-- no unrequested restrictive filter has been introduced.
-
-A plan can contain additional joins needed to connect concepts, but not additional business constraints without justification.
-
-### 17.6 Policy validation
-
-`QueryPolicy` controls:
-
-- allowed lenses and property tags;
-- sensitive fields;
-- named graphs;
-- query forms;
-- federation;
-- regex and custom functions;
-- maximum nodes, edges, filters, projections, path depth, limit, and aggregate complexity;
-- whether inferred or sampled schema links may be used;
-- whether document retrieval may expose particular sources.
-
-Policy failures are not sent to the model for creative workarounds. They terminate or produce a policy-limited answer.
-
-### 17.7 Capability validation
-
-The plan must be compilable for the selected endpoint dialect. A geospatial operation, for example, requires a known geospatial plugin and endpoint support. The planner may be retried with a diagnostic that a requested operation is unsupported, but the library must not substitute a semantically different operation.
-
----
-
-## 18. Deterministic SPARQL compiler
-
-The compiler translates a valid plan into an internal SPARQL AST and then renders text. It should never build a query through ad hoc string concatenation of model output.
-
-### 18.1 Compiler stages
-
-1. resolve lens and property references;
-2. allocate deterministic variables;
-3. create graph patterns from nodes and edges;
-4. add entity bindings using `VALUES` or local bindings;
-5. compile filters with typed term rendering;
-6. compile negation and optionality;
-7. build projections and aggregates;
-8. add labels and provenance according to evidence policy;
-9. apply safe rewrites and join ordering;
-10. apply graph scope and dialect rules;
-11. enforce query limits;
-12. render SPARQL and parse it again as a final syntax check.
-
-### 18.2 Internal AST
-
-The AST can be library-owned and intentionally smaller than the full SPARQL grammar:
+The staged API is normative and uses consistent inputs. `retrieve_schema(question, context)` returns candidates pinned to a catalog revision. `plan(question, candidates, context)` returns a bound plan. `compile(plan, context)` returns a compiled execution plan and evidence map. `execute(compiled, context)` returns normalized core results. `build_evidence(plan, compiled, execution, context)` returns an evidence packet. `answer(question, evidence, context)` returns a typed outcome. The context pins revisions, budget, deadline, cancellation scope, authorization, language, and trace identity and is threaded through every I/O boundary.
 
 ```python
-class TriplePattern(BaseModel): ...
-class PathPattern(BaseModel): ...
-class ValuesClause(BaseModel): ...
-class FilterExpression(BaseModel): ...
-class OptionalGroup(BaseModel): ...
-class NotExistsGroup(BaseModel): ...
-class GraphGroup(BaseModel): ...
-class SelectQuery(BaseModel): ...
-class ConstructQuery(BaseModel): ...
+candidates = await rag.retrieve_schema(question, context=context)
+plan = await rag.plan(question, candidates=candidates, context=context)
+compiled = rag.compile(plan, context=context)
+execution = await rag.execute(compiled, context=context)
+evidence = await rag.build_evidence(
+    plan,
+    compiled,
+    execution,
+    context=context,
+)
+outcome = await rag.answer(question, evidence=evidence, context=context)
 ```
 
-An AST enables structural policy checks and vendor-specific rendering without reparsing model-authored text.
-
-### 18.3 Variable allocation
-
-Variables are derived from plan IDs and sanitized by the compiler:
-
-- node `employee` becomes `?n_employee`;
-- a projected name becomes `?v_employee_name`;
-- internal graph provenance becomes `?_src_1`.
-
-User text never becomes a variable name. Stable allocation makes query snapshots reproducible.
-
-### 18.4 Node typing
-
-A lens with `sh:targetClass ex:Employee` can compile to:
-
-```sparql
-?n_employee a ex:Employee .
-```
-
-Whether this triple is required depends on `TypeStrategy`:
-
-- `explicit`: always emit type constraints;
-- `minimal`: emit them when needed for disambiguation or policy;
-- `entailment-aware`: rely on a configured endpoint entailment regime where safe;
-- `target-native`: use a target-specific compiler plugin.
-
-The default should be `explicit` because it is predictable.
-
-### 18.5 Property paths
-
-A `PathExpr` renders deterministically using parentheses where required. Unbounded repetition is allowed only when:
-
-- the path came from a trusted lens;
-- the active policy permits it;
-- the endpoint supports it;
-- a path-cost budget is not exceeded.
-
-The planner cannot construct a novel repeated path.
-
-### 18.6 Safe value binding
-
-Remote SPARQL does not provide a universal prepared-statement mechanism equivalent to relational parameter binding. Therefore:
-
-- RDF terms are parsed and validated before compilation;
-- IRIs and literals are rendered with a trusted RDF-term serializer;
-- multi-value bindings use `VALUES`;
-- raw user strings are never interpolated into query syntax;
-- regex patterns are escaped or rejected according to an explicit regex mode;
-- local RDFLib execution may use initial bindings when supported, but the query still passes policy checks.
-
-Example:
-
-```sparql
-VALUES ?n_project { <https://kg.example/id/project-x> }
-VALUES ?n_skill   { <https://kg.example/id/artificial-intelligence> }
-```
-
-### 18.7 Positive edges
-
-A plan edge from employee to project through a predicate path compiles to:
-
-```sparql
-?n_employee ex:workedOn ?n_project .
-```
-
-A sequence, inverse, or alternative shape path becomes one SPARQL property-path expression or a semantically equivalent group selected by the dialect.
-
-### 18.8 Negation
-
-`quantifier="none"` compiles to a correlated `FILTER NOT EXISTS` group:
-
-```sparql
-FILTER NOT EXISTS {
-  ?n_employee ex:workedOn ?n_project .
-  VALUES ?n_project { <https://kg.example/id/project-x> }
-}
-```
-
-The compiler verifies that the negated group shares at least one variable with the positive outer pattern.
-
-### 18.9 Optional projections
-
-Projection of a property with `minCount = 0` generally uses `OPTIONAL` unless the user's question requires its existence. A filter on that property makes it required unless the filter explicitly handles absence.
-
-Cardinality informs result typing but does not alone determine query semantics.
-
-### 18.10 Aggregation and duplicate control
-
-Many graph traversals multiply rows. The compiler should:
-
-- use `DISTINCT` by default for entity-list answers;
-- isolate aggregates in subqueries where additional many-valued projections would distort counts;
-- compile `COUNT(DISTINCT ?x)` when the projection semantics request distinct entities;
-- reject ambiguous combinations rather than guessing whether duplicates are meaningful.
-
-### 18.11 Label strategy
-
-Labels are evidence presentation, not identity. A configurable `LabelStrategy` defines prioritized paths and languages:
-
-1. shape-local display property override;
-2. `skos:prefLabel`;
-3. `rdfs:label`;
-4. configured domain label property;
-5. compact IRI fallback.
-
-Language filters should be explicit. The compiler may fetch labels in a separate batched query to keep the primary query selective.
-
-### 18.12 Named graphs and provenance
-
-Provenance strategies are backend-specific:
-
-- `NoProvenance`: query the configured dataset normally;
-- `NamedGraphProvenance`: compile patterns under `GRAPH ?source_graph` when dataset semantics allow it;
-- `ExplicitPropertyProvenance`: follow configured provenance properties;
-- `StatementProvenance`: use a supported RDF reification or triple-term strategy;
-- `BackendProvenance`: call a store-specific API.
-
-The compiler must not rewrite a default-union query into `GRAPH ?g` without an explicit strategy because that may change semantics.
-
-### 18.13 Query forms
-
-The first version should primarily compile:
-
-- `SELECT` for rows, entities, values, and aggregates;
-- `ASK` for boolean answers;
-- `CONSTRUCT` for optional evidence-neighborhood retrieval.
-
-`DESCRIBE` should be avoided by default because endpoint behavior is implementation-defined. SPARQL Update is never generated.
-
-### 18.14 Dialects and capabilities
-
-```python
-class EndpointCapabilities(BaseModel):
-    sparql_versions: frozenset[str] = frozenset({"1.1"})
-    query_forms: frozenset[str] = frozenset({"select", "ask", "construct"})
-    result_formats: frozenset[str] = frozenset()
-    supports_service: bool = False
-    supports_property_paths: bool = True
-    supports_triple_terms: bool = False
-    entailment_regimes: frozenset[str] = frozenset()
-    extension_functions: frozenset[str] = frozenset()
-    vendor: str | None = None
-```
-
-Capabilities can come from a SPARQL Service Description, safe feature probes, or configuration. Configuration wins when a service description is absent or inaccurate.
-
-### 18.15 Query policy pass
-
-After rendering, a separate policy checker parses the generated query and verifies:
-
-- it is a permitted query form;
-- it contains no update operation;
-- `SERVICE`, `LOAD`, or other disallowed clauses are absent;
-- graph IRIs are permitted;
-- limits and offsets are within policy;
-- function IRIs are allowed;
-- query length and structural complexity are bounded;
-- all constants correspond to validated plan values or trusted catalog terms.
-
-This defense-in-depth check protects against compiler bugs as well as model behavior.
+`explain(question, context)` performs retrieval, resolution, planning, validation, authorization description, and compilation without execution by default. It returns structured interpretations, candidate scores, the bound plan, policy and capability decisions, generated SPARQL, and warnings, but never hidden model reasoning. `ask_stream()` emits typed stage events followed by buffered or validated answer content; applications that cannot retract text SHOULD buffer prose until answer validation finishes.
 
 ---
 
-## 19. Query optimization
+## 16. Extensibility and package boundaries
 
-Optimization should be conservative and semantics-preserving.
+The core depends on small protocols for shape sources, indexes, planners, graph stores, document retrievers, query dialects, provenance strategies, caches, and trace sinks. Pydantic is a core dependency because the models are part of the trust boundary. Pydantic AI, pySHACL, persistent indexes, remote-store authentication packages, embeddings, and vendor dialects are optional extras. An application can therefore use caller-authored plans and deterministic rendering without installing a model framework.
 
-### 19.1 Static rewrites
+The proposed package structure follows the lifecycle rather than mirroring every class. `shapes` owns loading, normalization, compilation, catalog identity, and publication. `retrieval` owns shape indexing, structural expansion, context packing, and entity resolution. `planning` owns intent extraction, plan creation, validation, and coverage. `sparql` owns the internal AST, authorization injection, compilation, policy, optimization, rendering, and dialects. `stores` owns local and remote execution. `evidence` owns normalization, evidence maps, provenance, and validation. `answering` owns deterministic rendering, optional model synthesis, and outcome validation. `pipeline` owns revisions, budgets, cancellation, stage results, and repair.
 
-Safe rewrites include:
+Constraint and dialect plugins may add operations only by implementing the full typed chain from recognized source construct through plan validation, AST compilation, evidence construction, and conformance tests. In-process plugins are fully trusted application code: a post-render policy check limits their query output but cannot stop arbitrary Python from reading files, using the network, consuming resources, or accessing secrets. Untrusted extensions are out of scope unless a future release defines an out-of-process protocol and isolation boundary.
 
-- place `VALUES` clauses for resolved entities early;
-- push compatible filters near the patterns that bind their variables;
-- remove duplicate type and path patterns;
-- merge compatible `VALUES` bindings;
-- use direct predicate patterns instead of path syntax for one predicate;
-- move label retrieval to a second phase when it would multiply core rows;
-- use subqueries for aggregates over many-valued relationships;
-- use `EXISTS` rather than projecting unused values;
-- request only needed variables.
-
-### 19.2 Join ordering
-
-SPARQL endpoints may reorder basic graph patterns, but source order still matters for some engines and for readability. A simple cost model should prioritize:
-
-1. explicit entity bindings;
-2. highly selective typed literal filters;
-3. rare types or properties from available statistics;
-4. low-fanout joins;
-5. broad type scans;
-6. optional labels and evidence enrichment.
-
-Statistics are hints. The compiler must produce valid queries when no statistics exist.
-
-### 19.3 Query splitting
-
-A single query is not always optimal. The execution planner may split work into:
-
-1. core answer query;
-2. batched label query for result IRIs;
-3. provenance query;
-4. focused evidence-neighborhood `CONSTRUCT`;
-5. linked-document retrieval.
-
-This reduces row multiplication and keeps each stage bounded. The `CompiledExecutionPlan` records all subqueries and how their results combine.
-
-### 19.4 Prepared plan cache
-
-Cache keys include:
-
-- normalized semantic intent or canonical bound plan;
-- catalog revision;
-- endpoint capability revision;
-- query policy revision;
-- compiler version;
-- graph-scope configuration.
-
-Entity values may be parameter slots in an internal template even though final remote SPARQL uses rendered `VALUES` terms. This allows repeated questions with different entities to reuse planning and compilation work.
-
-### 19.5 Result cache
-
-Result caching is optional and must include dataset revision or a configured freshness window. In systems without revision metadata, cached results should expose their age and be disabled for highly dynamic data by default.
+Third-party plugin discovery through Python entry points is opt-in. Security-sensitive deployments SHOULD pass an explicit plugin list and SHOULD pin package versions and hashes. Catalog artifacts contain data only and never executable plugin code.
 
 ---
 
-## 20. Graph store abstraction
+## 17. Security and privacy
 
-### 20.1 Protocol
+The threat model assumes an attacker can control user text and may also control graph, shape, or document content. Injection threats include instructions hidden in labels or descriptions, SPARQL syntax smuggled through terms, destructive query forms, and SSRF through imports, parsers, or federation. The design must also tolerate a malicious or compromised endpoint and a trusted but defective plugin.
 
-```python
-class GraphStore(Protocol):
-    async def capabilities(self) -> EndpointCapabilities: ...
+Resource and privacy threats are equally important. Paths, regex, canonicalization, recursive shapes, huge or compressed responses, and Cartesian products can exhaust compute or memory, while caches, traces, citations, optional documents, and model-provider retention can disclose data across tenants or jurisdictions. These risks are controlled at several boundaries rather than delegated to a prompt.
 
-    async def select(
-        self,
-        query: str,
-        *,
-        timeout_seconds: float,
-        max_rows: int,
-    ) -> "SelectResult": ...
+Shape metadata and evidence are always delimited as untrusted data in prompts. Legal operations are conveyed structurally, and model output is independently validated. Credentials, raw HTTP clients, unrestricted store tools, and configuration authority never enter a model dependency. The query surface is read-only, AST-based, and bounded; `SERVICE`, updates, remote imports, custom functions, and regex are disabled in the first release.
 
-    async def ask(
-        self,
-        query: str,
-        *,
-        timeout_seconds: float,
-    ) -> bool: ...
+Authorization is enforced before lens cards reach the planner, during plan validation, in compiler-injected constraints or endpoint credentials, in every diagnostic or enrichment query, before content reaches an answer model, and again during citation and trace rendering. Policy distinguishes projection, filtering, joining, existence testing, and later aggregation because hiding a sensitive value while allowing a count or existence test can still leak it. Minimum cohort and inference controls are future policy features and are listed as an open question rather than implied by a `sensitive` Boolean.
 
-    async def construct(
-        self,
-        query: str,
-        *,
-        timeout_seconds: float,
-        max_triples: int,
-    ) -> "RDFGraphHandle": ...
-```
+Caches are separate by purpose. A public schema cache may be shared only when its catalog and policy scope are identical. Plan-template, entity-resolution, result, evidence, and model-response caches include catalog, compiler, capability, graph, tenant, authorization, policy, and dataset revision as appropriate; sensitive caches require encryption and retention limits, and cache hits are re-authorized. When a dataset revision is unavailable, result and evidence caching are off by default or use an explicitly accepted freshness window.
 
-There is intentionally no update method on the read-only GraphRAG interface.
-
-### 20.2 RDFLib store
-
-`RDFLibGraphStore` supports:
-
-- `Graph` and `Dataset` inputs;
-- local SPARQL execution;
-- direct triple access for labels and evidence;
-- optional initial bindings;
-- controlled serialization;
-- test-friendly in-memory operation.
-
-RDFLib can access files and network resources indirectly while parsing or querying, so the adapter must configure or document security restrictions for untrusted data.
-
-### 20.3 Remote SPARQL store
-
-`SPARQLEndpointStore` uses an injected asynchronous HTTP client and supports:
-
-- GET or POST according to query size and policy;
-- direct `application/sparql-query` POST by default for larger queries;
-- content negotiation;
-- connection pooling;
-- authentication hooks;
-- retry only for safe transport failures, not arbitrary endpoint errors;
-- response byte limits and streaming parsers;
-- cancellation and deadlines;
-- endpoint-specific error normalization.
-
-The query endpoint is separate from any update endpoint, and the library never calls the latter.
-
-### 20.4 Error taxonomy
-
-```python
-class GraphStoreError(Exception): ...
-class QuerySyntaxError(GraphStoreError): ...
-class QueryRejectedError(GraphStoreError): ...
-class QueryTimeoutError(GraphStoreError): ...
-class ResultLimitError(GraphStoreError): ...
-class EndpointUnavailableError(GraphStoreError): ...
-class UnsupportedFeatureError(GraphStoreError): ...
-class ResultFormatError(GraphStoreError): ...
-```
-
-Normalized errors enable deterministic diagnosis and controlled repair.
+Default logs contain stable IDs, digests, counts, durations, issue codes, and redacted endpoint names rather than query literals, entity values, rows, document text, credentials, or source locators. Debug capture is explicit, access-controlled, encrypted where required, and independently retained. Provider transmission of schema or evidence is also explicit and governed by application configuration for redaction, residency, retention, and acceptable data classes.
 
 ---
 
-## 21. Execution, diagnosis, and repair
+## 18. Operations, observability, and performance
 
-### 21.1 Execution budgets
+Every run produces spans for catalog lookup, schema retrieval, entity resolution, each model request, plan validation, authorization injection, compilation, each store query, evidence construction, optional validation and document retrieval, answer rendering, and outcome validation. Attributes contain revisions, counts, durations, cache decisions, retry classes, completeness flags, and issue codes, not hidden chain-of-thought. A reproducibility record retains the plan and query digests, model and prompt-template identifiers, catalog and policy revisions, Dataset Scope, evidence IDs, and renderer version subject to retention policy.
 
-Every run has independent limits for:
+Useful service metrics include catalog publication success and duration, retrieval recall on evaluation cases, ambiguity rate, plan rejection reasons, query complexity, endpoint latency and failure class, empty-result diagnoses, evidence completeness, claim-validation level, cache isolation, end-to-end cost, and deadline exhaustion. Production phases must define SLOs and alerts for endpoint availability, planner availability, p95 latency, policy failures, catalog age, cache health, and degraded outcomes rather than merely emitting raw telemetry.
 
-- total wall-clock deadline;
-- model requests and tokens;
-- planner output retries;
-- query count;
-- per-query timeout;
-- response bytes;
-- rows and triples;
-- document chunks;
-- repair attempts.
+The expected fast path has one schema lookup, zero or one batched entity-resolution query, one planner call, one core graph query, and deterministic rendering for simple results. Optional labels, provenance, and documents may run concurrently after core results. Remote results are parsed incrementally where possible, and byte and row limits are enforced before building large Pydantic object trees. Backpressure limits concurrent model, endpoint, parser, and enrichment work per tenant and per process.
 
-Limits are represented in a `RunBudget` dependency and decremented centrally.
-
-### 21.2 Syntax and endpoint failures
-
-A syntax failure after local parsing usually indicates a dialect mismatch or renderer bug. The repair order is:
-
-1. normalize endpoint error;
-2. compare used features with capabilities;
-3. deterministically downgrade syntax where equivalent;
-4. re-render and re-check policy;
-5. only then ask the planner for a new plan if the operation itself is unsupported.
-
-Do not ask the LLM to edit raw SPARQL error text into a new query.
-
-### 21.3 Timeout or excessive-result failures
-
-The system may apply semantics-preserving rewrites:
-
-- lower a default presentation limit when the user did not request all results;
-- split labels or provenance into secondary queries;
-- replace projected relationship values with `EXISTS` when only existence matters;
-- add a subquery to isolate distinct answer entities;
-- reorder selective bindings;
-- switch to a backend-native full-text or geospatial operator only if equivalent and configured.
-
-If the user explicitly requested an exhaustive result and policy cannot provide it, the answer should be marked truncated or rejected rather than silently narrowed.
-
-### 21.4 Empty results
-
-An empty result is not automatically an error. The diagnostic ladder is:
-
-1. confirm resolved entity IDs still exist or have expected types;
-2. run bounded conjunct probes to identify which required edge or filter eliminates all rows;
-3. inspect literal normalization, language, datatype, and exact-versus-alias matching;
-4. determine whether the graph has no matching data or whether the plan likely mis-bound a concept;
-5. perform one plan repair only when diagnostics support a different schema binding;
-6. otherwise return a grounded “no matching results” answer with diagnostic limitations.
-
-The library must not drop user constraints merely to produce results. Optional relaxation is an explicit `RelaxationPolicy` and every relaxed constraint is reported.
-
-### 21.5 Plan repair
-
-A repair prompt receives:
-
-- original question;
-- prior typed plan;
-- structured validation or execution issue codes;
-- relevant lens cards;
-- probe summaries;
-- instructions to change only the diagnosed part.
-
-It returns another `BoundQueryPlan`, never raw SPARQL. The normal validator and compiler run again.
-
-### 21.6 Circuit breakers
-
-Track endpoint failures and latency. Repeated timeout or rejection events can open a circuit breaker, causing later calls to fail quickly with a structured service limitation. This prevents model retries from amplifying an endpoint incident.
+Catalog artifacts have a versioned non-executable format, checksums, compatibility rules, and migration hooks. Deployment warms a new artifact before atomic publication and preserves a rollback artifact. Multi-worker coordination, credential rotation, graceful shutdown, request draining, resource-pool sizing, corruption recovery, and refresh scheduling become phase exit criteria before the library is described as production-ready.
 
 ---
 
-## 22. Evidence construction
+## 19. Testing and evaluation
 
-GraphRAG needs more than endpoint rows. The evidence builder turns query outputs into a stable, minimal context for answering.
+Unit tests cover RDF term parsing and rendering, path normalization and cycle limits, Boolean constraint preservation, target semantics, identity and canonicalization budgets, affordance origin rules, join construction, retrieval scoring, every validator rule, AST rendering and parse round trips, authorization injection, result parsing, evidence IDs, typed outcomes, and citation policy. Property-based tests generate RDF terms, safe path ASTs, connected plans, literal escapes, and bounded shape structures. Fuzzers target RDF parsers, SPARQL Results parsers, canonicalization, compressed responses, cyclic RDF lists, invalid Unicode, and oversized literals and IRIs.
 
-### 22.1 Binding normalization
+Golden query tests are useful but insufficient because matching text or syntax does not prove semantic equivalence. Differential tests execute a compiled plan and a reviewed reference query over generated datasets and compare solution mappings. Normative regression fixtures cover subclass-only instances under the `direct_type` profile, true and false `ASK`, empty `SELECT`, RDF terms that differ under `sameTerm` and value equality, multi-valued projections, extra-row completeness checks, and inverse edges whose evidence must use physical RDF orientation. Metamorphic tests prove that optimizer rewrites and query splitting preserve results under their declared assumptions. Mutation tests alter authorization and validation rules to ensure the test suite detects weakened policy.
 
-SPARQL Results JSON bindings are parsed into `RDFTerm` variants. The parser checks:
+The shared store suite runs against RDFLib graph and dataset modes first, then at least two materially different remote implementations. It covers named-graph semantics, endpoint errors, compressed and oversized responses, deadlines, cancellation, retry classification, partial enrichment, hot catalog swaps, cache isolation, authorization on every auxiliary query, and best-effort split-query inconsistency. Plugin packages must pass contract tests for normalization, validation, compilation, policy, evidence construction, and failure behavior.
 
-- required binding fields;
-- legal IRIs and datatypes;
-- language and direction metadata;
-- response-size limits;
-- duplicate variable names;
-- unsupported term kinds.
-
-No endpoint-provided lexical value is trusted as already typed Python data.
-
-### 22.2 Mapping rows to facts
-
-The compiler emits an `EvidenceMap` alongside each query. It records which projected or hidden variables correspond to:
-
-- plan nodes;
-- property-lens paths;
-- source graphs;
-- display labels;
-- provenance terms.
-
-The evidence builder uses this map to create `FactEvidence` without reverse-engineering the SPARQL string.
-
-### 22.3 Evidence query strategy
-
-For simple predicate edges, the answer query can project enough variables to construct facts directly.
-
-For complex property paths, there are three modes:
-
-- `path_assertion`: record that the endpoints are connected by the catalog path without materializing intermediate triples;
-- `path_witness`: run a bounded witness query that returns intermediate nodes and predicates where possible;
-- `construct_neighborhood`: retrieve a small graph around result nodes using a compiler-generated `CONSTRUCT`.
-
-The default can be `path_assertion` for efficiency, with `path_witness` enabled for audit-sensitive applications.
-
-### 22.4 Provenance
-
-Each fact includes the strongest available provenance:
-
-1. statement-level source;
-2. named graph;
-3. explicit `prov:wasDerivedFrom` or configured provenance path;
-4. dataset and query execution identity;
-5. no source detail beyond the endpoint, clearly indicated.
-
-A locally constructed evidence graph can include a query-execution resource linking facts to the plan digest, query digest, shapes used, dataset revision, and timestamps.
-
-### 22.5 Evidence completeness
-
-The packet records whether evidence is:
-
-- complete for the requested result set;
-- truncated by row or byte limits;
-- missing labels;
-- missing provenance;
-- based on stale statistics or cache;
-- affected by validation warnings.
-
-Answer generation uses this metadata to formulate limitations.
+End-to-end cases record the question, data and shape fixtures, expected intent constraints, acceptable lens set, entity resolution, plan equivalence class, expected solution mappings, evidence relations, outcome variant, and allowed answer claims. Evaluation reports schema-retrieval recall, entity accuracy, plan validity and semantic accuracy, execution accuracy, evidence completeness, deterministic claim correctness, free-prose support, latency, and cost separately. A single end-answer score would hide which trust boundary failed.
 
 ---
 
-## 23. Hybrid graph and document RAG
+## 20. Delivery plan
 
-The document layer is optional and subordinate to the graph plan.
+### Phase 0: semantic spikes
 
-### 23.1 Document retriever protocol
+After resolving OQ-001, OQ-006, and OQ-008, the first phase validates the riskiest assumptions before a package architecture hardens around them. It implements direct and inverse path parsing, direct-type and target-node lens construction, a hand-authored version 0.1 plan, compilation to `SELECT` and `ASK`, exact result normalization, query-result, triple-match, and absence evidence, and the employee/project/skill example. It also compares full-catalog context with lexical retrieval on small catalogs and tests RDFC-1.0 identity budgets. The exit criterion is an executable specification with reviewed semantics and differential tests, not merely a successful demo.
 
-```python
-class DocumentFilter(BaseModel):
-    entity_iris: tuple[str, ...] = ()
-    document_ids: tuple[str, ...] = ()
-    source_types: tuple[str, ...] = ()
-    date_from: str | None = None
-    date_to: str | None = None
+### Phase 1: deterministic kernel and version 0.1
 
+After resolving OQ-004 and OQ-005, the first release contains the catalog, in-memory lexical index, typed plan and validators, Authorization Scope interface, portable SPARQL AST and renderer, RDFLib store, typed evidence packet, deterministic answer renderer, typed outcomes, and debug explanation. Plans are fixtures or caller-authored; no model is required. The release passes the unit, property, differential, metamorphic, adversarial, and authorization tests for its feature matrix.
 
-class DocumentRetriever(Protocol):
-    async def search(
-        self,
-        query: str,
-        *,
-        filters: DocumentFilter,
-        limit: int,
-    ) -> list[TextChunkEvidence]: ...
-```
+### Phase 2: structured planning
 
-### 23.2 Late fusion: recommended default
+After resolving OQ-009, OQ-010, OQ-013, and OQ-017, this phase adds the candidate context packer, label-based entity resolver, Pydantic AI planner adapter, bounded output retry, fake-model tests, prompt versioning, and evaluation tooling. A benchmark must establish lens-retrieval recall, entity accuracy, plan semantic accuracy, and unsupported-outcome precision against declared thresholds before the planner becomes the recommended path.
 
-1. SPARQL identifies exact answer entities, relationships, and source document IDs.
-2. The document retriever searches only chunks linked to those entities or documents.
-3. Graph facts and chunks are combined in one evidence packet.
-4. The answerer can use text for explanation while graph facts define the answer set.
+### Phase 3: remote stores and production controls
 
-This reduces semantic drift compared with an unrestricted vector search.
+After resolving OQ-007, OQ-011, OQ-012, OQ-014, and OQ-015, the remote phase adds an asynchronous SPARQL Protocol client, capability configuration and safe probing, authentication hooks, result streaming, normalized failures, deadlines and cancellation, retry classification, circuit breakers, named-graph scopes, catalog publication, readiness, backpressure, and operational SLOs. The same behavioral suite runs against at least two remote stores, and the limitations of snapshot consistency are surfaced in evidence.
 
-### 23.3 Early fusion
+### Phase 4: richer evidence and validation
 
-When entity resolution cannot find a phrase directly in the graph, document or entity embeddings may suggest candidate IRIs. These candidates still go through type checks, plan validation, and graph confirmation before they become answer evidence.
+After resolving the relevant parts of OQ-002, OQ-003, and OQ-018, this phase adds optional pySHACL meta-validation, focused shape-aware evidence closure, validation-finding evidence, provenance strategies, and carefully bounded `CONSTRUCT` support if needed. It then introduces a separately specified aggregate algebra and aggregate evidence. Each new feature updates the normative matrix, threat model, compiler, evidence types, differential tests, and answer policy together.
 
-### 23.4 Link strategies
+### Phase 5: hybrid retrieval and scale
 
-Documents may link to graph entities through:
-
-- `schema:about` or another configured RDF property;
-- `prov:wasDerivedFrom`;
-- named graph metadata;
-- a side-table in the document store;
-- entity annotations produced during ingestion.
-
-The core library should not mandate one vocabulary. A `DocumentLinkResolver` converts graph evidence into retrieval filters.
-
-### 23.5 Chunk evidence policy
-
-Chunks should include stable IDs, source locator, document title, linked entities, and retrieval score. The answerer must distinguish:
-
-- graph facts that determine a set membership or numerical result;
-- text that explains or contextualizes those facts;
-- text-only claims that are not represented in the graph.
-
-Applications can prohibit text-only claims or allow them with a separate confidence label.
+After resolving OQ-016 and any still-relevant provider or cache questions, the final planned phase adds graph-guided document retrieval, provider-transmission policy, typed model answering, persistent catalogs, SQLite FTS, optional embedding indexes, incremental rebuild, graph statistics, revision-aware caches, and supported dialect plugins. Sequence, alternative, and repeating paths are considered only after path witness, cost, and endpoint portability semantics are agreed.
 
 ---
 
-## 24. Result and evidence validation
+## 21. Risks and mitigations
 
-Validation occurs at three different scopes.
+**Incomplete or validation-oriented shapes.** A shapes graph may omit queryable relationships or contain constraints that are meaningful only during validation. ShapeLens reports these gaps, permits trusted overlays, and never elevates ontology or sampled hints to executable authority by default. The practical mitigation is better shape metadata and stable IRI-backed property shapes, not optimistic inference.
 
-### 24.1 Row-contract validation
+**Context-specific shapes and accidental disclosure.** Several shapes may describe the same class for different audiences. The catalog preserves each context and authorization applies to every operation, including filters, existence, auxiliary queries, documents, and citations. A lens is a semantic view, not a security view unless the full enforcement path makes it one.
 
-For every projection, the compiler produces a `ProjectionContract`:
+**An algebra that is too small.** Users may encounter questions that version 0.1 cannot express. The system returns `Unsupported`, measures those intent categories, and extends the algebra with typed nodes only when their relational semantics, authorization, evidence, and tests are understood. Raw SPARQL remains a separate trusted expert API and never a model-output escape hatch.
 
-- expected RDF term kinds;
-- datatypes or value classes;
-- required versus optional binding;
-- scalar versus set behavior;
-- coercion rules;
-- associated lens and property.
+**Endpoint variance and inconsistent snapshots.** SPARQL syntax, performance, entailment, default graphs, and consistency differ. Conservative 1.1 queries, pinned capabilities, dialect tests, and an explicit Dataset Scope reduce surprises. When a store cannot provide a revision or snapshot across split queries, ShapeLens records best-effort consistency and avoids claims that require stronger proof.
 
-A dynamic Pydantic model or `TypeAdapter` validates normalized rows. This catches endpoint data that contradicts the planner's assumptions.
+**Evidence that is valid but insufficient.** A query row can be well typed without supporting the wording of an answer. Distinct evidence variants, claim kinds, deterministic rendering, proof-strength labels, and completeness flags prevent citation existence from masquerading as entailment. Free prose remains a weaker, explicitly described validation level.
 
-### 24.2 Focused SHACL validation
+**Cost and retry amplification.** Model repairs, endpoint probes, and enrichments can multiply latency during failure. A central deadline and query/model budgets, deterministic diagnosis before repair, classified retries, circuit breakers, and deterministic answers keep amplification bounded. Optional enrichments fail independently from core evidence.
 
-When `pySHACL` is installed, selected shapes and focus nodes can validate evidence. Three modes are needed:
+**Adversarial shape graphs and endpoint responses.** Recursive blank nodes, canonicalization poisoning, imports, huge literals, compressed payloads, and malicious metadata can exhaust resources or inject instructions. Bounded parsing and canonicalization, network denial by default, streaming size checks, structured prompts, and parser fuzzing are required controls.
 
-- `values`: validate only returned values against extracted contracts; fastest and default;
-- `focused_complete`: fetch the properties needed by selected shapes for answer nodes, then run focused SHACL validation;
-- `full_graph`: validate the complete local graph or delegate to an external validation service.
-
-Running ordinary SHACL validation on a deliberately partial evidence subgraph can create false `minCount` failures. Therefore, `focused_complete` must fetch a shape-aware closure before formal validation.
-
-### 24.3 Shape selection
-
-For large shapes graphs, validate only the relevant shapes and answer focus nodes when the validator supports shape selection and focus-node filtering. The catalog already knows the exact source shape IDs used by the plan.
-
-### 24.4 Non-conformant data policy
-
-Configurable policies:
-
-- `reject`: do not answer from non-conformant evidence;
-- `warn`: answer and include limitations;
-- `filter`: omit violating rows when doing so preserves query semantics and report the omission;
-- `observe`: retain issues only in diagnostics.
-
-Filtering must never be the silent default.
-
-### 24.5 Validation reports as evidence
-
-Validation reports can themselves be represented in the evidence packet. This supports questions such as “Which employee records are missing an email address?” In that case, a validation result is not merely a warning; it is the queried evidence.
-
-A specialized `ValidationQueryPlanner` can compile certain data-quality questions into SHACL validation operations or SPARQL over persisted validation reports.
+**Plugin trust.** In-process Python plugins can bypass application controls regardless of AST checks. They are treated as fully trusted deployment code, explicitly loaded and pinned. Supporting untrusted plugins would require process isolation and is not promised by this design.
 
 ---
 
-## 25. Answer synthesis with Pydantic AI
+## 22. Architectural decisions
 
-### 25.1 Answerer dependencies
+### ADR-001: Models do not generate raw SPARQL
 
-```python
-@dataclass(frozen=True)
-class AnswerDeps:
-    evidence: EvidencePacket
-    answer_policy: "AnswerPolicy"
-    language: str | None
-```
+**Decision.** A model returns a typed, lens-bound plan, and ordinary Python compiles it. This reduces schema invention, makes authorization and policy enforceable, supports deterministic testing, and isolates endpoint dialects. A trusted caller may use a separate expert SPARQL API, but that API is outside the agent path.
 
-### 25.2 Structured output
+### ADR-002: SHACL compiles into context-specific lenses
 
-The answer agent returns `GroundedAnswer`, not arbitrary Markdown. Its instructions should require:
+**Decision.** Shapes for the same class remain separate. A trusted overlay may augment one primary shape or supply its application target, but it does not merge several primary shapes into one lens. SHACL is contextual, and implicit composition of validation, application, and access contexts would create misleading affordances and disclosure risks; an explicit composite lens is a future feature with its own identity and conflict rules.
 
-- answer only from the evidence packet;
-- preserve distinctions between exact graph results and text context;
-- cite evidence IDs for every claim;
-- mention truncation, ambiguity, missing provenance, or validation issues;
-- return a clear no-answer reason when evidence is insufficient.
+### ADR-003: Derived lens fields carry authority origin
 
-### 25.3 Output validator
+**Decision.** Normative shape statements and trusted overlays may authorize operations; ontology and sampled hints may rank or explain but do not authorize by default. The alternative—treating every inferred range or sampled type as schema—would make the executable surface unstable and difficult to audit.
 
-The validator checks:
+### ADR-004: The library owns a small query algebra
 
-- every evidence ID exists;
-- forbidden evidence types are not used for restricted claim classes;
-- claims do not cite only rows that lack the relevant fact mapping;
-- the answer does not claim completeness when the packet is truncated;
-- no-answer output is used when the result set is empty and no explanatory evidence supports another conclusion;
-- sensitive source locators are not exposed.
+**Decision.** Version 0.1 implements connected conjunctive `SELECT` and `ASK` plans with direct and inverse edges, scoped absence, simple filters, and projections. Richer SPARQL enters through typed additions with defined semantics rather than generic syntax trees supplied by a model.
 
-A stricter optional validator can use a deterministic claim template for entity lists and numeric answers, leaving the LLM only the explanatory prose.
+### ADR-005: Evidence is typed by proof kind
 
-### 25.4 Deterministic rendering option
+**Decision.** Query results, triple matches, reachability, absence, aggregates, validation findings, rows, and text chunks are distinct evidence variants. A single generic fact type cannot state the truth conditions of all of them and would encourage answers stronger than the observations support.
 
-For common answer types, deterministic rendering is preferable:
+### ADR-006: Every run pins revisions and Dataset Scope
 
-- boolean;
-- count;
-- short entity list;
-- simple table;
-- validation issue list.
+**Decision.** Catalog, policy, authorization, capabilities, compiler, and available dataset revision are fixed for a run. Atomic catalog publication and explicit best-effort consistency make retries, split queries, caches, and audits understandable.
 
-The `AnswerRenderer` can generate the direct answer from rows, while an optional model writes a concise explanation. This reduces cost and factual risk.
+### ADR-007: Authorization is outside model control
 
-### 25.5 Citation rendering
+**Decision.** Endpoint credentials, graph partitions, and compiler-injected mandatory constraints are trusted runtime inputs applied to primary and auxiliary work. Lens filtering alone is defense in depth, not an authorization model.
 
-Internal evidence IDs are converted to application-specific citations:
+### ADR-008: Pydantic AI is an optional adapter
 
-- footnote numbers;
-- source graph labels;
-- document links;
-- expandable fact cards;
-- row references in a table.
+**Decision.** Pydantic remains core because typed models protect trust boundaries, while Pydantic AI is the recommended optional planner and answerer integration. The deterministic kernel, tests, and caller-authored plans work without a model provider.
 
-Citation rendering occurs after structured answer validation so the model cannot fabricate display URLs or source labels.
+### ADR-009: New standards are capability-gated
 
-### 25.6 Streaming
-
-Evidence must be fixed before answer text is streamed. `ask_stream()` can first emit pipeline events, then stream answer text, and finally emit a verified `GroundedAnswer`. Applications that cannot retract streamed text may choose deterministic rendering or buffer until validation completes.
+**Decision.** SHACL 1.0 defines the source-vocabulary baseline, the ShapeLens feature matrix defines the queryable subset, and SPARQL 1.1 defines the portable query target. SHACL 1.2 and SPARQL 1.2 features remain explicit capabilities because their specifications and implementation coverage continue to evolve. RDFC-1.0 is used for canonicalization because it is a W3C Recommendation.
 
 ---
 
-## 26. The `ShapeRAG` facade
+## 23. Open questions
 
-### 26.1 Main methods
+The following questions are intentionally unresolved. They are decisions that can materially change correctness, security, or public compatibility, so implementation should not bury them in defaults. “Resolve before” identifies the phase that cannot begin until the question is answered.
 
-```python
-class ShapeRAG:
-    @classmethod
-    def from_rdflib(
-        cls,
-        *,
-        data: object,
-        shapes: object,
-        **kwargs: object,
-    ) -> "ShapeRAG": ...
+| ID | Open question | Why it matters | Resolve before |
+|---|---|---|---|
+| OQ-001 | What exact application scenarios and evaluation thresholds define success for version 0.1? | The architecture needs measurable evidence that lenses improve planning rather than merely producing valid queries. | Phase 0 |
+| OQ-002 | Are `sh:targetSubjectsOf` and `sh:targetObjectsOf` part of the first post-0.1 profile, and what graph-scope, cost, and evidence rules accompany their direct target patterns? | Target selection changes enumeration and evidence semantics. | Phase 4 |
+| OQ-003 | Which lexical search, ordered comparison, Boolean filter, union, optional traversal, aggregation, grouping, and pagination nodes enter the next algebra, and what are their formal multiset and normalization semantics? | Ambiguous algebra produces subtly wrong SPARQL even when types validate. | Each feature phase |
+| OQ-004 | Which authorization deployments are officially supported: endpoint-native ACLs, graph partitioning, compiler-injected row predicates, or a tested combination? | The answer determines whether row- and value-level restrictions can be guaranteed. | Phase 1 |
+| OQ-005 | How are mandatory authorization predicates represented without exposing sensitive policy details to plans, traces, or error messages? | Enforcement must be inspectable to operators without leaking it to users or models. | Phase 1 |
+| OQ-006 | Which named completeness profiles may authorize absence evidence, and what is the default when no profile is configured? | `NOT EXISTS` is meaningful only relative to a declared Dataset Scope and an accepted completeness assumption. | Phase 0 |
+| OQ-007 | Must split label, provenance, validation, and document queries share a store snapshot, or is disclosed best-effort consistency sufficient for each evidence class? | Stronger consistency may be unavailable or expensive on remote endpoints. | Phase 3 |
+| OQ-008 | What exact extraction algorithm and source boundary feed RDFC-1.0 for blank-node occurrences, and what migration support is promised when those keys change? | Plans and external references need a clear stability guarantee. | Phase 0 |
+| OQ-009 | May ontology or sampled hints ever be promoted automatically, or is promotion always an explicit trusted overlay? | Automatic promotion improves convenience but weakens auditability and safety. | Phase 2 |
+| OQ-010 | Which ambiguity threshold and interaction model should resolvers use, and when may an application request union-of-candidates semantics? | A silent union can materially change an answer, while clarification affects API flow. | Phase 2 |
+| OQ-011 | Which partial-enrichment failures still permit `Answered`, and how are degradation and retryability represented to applications? | Labels, provenance, validation, and documents have different importance. | Phase 3 |
+| OQ-012 | What tenant keys, encryption, retention, invalidation, and re-authorization rules apply to each cache class? | A generic “policy revision” key is insufficient to prevent cross-tenant disclosure. | Phase 3 |
+| OQ-013 | Which schema and evidence classes may be sent to external model providers by default, if any? | Provider retention, residency, and confidentiality requirements vary by deployment. | Phase 2 |
+| OQ-014 | What catalog publication, coordination, migration, and rollback mechanism is required for multi-worker deployments? | In-flight revision consistency and safe recovery depend on it. | Phase 3 |
+| OQ-015 | Which endpoint assumptions about default graphs, entailment, blank-node identity, transaction isolation, and revision metadata can adapters promise? | These assumptions determine query equivalence and evidence truth conditions. | Phase 3 |
+| OQ-016 | Is out-of-process plugin isolation a product goal, or are plugins permanently documented as trusted code? | The answer changes the extension protocol and hosting threat model. | Phase 5 |
+| OQ-017 | What proof-strength labels are public, and is model-based claim support checking worth its cost and uncertainty? | Applications need an honest, understandable grounding guarantee. | Phase 2 |
+| OQ-018 | Which SHACL 1.2 and SPARQL 1.2 features have enough implementation support to leave experimental profiles? | Version labels alone do not establish portable behavior. | Ongoing |
 
-    @classmethod
-    async def from_endpoint(
-        cls,
-        *,
-        endpoint_url: str,
-        shapes: object,
-        **kwargs: object,
-    ) -> "ShapeRAG": ...
-
-    async def build_catalog(self, *, force: bool = False) -> "CatalogBuildReport": ...
-
-    async def ask(
-        self,
-        question: str,
-        *,
-        context: "RequestContext | None" = None,
-        return_debug: bool = False,
-    ) -> AskResult: ...
-
-    async def ask_stream(
-        self,
-        question: str,
-        *,
-        context: "RequestContext | None" = None,
-    ) -> "AsyncIterator[RunEvent]": ...
-
-    async def retrieve_schema(self, question: str) -> "CandidateLensSet": ...
-    async def plan(self, question: str) -> BoundQueryPlan: ...
-    def compile(self, plan: BoundQueryPlan) -> "CompiledExecutionPlan": ...
-    async def execute(self, plan: "CompiledExecutionPlan") -> "ExecutionResult": ...
-    async def build_evidence(self, result: "ExecutionResult") -> EvidencePacket: ...
-    async def answer(self, evidence: EvidencePacket) -> GroundedAnswer: ...
-    async def explain(self, question: str) -> "ExplainResult": ...
-```
-
-### 26.2 Request context
-
-```python
-class RequestContext(BaseModel):
-    user_id: str | None = None
-    tenant_id: str | None = None
-    language: str | None = None
-    allowed_profiles: frozenset[str] = Field(default_factory=frozenset)
-    allowed_graphs: frozenset[str] = Field(default_factory=frozenset)
-    attributes: dict[str, str] = Field(default_factory=dict)
-```
-
-Policy derives from server-side context. User prompts cannot grant themselves access by claiming a role.
-
-### 26.3 Explain result
-
-`explain()` should return:
-
-- normalized interpretation;
-- retrieved lens cards and scores;
-- entity candidates;
-- bound plan;
-- policy and capability decisions;
-- generated SPARQL without executing it by default;
-- estimated cost and warnings;
-- human-readable explanation based on structured data, not private model reasoning.
-
-### 26.4 Catalog API
-
-```python
-catalog = await rag.catalog()
-
-for lens in catalog.find(text="expertise"):
-    print(lens.id, lens.labels)
-
-print(catalog.explain_join("lens:Employee", "lens:Skill"))
-```
-
-This makes the library useful as a schema exploration tool independently of question answering.
+Resolved questions should be removed from this table only after the decision is added to the appropriate normative section and, when the choice is hard to reverse and genuinely trade-off driven, recorded as an ADR. The implementation should also link tests and evaluation cases to the relevant decision.
 
 ---
 
-## 27. Extensibility architecture
+## 24. Recommendation and references
 
-The core should depend on small Python protocols. Optional integrations live in extras or separate packages.
+ShapeLens should proceed as a compiler architecture with a narrow, executable first contract. Compile supported SHACL into context-specific, provenance-aware Shape Lenses; retrieve a small connected lens subgraph; resolve entities separately; ask a structured planner for a typed plan; validate it against catalog, authorization, policy, and endpoint capabilities; compile conservative SPARQL; execute within a pinned run context; construct evidence whose type states what was actually observed; and return a typed outcome whose wording does not exceed that evidence.
 
-### 27.1 Key protocols
+The most important rule remains simple: **the model chooses among semantic operations, while ordinary Python proves that those operations are legal and turns them into graph queries.** The equally important qualification added by this revision is that SHACL constrains a context; it does not by itself make the dataset complete, the operation authorized, or the answer true outside the queried scope.
 
-```python
-class ShapeSource(Protocol): ...
-class ShapeIndex(Protocol): ...
-class EmbeddingProvider(Protocol): ...
-class GraphStore(Protocol): ...
-class EntityResolver(Protocol): ...
-class DocumentRetriever(Protocol): ...
-class Planner(Protocol): ...
-class Answerer(Protocol): ...
-class QueryDialect(Protocol): ...
-class ConstraintPlugin(Protocol): ...
-class ProvenanceStrategy(Protocol): ...
-class CacheStore(Protocol): ...
-class TraceSink(Protocol): ...
-```
-
-### 27.2 Constraint plugins
-
-A custom SHACL constraint component may carry valuable semantics. A plugin can:
-
-- recognize parameter IRIs;
-- add retrieval text;
-- derive allowed plan operations;
-- validate model-produced values;
-- compile a typed operation to SPARQL;
-- validate returned evidence.
-
-```python
-class ConstraintPlugin(Protocol):
-    name: str
-
-    def recognizes(self, component_iri: str) -> bool: ...
-    def enrich_property(self, shape: "RawShape", lens: PropertyLens) -> PropertyLens: ...
-    def validate_operation(self, operation: object, lens: PropertyLens) -> list[ValidationIssue]: ...
-    def compile_operation(self, operation: object, context: "CompileContext") -> object: ...
-```
-
-A plugin must implement the full trust chain for any operation it introduces.
-
-### 27.3 Query dialect plugins
-
-Examples:
-
-- Virtuoso full-text;
-- GraphDB search and inference options;
-- Blazegraph hints;
-- Jena text;
-- Stardog reasoning or path queries;
-- GeoSPARQL functions;
-- RDF-star or SPARQL 1.2 triple terms.
-
-Dialect plugins declare capabilities and render only typed AST nodes. They do not receive raw natural language.
-
-### 27.4 Planner plugins
-
-The default is `PydanticAIPlanner`. Alternatives may include:
-
-- deterministic template planner;
-- another structured-output agent framework;
-- a remote planning service;
-- a fine-tuned model behind the same `Planner` protocol.
-
-Fine-tuning can later improve schema binding, but the target output remains `BoundQueryPlan`, preserving validation and compiler guarantees.
-
-### 27.5 Entry points
-
-Optional third-party plugins can register through Python package entry points, for example:
-
-```toml
-[project.entry-points."shapelens.constraint_plugins"]
-geo = "shapelens_geo:GeoConstraintPlugin"
-
-[project.entry-points."shapelens.dialects"]
-graphdb = "shapelens_graphdb:GraphDBDialect"
-```
-
-Auto-loading should be opt-in in security-sensitive deployments.
-
----
-
-## 28. Proposed package layout
-
-```text
-src/shapelens/
-├── __init__.py
-├── api.py                         # ShapeRAG facade
-├── config.py                      # Pydantic settings and policies
-├── exceptions.py
-├── models/
-│   ├── rdf.py                     # RDFTerm and codecs
-│   ├── path.py                    # canonical SHACL path AST
-│   ├── shape.py                   # ShapeLens and PropertyLens
-│   ├── intent.py                  # SemanticIntent
-│   ├── plan.py                    # BoundQueryPlan
-│   ├── query.py                   # internal SPARQL AST
-│   ├── evidence.py
-│   ├── answer.py
-│   └── events.py
-├── shapes/
-│   ├── source.py
-│   ├── loader.py
-│   ├── imports.py
-│   ├── normalize.py
-│   ├── path_parser.py
-│   ├── constraints.py
-│   ├── compiler.py
-│   ├── registry.py
-│   ├── profiles.py
-│   └── serialization.py
-├── index/
-│   ├── base.py
-│   ├── memory.py
-│   ├── sqlite.py
-│   ├── hybrid.py
-│   └── context_packer.py
-├── resolution/
-│   ├── entities.py
-│   ├── labels.py
-│   └── composite.py
-├── planning/
-│   ├── base.py
-│   ├── pydantic_ai.py
-│   ├── prompts.py
-│   ├── binder.py
-│   ├── validator.py
-│   └── rules.py
-├── sparql/
-│   ├── ast.py
-│   ├── compiler.py
-│   ├── renderer.py
-│   ├── optimizer.py
-│   ├── policy.py
-│   ├── capabilities.py
-│   ├── parser_check.py
-│   └── dialects/
-│       ├── portable.py
-│       └── base.py
-├── stores/
-│   ├── base.py
-│   ├── rdflib.py
-│   ├── endpoint.py
-│   └── results.py
-├── evidence/
-│   ├── builder.py
-│   ├── mapping.py
-│   ├── provenance.py
-│   ├── validators.py
-│   └── graph.py
-├── documents/
-│   ├── base.py
-│   ├── links.py
-│   └── null.py
-├── answering/
-│   ├── base.py
-│   ├── pydantic_ai.py
-│   ├── deterministic.py
-│   ├── validators.py
-│   └── render.py
-├── pipeline/
-│   ├── engine.py
-│   ├── graph.py
-│   ├── state.py
-│   ├── budgets.py
-│   └── repair.py
-├── validation/
-│   ├── pyshacl.py
-│   ├── row_contracts.py
-│   └── reports.py
-├── observability/
-│   ├── traces.py
-│   ├── metrics.py
-│   └── redaction.py
-└── testing/
-    ├── fake_model.py
-    ├── fake_store.py
-    ├── datasets.py
-    └── assertions.py
-```
-
-### 28.1 Distribution extras
-
-Proposed extras:
-
-```text
-shapelens                  # Pydantic, RDFLib, HTTP client, deterministic core
-shapelens[ai]              # Pydantic AI planner and answerer
-shapelens[shacl]           # pySHACL validation
-shapelens[oxigraph]        # PyOxigraph local backend
-shapelens[sqlite]          # persistent schema catalog/index support
-shapelens[evals]           # evaluation tooling
-shapelens[all]
-```
-
-Pydantic should be a core dependency. Pydantic AI can be an extra so deterministic and server-side users can avoid model-provider dependencies, while `shapelens[ai]` is the recommended installation.
-
----
-
-## 29. Configuration model
-
-```python
-from pydantic import BaseModel, Field
-
-
-class QueryPolicy(BaseModel):
-    allowed_query_forms: frozenset[str] = frozenset({"select", "ask", "construct"})
-    allow_service: bool = False
-    allow_regex: bool = False
-    allow_custom_functions: bool = False
-    allowed_graphs: frozenset[str] = frozenset()
-    max_plan_nodes: int = 12
-    max_plan_edges: int = 16
-    max_filters: int = 20
-    max_property_path_depth: int = 6
-    max_result_rows: int = 500
-    max_construct_triples: int = 5_000
-    default_limit: int = 100
-    query_timeout_seconds: float = 20.0
-
-
-class RetrievalConfig(BaseModel):
-    schema_top_k: int = 12
-    structural_expansion_depth: int = 2
-    max_lens_context_chars: int = 30_000
-    use_embeddings: bool = False
-    lexical_weight: float = 0.6
-    embedding_weight: float = 0.4
-
-
-class ValidationConfig(BaseModel):
-    mode: Literal["values", "focused_complete", "full_graph"] = "values"
-    nonconformant_policy: Literal["reject", "warn", "filter", "observe"] = "warn"
-    meta_validate_shapes: bool = True
-
-
-class ShapeRAGConfig(BaseModel):
-    planner_model: str | None = None
-    answer_model: str | None = None
-    planning_mode: Literal["fast", "robust", "deterministic"] = "fast"
-    language: str = "en"
-    planner_retries: int = 1
-    execution_repairs: int = 1
-    answer_retries: int = 1
-    query: QueryPolicy = Field(default_factory=QueryPolicy)
-    retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
-    validation: ValidationConfig = Field(default_factory=ValidationConfig)
-```
-
-Server deployments may derive these settings from environment variables through `pydantic-settings` in an optional package.
-
-### 29.1 Configuration precedence
-
-Recommended precedence:
-
-1. hard security ceiling set by application code;
-2. tenant policy;
-3. endpoint policy;
-4. library configuration;
-5. per-request preferences that can only reduce, never expand, permissions.
-
-Model output and user text are never configuration sources.
-
----
-
-## 30. Security design
-
-### 30.1 Threat model
-
-Relevant threats include:
-
-- prompt injection in user questions, shape comments, labels, or retrieved documents;
-- SPARQL injection through literals, IRIs, regexes, or plugin fragments;
-- update or destructive operations;
-- SSRF through `SERVICE`, RDF imports, parsers, or dereferenced IRIs;
-- denial of service through property paths, regexes, Cartesian products, huge results, recursive shapes, or import cycles;
-- sensitive data exposure through shape retrieval, graph patterns, provenance, logs, or citations;
-- cross-tenant cache leakage;
-- malicious endpoint result payloads;
-- untrusted plugin code.
-
-### 30.2 Prompt-injection boundaries
-
-Shape metadata and document text are data, not instructions. Prompt construction should:
-
-- clearly delimit candidate lens cards and evidence;
-- state that instructions inside those fields are untrusted content;
-- expose legal operations as structured schema rather than prose alone;
-- validate all model output independently;
-- avoid giving the model credentials, raw HTTP clients, or unrestricted query tools.
-
-### 30.3 Query safety
-
-Mandatory controls:
-
-- no SPARQL Update interface;
-- AST-based compilation;
-- validated RDF-term rendering;
-- post-render parse and policy check;
-- disabled `SERVICE` by default;
-- graph and function allowlists;
-- limits, deadlines, and response byte caps;
-- connected-plan checks;
-- restricted property-path depth and repetition;
-- separate read-only endpoint credentials.
-
-### 30.4 Shape and RDF loading safety
-
-For untrusted RDF:
-
-- disable remote context and import resolution unless explicitly allowed;
-- restrict URL schemes and hosts;
-- cap bytes, triples, nesting, and redirects;
-- use parser security guidance;
-- isolate parsing when higher assurance is required;
-- never execute SHACL-JS or arbitrary extension code by default.
-
-### 30.5 Access control
-
-Security tags may live in application configuration or optional shape annotations, but enforcement belongs to `QueryPolicy`, not the planner.
-
-Access checks occur:
-
-- before lens cards enter the planner context;
-- during plan validation;
-- during graph-scope compilation;
-- before evidence and document chunks enter the answerer;
-- during citation rendering and trace export.
-
-### 30.6 Logging and redaction
-
-Default logs should contain hashes and IDs rather than full query literals, result values, or document text. Debug mode must be explicit and support a `Redactor` that can remove sensitive properties based on lens policy tags.
-
-### 30.7 Plugin safety
-
-Plugins execute Python code and are trusted. Auto-discovery should be optional; deployments can supply an explicit plugin list. Plugin-generated AST nodes pass through the same policy checker.
-
----
-
-## 31. Observability
-
-### 31.1 Trace model
-
-Each run creates a trace with spans for:
-
-- catalog lookup;
-- schema retrieval;
-- entity resolution;
-- planner request;
-- plan validation;
-- compilation and policy;
-- each graph query;
-- evidence building;
-- SHACL validation;
-- document retrieval;
-- answer generation and validation.
-
-Span attributes should include stable IDs, counts, durations, cache hits, issue codes, and model usage—not hidden chain-of-thought.
-
-### 31.2 Metrics
-
-Useful metrics:
-
-- catalog build time and changed-lens count;
-- schema-retrieval precision proxies and chosen-lens frequency;
-- entity-resolution ambiguity rate;
-- plan validation failure rate by issue code;
-- model output retry rate;
-- compiled-query complexity;
-- endpoint latency, timeout, and rejection rate;
-- empty-result rate and diagnostic outcomes;
-- evidence validation warning rate;
-- answer citation coverage;
-- cache hit rate;
-- total per-question cost and latency.
-
-### 31.3 Reproducibility record
-
-For each answer retain, subject to policy:
-
-- catalog revision;
-- endpoint capability revision;
-- model/provider identifiers and settings;
-- prompt template version;
-- bound plan and digest;
-- query and digest;
-- dataset revision or query timestamp;
-- evidence IDs and source metadata;
-- validation issues;
-- renderer version.
-
-This record allows a result to be audited without exposing model reasoning.
-
----
-
-## 32. Performance design
-
-### 32.1 Latency budget strategy
-
-The normal `fast` path should require:
-
-- one schema-index search;
-- zero or one entity-resolution query, preferably batched;
-- one planner model request;
-- one core SPARQL query;
-- optional batched label/provenance and document requests in parallel;
-- deterministic or one answer model request.
-
-No stage should trigger an open-ended tool loop.
-
-### 32.2 Concurrency
-
-After core rows are known, independent work can run concurrently:
-
-- label lookup;
-- provenance lookup;
-- focused evidence graph retrieval;
-- linked-document search;
-- row-contract validation for separate batches.
-
-Use structured concurrency and cancel dependent work when the run deadline expires.
-
-### 32.3 Memory behavior
-
-Remote results should be parsed incrementally where possible. Enforce row and byte limits before building large Pydantic object trees. Evidence packets should contain only projected and required hidden variables, not full endpoint payloads.
-
-### 32.4 Catalog serialization
-
-Serialize compiled lenses, join graph, lexical index metadata, source digests, and embeddings into a versioned artifact. Loading a catalog should be substantially cheaper than reparsing all shapes.
-
-The artifact format should have:
-
-- schema version;
-- compiler version;
-- checksums;
-- forward-compatible optional fields;
-- no executable code;
-- migration hooks.
-
-### 32.5 Model-context efficiency
-
-Lens cards should favor compact tables or structured JSON over raw Turtle. Send only:
-
-- selected semantic fields;
-- property IDs;
-- value types;
-- cardinality;
-- allowed operators;
-- join targets;
-- brief intent text.
-
-The full source shape is available through an inspection tool for exceptional cases.
-
-### 32.6 Cost-aware planning
-
-The system can choose:
-
-- deterministic rendering instead of an answer model for simple results;
-- a smaller planner model for well-described shape catalogs;
-- robust two-stage planning only after a fast-plan failure or for configured high-risk questions;
-- no embeddings for small catalogs;
-- no formal SHACL validation for every query when value-contract checks suffice.
-
-These are policy choices exposed in diagnostics.
-
----
-
-## 33. Testing strategy
-
-### 33.1 Unit tests
-
-Test independently:
-
-- RDF term parsing and rendering;
-- SHACL path normalization, including lists and cycles;
-- constraint extraction;
-- stable shape IDs;
-- affordance derivation;
-- join graph construction;
-- lexical and hybrid scoring;
-- every plan validator rule;
-- SPARQL AST rendering and parse round-trips;
-- policy rejection;
-- result parsing;
-- evidence IDs;
-- answer citation validation.
-
-### 33.2 Property-based tests
-
-Use Hypothesis for:
-
-- literal and IRI round-trips;
-- randomly composed safe path ASTs;
-- plan graph connectivity invariants;
-- renderer escaping;
-- limit and budget enforcement;
-- catalog serialization round-trips.
-
-### 33.3 Golden query tests
-
-For each supported plan feature, store:
-
-- input shapes;
-- bound plan;
-- expected portable SPARQL;
-- expected AST;
-- expected result contract.
-
-Golden tests should normalize whitespace and prefix order while preserving semantic structure.
-
-### 33.4 Conformance fixtures
-
-Use selected W3C SHACL and SPARQL tests where licensing and scope permit. The library is not a full SHACL or SPARQL implementation, but its path parser, term handling, and generated syntax should be checked against standards-derived cases.
-
-### 33.5 Store integration matrix
-
-Run a shared behavioral suite against:
-
-- RDFLib memory graph;
-- RDFLib dataset with named graphs;
-- an embedded Oxigraph option;
-- representative remote endpoints in CI or nightly tests;
-- mocked HTTP error and size-limit cases.
-
-### 33.6 Model tests
-
-Pydantic AI tests should use test or function models to assert:
-
-- candidate lenses are passed correctly;
-- valid plans are accepted;
-- invalid IDs trigger retries;
-- retries stop at the configured budget;
-- tools cannot bypass policy;
-- answer claims require evidence.
-
-A small live-model suite can run separately because it is non-deterministic and has external cost.
-
-### 33.7 End-to-end evaluation dataset
-
-Each case contains:
-
-- question;
-- graph fixture;
-- shapes graph;
-- expected intent constraints;
-- acceptable lens set;
-- acceptable plan equivalence class;
-- expected answer bindings;
-- expected evidence relations;
-- expected answer claims.
-
-Metrics should separate:
-
-1. schema retrieval recall;
-2. entity resolution accuracy;
-3. plan semantic accuracy;
-4. SPARQL execution accuracy;
-5. evidence completeness;
-6. answer faithfulness and citation validity;
-7. latency and cost.
-
-A single end-answer score hides which layer failed.
-
-### 33.8 Adversarial tests
-
-Include:
-
-- user attempts to request updates or `SERVICE` calls;
-- malicious labels or `sh:description` text containing instructions;
-- invalid IRIs and literal escape sequences;
-- cyclic paths and imports;
-- highly connected plans;
-- regex denial-of-service patterns;
-- cross-tenant lens and cache access;
-- oversized endpoint responses;
-- result datatypes contradicting shapes;
-- empty results that must not cause constraint dropping.
-
----
-
-## 34. Detailed end-to-end example
-
-Question:
-
-> Which employees worked on Project X and are experts in artificial intelligence?
-
-### 34.1 Example shapes
-
-```turtle
-@prefix ex: <https://example.org/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-
-ex:EmployeeStaffingShape
-    a sh:NodeShape ;
-    sh:targetClass ex:Employee ;
-    rdfs:label "Employee staffing view"@en ;
-    sh:property ex:EmployeeNameShape ;
-    sh:property ex:EmployeeWorkedOnShape ;
-    sh:property ex:EmployeeExpertiseShape .
-
-ex:EmployeeNameShape
-    a sh:PropertyShape ;
-    sh:path ex:name ;
-    sh:name "name"@en ;
-    sh:datatype xsd:string ;
-    sh:maxCount 1 .
-
-ex:EmployeeWorkedOnShape
-    a sh:PropertyShape ;
-    sh:path ex:workedOn ;
-    sh:name "worked on"@en ;
-    sh:description "A project to which the employee contributed."@en ;
-    sh:class ex:Project .
-
-ex:EmployeeExpertiseShape
-    a sh:PropertyShape ;
-    sh:path ex:expertise ;
-    sh:name "expertise"@en ;
-    sh:description "A skill or subject in which the employee has expertise."@en ;
-    sh:class ex:Skill .
-
-ex:ProjectShape
-    a sh:NodeShape ;
-    sh:targetClass ex:Project ;
-    rdfs:label "Project"@en ;
-    sh:property [
-        sh:path ex:name ;
-        sh:name "project name"@en ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1
-    ] .
-
-ex:SkillShape
-    a sh:NodeShape ;
-    sh:targetClass ex:Skill ;
-    rdfs:label "Skill"@en ;
-    sh:property [
-        sh:path rdfs:label ;
-        sh:name "skill label"@en ;
-        sh:datatype xsd:string
-    ] .
-```
-
-### 34.2 Catalog compilation
-
-The compiler creates three principal lenses and two join ports:
-
-```text
-EmployeeStaffing
-  focus class: ex:Employee
-  properties:
-    employee.name -> xsd:string, max 1
-    employee.worked_on -> ex:Project, many, joins Project
-    employee.expertise -> ex:Skill, many, joins Skill
-
-Project
-  focus class: ex:Project
-  properties:
-    project.name -> xsd:string, max 1
-
-Skill
-  focus class: ex:Skill
-  properties:
-    skill.label -> xsd:string
-```
-
-The lexical index gives strong matches for “employees,” “worked on,” “project,” “experts,” and “artificial intelligence.” Structural expansion connects the Employee lens to both Project and Skill.
-
-### 34.3 Entity resolution
-
-The resolver may issue a batched label query or consult a local entity index:
-
-```text
-"Project X"
-  -> https://example.org/id/project-x
-     type-compatible with Project
-     match: exact label
-
-"artificial intelligence"
-  -> https://example.org/id/skill-ai
-     type-compatible with Skill
-     match: preferred label
-```
-
-If “Project X” matches multiple project IRIs, the candidates remain explicit until context or application policy resolves them.
-
-### 34.4 Bound plan
-
-Illustrative plan:
-
-```json
-{
-  "question": "Which employees worked on Project X and are experts in artificial intelligence?",
-  "nodes": [
-    {
-      "id": "employee",
-      "lens_id": "lens:employee-staffing",
-      "binding": {"kind": "unbound", "values": []}
-    },
-    {
-      "id": "project",
-      "lens_id": "lens:project",
-      "binding": {
-        "kind": "iri",
-        "values": [
-          {"kind": "iri", "value": "https://example.org/id/project-x"}
-        ]
-      }
-    },
-    {
-      "id": "skill",
-      "lens_id": "lens:skill",
-      "binding": {
-        "kind": "iri",
-        "values": [
-          {"kind": "iri", "value": "https://example.org/id/skill-ai"}
-        ]
-      }
-    }
-  ],
-  "edges": [
-    {
-      "id": "worked_on",
-      "source_node": "employee",
-      "property_lens_id": "prop:employee-worked-on",
-      "target_node": "project",
-      "quantifier": "any",
-      "optional": false
-    },
-    {
-      "id": "has_expertise",
-      "source_node": "employee",
-      "property_lens_id": "prop:employee-expertise",
-      "target_node": "skill",
-      "quantifier": "any",
-      "optional": false
-    }
-  ],
-  "filters": [],
-  "projections": [
-    {
-      "id": "employee_iri",
-      "kind": "node",
-      "node_id": "employee",
-      "distinct": true
-    },
-    {
-      "id": "employee_name",
-      "kind": "field",
-      "node_id": "employee",
-      "property_lens_id": "prop:employee-name"
-    }
-  ],
-  "distinct": true,
-  "evidence": {
-    "include_connecting_facts": true,
-    "include_labels": true,
-    "include_source_graphs": true,
-    "include_linked_documents": false,
-    "neighborhood_depth": 0
-  },
-  "selected_lens_ids": [
-    "lens:employee-staffing",
-    "lens:project",
-    "lens:skill"
-  ]
-}
-```
-
-### 34.5 Plan validation
-
-The validator confirms:
-
-- all three lenses and both properties are in the candidate set;
-- `worked_on` starts at Employee and accepts a Project-like IRI;
-- `expertise` starts at Employee and accepts a Skill-like IRI;
-- the two resolved IRIs are compatible with their target lenses;
-- the graph is connected through `employee`;
-- both user constraints are represented;
-- no extra filter was added;
-- the employee name projection is legal and optional if the graph lacks a name;
-- the result limit will be capped by policy.
-
-### 34.6 Compiled SPARQL
-
-A portable query can be:
-
-```sparql
-PREFIX ex: <https://example.org/>
-
-SELECT DISTINCT ?n_employee ?v_employee_name
-WHERE {
-  VALUES ?n_project { <https://example.org/id/project-x> }
-  VALUES ?n_skill { <https://example.org/id/skill-ai> }
-
-  ?n_employee a ex:Employee ;
-              ex:workedOn ?n_project ;
-              ex:expertise ?n_skill .
-
-  OPTIONAL {
-    ?n_employee ex:name ?v_employee_name .
-  }
-}
-ORDER BY ?v_employee_name
-LIMIT 100
-```
-
-The compiler may omit `ORDER BY` unless requested or a stable presentation order is configured. It can also fetch names in a second query if the primary graph pattern has additional many-valued projections.
-
-### 34.7 Execution result
-
-Illustrative endpoint rows:
-
-```text
-employee = ex:alice    name = "Alice Nguyen"
-employee = ex:omar     name = "Omar Haddad"
-```
-
-### 34.8 Evidence packet
-
-```text
-fact:f1  ex:alice ex:workedOn ex:project-x
-fact:f2  ex:alice ex:expertise ex:skill-ai
-fact:f3  ex:omar  ex:workedOn ex:project-x
-fact:f4  ex:omar  ex:expertise ex:skill-ai
-row:r1   employee=ex:alice, name="Alice Nguyen", facts=[f1,f2]
-row:r2   employee=ex:omar,  name="Omar Haddad", facts=[f3,f4]
-```
-
-If named-graph provenance is enabled, each fact also carries its source graph. If the graph returns a value with the wrong datatype or a missing required property, the packet includes validation issues.
-
-### 34.9 Grounded answer
-
-Structured answer:
-
-```json
-{
-  "direct_answer": "Alice Nguyen and Omar Haddad match both conditions.",
-  "claims": [
-    {
-      "text": "Alice Nguyen worked on Project X and has artificial-intelligence expertise.",
-      "evidence_ids": ["fact:f1", "fact:f2"],
-      "confidence": "high"
-    },
-    {
-      "text": "Omar Haddad worked on Project X and has artificial-intelligence expertise.",
-      "evidence_ids": ["fact:f3", "fact:f4"],
-      "confidence": "high"
-    }
-  ],
-  "limitations": []
-}
-```
-
-The final renderer converts fact IDs into the application's citation style.
-
-### 34.10 Empty-result diagnosis
-
-Suppose the query returns no rows. Bounded probes can determine:
-
-- Project X exists and employees are linked to it;
-- the AI skill exists;
-- no employee in the project has the exact `ex:expertise ex:skill-ai` relation.
-
-The correct response is then a grounded “No employees matched both conditions in the queried data,” not a query with the expertise condition removed.
-
----
-
-## 35. Development roadmap
-
-### Phase 0: design spikes
-
-Deliverables:
-
-- validate the path AST against representative SHACL graphs;
-- prove typed-plan-to-SPARQL compilation for common patterns;
-- test Pydantic AI structured planning with lens cards;
-- compare all-shapes context versus lexical retrieval on small catalogs;
-- verify remote result parsing and safe term rendering;
-- decide catalog serialization format.
-
-Exit criterion: the employee/project/skill example works locally without raw SPARQL generation.
-
-### Phase 1: deterministic kernel
-
-Implement:
-
-- RDF term models and codecs;
-- SHACL loader and path parser;
-- core constraint extraction;
-- Shape Lens compiler and registry;
-- in-memory lexical index;
-- bound plan models and validators;
-- portable SPARQL AST, compiler, renderer, and policy;
-- RDFLib graph store;
-- result-contract validation;
-- evidence packet and deterministic answer renderer.
-
-No LLM is required in this phase. Plans are fixtures or caller-authored.
-
-Exit criterion: comprehensive unit and golden-query tests pass for positive joins, filters, negation, optional values, counts, and labels.
-
-### Phase 2: Pydantic AI planner
-
-Implement:
-
-- candidate lens context packer;
-- entity resolver interface and simple label resolver;
-- `PydanticAIPlanner` fast mode;
-- output validator and one bounded retry;
-- fake-model tests;
-- plan explanation output;
-- prompt versioning and usage tracking.
-
-Exit criterion: a benchmark set of natural-language questions produces valid plans with no raw schema invention.
-
-### Phase 3: remote endpoint support
-
-Implement:
-
-- asynchronous SPARQL Protocol client;
-- capability configuration and Service Description parsing;
-- response streaming and limits;
-- normalized endpoint errors;
-- execution diagnosis and deterministic rewrites;
-- named graph scope;
-- authentication hooks and read-only policies.
-
-Exit criterion: the same test suite runs against at least two materially different SPARQL implementations.
-
-### Phase 4: formal SHACL validation
-
-Implement:
-
-- optional pySHACL adapter;
-- meta-validation of shapes;
-- selected-shape and focus-node validation;
-- focused-complete evidence closure;
-- validation issue mapping;
-- validation-report query mode.
-
-Exit criterion: non-conformant evidence is handled correctly under all four policies.
-
-### Phase 5: hybrid GraphRAG
-
-Implement:
-
-- document retriever and link resolver protocols;
-- graph-guided document filters;
-- answerer with `GroundedAnswer` output;
-- claim-to-evidence validation;
-- citation renderer;
-- streaming events;
-- deterministic versus model answer selection.
-
-Exit criterion: graph facts determine the answer set and linked chunks add explanation without introducing uncited claims.
-
-### Phase 6: scale and persistence
-
-Implement:
-
-- SQLite catalog and FTS index;
-- optional embedding index interface;
-- structural retrieval expansion;
-- incremental catalog rebuild;
-- plan and result caches;
-- graph statistics and cost hints;
-- parallel evidence enrichment;
-- OpenTelemetry-compatible traces.
-
-Exit criterion: catalogs with thousands of shapes remain usable within configured context, latency, and memory budgets.
-
-### Phase 7: advanced profiles and plugins
-
-Implement selectively:
-
-- robust two-stage planner;
-- custom constraint plugins;
-- geospatial and full-text typed operations;
-- SPARQL 1.2 and RDF triple-term support;
-- endpoint dialect packages;
-- fine-tuned planner adapter;
-- durable execution integration where needed.
-
----
-
-## 36. Recommended initial feature subset
-
-To avoid building a full SPARQL compiler before proving value, version 0.1 should support:
-
-### SHACL input
-
-- `sh:NodeShape` and `sh:PropertyShape`;
-- IRI-backed and blank-node property shapes;
-- `sh:targetClass` and explicit application targets;
-- predicate, inverse, sequence, and alternative paths;
-- `sh:class`, `sh:node`, `sh:datatype`, `sh:nodeKind`;
-- `sh:minCount`, `sh:maxCount`, `sh:in`, `sh:or`;
-- labels, descriptions, comments, messages, and optional `sh:intent`;
-- shape imports only from trusted local sources.
-
-### Query plan
-
-- entity nodes and bound IRIs;
-- positive and negative edges;
-- equality, membership, ordered comparison, text equality/contains, and existence filters;
-- entity and field projections;
-- count/min/max/sum/average;
-- sort, distinct, and limit;
-- label retrieval.
-
-### SPARQL
-
-- `SELECT` and `ASK`;
-- basic graph patterns;
-- property paths from catalog paths;
-- `VALUES`;
-- `OPTIONAL`;
-- `FILTER`, `EXISTS`, and `NOT EXISTS`;
-- aggregates, grouping, ordering, and limits;
-- no federation, update, arbitrary custom functions, or user-defined raw patterns.
-
-### GraphRAG
-
-- exact graph evidence;
-- optional linked-document chunks;
-- structured grounded answer;
-- deterministic citation validation.
-
-This subset covers a large proportion of entity lookup, relationship intersection, missing-property, filtering, aggregation, and data-quality questions.
-
----
-
-## 37. Risks and mitigations
-
-### 37.1 Shapes are incomplete or validation-oriented
-
-**Risk:** A shapes graph may omit useful relationships, labels, or query semantics.
-
-**Mitigation:** Merge ontology labels, allow explicit lens overlays, support sampled range hints, and report schema gaps. Never treat inferred hints as equal to formal shape contracts without marking their confidence.
-
-### 37.2 One class has many context-specific shapes
-
-**Risk:** The planner chooses a lens with sensitive or irrelevant properties.
-
-**Mitigation:** Preserve separate lenses, use profiles and request policy, retrieve context-specific descriptions, and never merge all shapes for a class into one universal view by default.
-
-### 37.3 Complex SHACL is not invertible
-
-**Risk:** A constraint describes invalid data but does not define a useful retrieval relation.
-
-**Mitigation:** Keep unsupported constraints validation-only. Add typed plugins only when semantics are understood.
-
-### 37.4 Endpoint behavior differs
-
-**Risk:** Valid SPARQL performs differently or unsupported extensions are assumed.
-
-**Mitigation:** conservative baseline, capabilities object, dialect plugins, integration matrix, and deterministic downgrade paths.
-
-### 37.5 Result evidence is partial
-
-**Risk:** Projected rows prove an answer but do not contain all triples needed for formal validation or explanation.
-
-**Mitigation:** explicit evidence modes, focused closure, provenance strategies, and completeness flags.
-
-### 37.6 Agent retries become expensive
-
-**Risk:** Repeated model and endpoint calls increase cost and latency.
-
-**Mitigation:** bounded retries, deterministic diagnostics first, cached plans, deterministic answers, and no open-ended execution tool.
-
-### 37.7 Schema metadata contains prompt injection
-
-**Risk:** A malicious label or description instructs the model to bypass policy.
-
-**Mitigation:** treat metadata as delimited data, expose legal IDs structurally, independently validate output, and keep execution outside the model.
-
-### 37.8 Dynamic Pydantic models become complex
-
-**Risk:** Per-plan model creation increases overhead and debugging difficulty.
-
-**Mitigation:** use a stable `RDFTerm` union plus `ProjectionContract` and `TypeAdapter` for most rows; generate named models only when a public typed-result API requires them; cache adapters by plan digest.
-
-### 37.9 Blank-node shape IDs change
-
-**Risk:** Unstable IDs invalidate caches and examples.
-
-**Mitigation:** canonical bounded descriptions, content hashes, source-graph revision, and clear distinction between internal IDs and ontology IRIs.
-
-### 37.10 Query plan is not expressive enough
-
-**Risk:** Users fall back to raw SPARQL frequently.
-
-**Mitigation:** track unsupported intent categories, add typed algebra nodes based on real cases, and provide a trusted application-level `CompiledPatternPlugin`. Raw SPARQL remains a separate expert API, never a model output mode.
-
----
-
-## 38. Key architectural decisions
-
-### ADR-001: The LLM does not generate raw SPARQL by default
-
-**Decision:** model output is a typed, shape-bound plan.  
-**Reason:** reduces schema hallucination, enables policy, permits deterministic optimization, and makes plans portable across dialects.
-
-### ADR-002: SHACL is compiled into multiple context-specific lenses
-
-**Decision:** do not collapse all shapes for one class into a single schema object.  
-**Reason:** SHACL is contextual; different shapes may encode different applications, permissions, or completeness expectations.
-
-### ADR-003: The library owns a small query algebra
-
-**Decision:** implement only the SPARQL subset needed by typed operations, with plugins for extensions.  
-**Reason:** a full generic SPARQL AST would increase scope and weaken safety without helping common GraphRAG use cases.
-
-### ADR-004: Schema retrieval and document retrieval are separate
-
-**Decision:** maintain distinct indexes and protocols.  
-**Reason:** they solve different problems and have different correctness criteria.
-
-### ADR-005: Evidence is a first-class typed artifact
-
-**Decision:** answer generation consumes an `EvidencePacket` and returns claims with evidence IDs.  
-**Reason:** enables grounding, citations, validation, audit, and deterministic rendering.
-
-### ADR-006: Pydantic AI is an adapter over a deterministic core
-
-**Decision:** require Pydantic in core; expose Pydantic AI as the recommended planner/answerer extra.  
-**Reason:** preserves testability, portability, and non-LLM use while taking advantage of typed dependencies, tools, and output validation.
-
-### ADR-007: Pydantic Graph is internal and optional
-
-**Decision:** the default pipeline may use `pydantic-graph` internally, but public APIs remain ordinary methods and async iterators.  
-**Reason:** typed state-machine orchestration is useful, but ease of use requires hiding its complexity.
-
-### ADR-008: SHACL 1.2 and SPARQL 1.2 are capability-gated
-
-**Decision:** use a stable 1.0/1.1 baseline and detect newer features.  
-**Reason:** current implementations vary, while newer metadata such as `sh:intent` provides real value when available.
-
----
-
-## 39. Future directions
-
-### 39.1 Learned lens retrieval
-
-Training data can record question-to-lens relevance without changing the plan schema. A learned reranker can improve schema retrieval while lexical and structural signals remain available for explanation.
-
-### 39.2 Fine-tuned plan model
-
-Once a corpus of questions, candidate lenses, accepted plans, and execution outcomes exists, fine-tune a model to produce `BoundQueryPlan`. This is safer and more reusable than fine-tuning direct SPARQL because the deterministic compiler and policy remain unchanged.
-
-### 39.3 Query-plan learning from accepted SPARQL
-
-A migration tool can parse a curated subset of existing SPARQL queries, map predicates to property lenses, and produce plan templates. Human review resolves constructs outside the typed algebra.
-
-### 39.4 Conversational plans
-
-Conversation state can preserve resolved entities and prior plans. Follow-up questions modify a typed plan through explicit operations such as add filter, change projection, or compare groups, rather than asking the model to rewrite the entire SPARQL query.
-
-### 39.5 Shape authoring feedback
-
-Repeated schema-retrieval failures can generate reports recommending:
-
-- missing labels or aliases;
-- ambiguous descriptions;
-- absent `sh:intent` statements;
-- unlinked target classes;
-- property shapes that should use stable IRIs;
-- missing provenance or label configuration.
-
-The library could become a tool for improving SHACL graphs for both humans and agents.
-
-### 39.6 Persisted validation GraphRAG
-
-Validation reports can form a separate knowledge graph. Users can ask:
-
-- which records violate a profile;
-- which shapes produce the most failures;
-- whether data quality improved between revisions;
-- which source graphs contain violations.
-
-This reuses the same lens, SPARQL, evidence, and answer architecture.
-
-### 39.7 Multi-endpoint planning
-
-A future typed federation layer can assign plan fragments to allowlisted stores based on lens ownership and join keys. It should prefer application-side bounded joins over giving the model unrestricted `SERVICE` access.
-
-### 39.8 Query-aware SHACL profiles
-
-Applications can publish a Shapes Graph profile specifically intended as an agent query interface. It may contain:
-
-- stable IRI-backed property shapes;
-- concise names and intent statements;
-- queryable versus validation-only tags;
-- preferred label and provenance paths;
-- sensitivity metadata;
-- computational cost classes.
-
-The core remains compatible with ordinary SHACL, while such profiles produce better plans with less configuration.
-
----
-
-## 40. Final recommendation
-
-Implement ShapeLens GraphRAG as a **compiler architecture**, not as a free-running SPARQL agent:
-
-1. compile SHACL into versioned Shape Lenses;
-2. retrieve a small connected lens subgraph for each question;
-3. resolve mentioned entities separately;
-4. use Pydantic AI to emit a typed, lens-bound plan;
-5. validate the plan against shapes, policy, and endpoint capabilities;
-6. deterministically compile safe SPARQL;
-7. execute under strict budgets and diagnose failures structurally;
-8. convert results into a typed evidence packet;
-9. optionally retrieve documents constrained by graph evidence;
-10. render or generate a claim-based answer whose evidence references are validated.
-
-The most important design rule is simple:
-
-> The language model chooses semantic operations; ordinary Python proves that those operations are legal and turns them into SPARQL.
-
-That separation is what makes the system generic enough for many domains, flexible enough for multiple stores and models, efficient enough for real applications, and inspectable enough to trust.
-
----
-
-## 41. Standards and implementation references
-
-The design is informed by the following primary specifications and official project documentation. The linked versions were reviewed on **6 August 2026**.
-
-### RDF, SHACL, and SPARQL
+The following primary specifications and official project documentation informed this design and were reviewed on 6 August 2026:
 
 - [Shapes Constraint Language (SHACL), W3C Recommendation](https://www.w3.org/TR/shacl/)
-- [SHACL 1.2 Core](https://www.w3.org/TR/shacl12-core/)
+- [SHACL 1.2 Core, W3C Working Draft](https://www.w3.org/TR/shacl12-core/)
 - [SHACL 1.2 SPARQL Extensions](https://www.w3.org/TR/shacl12-sparql/)
 - [SHACL 1.2 Profiling](https://www.w3.org/TR/shacl12-profiling/)
 - [SPARQL 1.1 Query Language](https://www.w3.org/TR/sparql11-query/)
 - [SPARQL 1.1 Protocol](https://www.w3.org/TR/sparql11-protocol/)
-- [SPARQL 1.2 Query Language](https://www.w3.org/TR/sparql12-query/)
+- [SPARQL 1.2 Query Language, W3C Working Draft](https://www.w3.org/TR/sparql12-query/)
 - [SPARQL 1.2 Protocol](https://www.w3.org/TR/sparql12-protocol/)
 - [SPARQL 1.2 Service Description](https://www.w3.org/TR/sparql12-service-description/)
-
-### Python implementation stack
-
+- [RDF Dataset Canonicalization 1.0, W3C Recommendation](https://www.w3.org/TR/rdf-canon/)
 - [Pydantic models](https://docs.pydantic.dev/latest/concepts/models/)
 - [Pydantic discriminated unions](https://docs.pydantic.dev/latest/concepts/unions/#discriminated-unions)
 - [Pydantic `TypeAdapter`](https://docs.pydantic.dev/latest/concepts/type_adapter/)
 - [Pydantic AI agents](https://ai.pydantic.dev/agents/)
 - [Pydantic AI dependencies](https://ai.pydantic.dev/dependencies/)
-- [Pydantic AI structured output and validators](https://ai.pydantic.dev/output/)
-- [Pydantic Graph](https://ai.pydantic.dev/graph/)
+- [Pydantic AI structured output](https://ai.pydantic.dev/output/)
 - [RDFLib documentation](https://rdflib.readthedocs.io/en/stable/)
 - [pySHACL official repository](https://github.com/RDFLib/pySHACL)
 
-Because the 1.2 specifications are evolving working drafts, implementation support should be advertised through explicit feature profiles and tested capabilities rather than assumed from version labels alone.
+SHACL 1.2 and SPARQL 1.2 remain evolving Working Drafts at the time of review. ShapeLens should therefore advertise individual tested capabilities and feature profiles rather than infer support from a version number.
