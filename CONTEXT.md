@@ -1,6 +1,6 @@
 # ShapeLens
 
-ShapeLens is the domain concerned with turning contextual SHACL descriptions into bounded graph-query operations and evidence-backed answers. This glossary defines the project’s core domain language without prescribing implementation details.
+ShapeLens is the domain concerned with turning contextual SHACL descriptions into bounded graph-query operations and evidence-backed results. This glossary defines the project’s core domain language without prescribing implementation details.
 
 ## Semantic views
 
@@ -33,12 +33,28 @@ The way a lens statement was obtained: directly from a shape, from an Applicatio
 _Avoid_: Source trust, authorization, confidence score
 
 **Shape Source Trust**:
-The application-approved trust status of a source from which shape statements are compiled.
-_Avoid_: Parse validity, Derivation Origin, SHACL conformance
+The application-approved status that permits a source to influence catalog construction. It establishes admission, not whether the source describes a fit query interface.
+_Avoid_: Parse validity, Derivation Origin, Semantic Qualification, SHACL conformance
 
 **Application Overlay**:
-A versioned application-authored addition that gives a shape explicit query meaning or metadata not supplied by the shapes graph and is independently subject to Shape Source Trust.
+A versioned application-authored addition to shape-derived material, classified as a Descriptive Overlay, Executable Semantic Overlay, or Policy Metadata Overlay.
 _Avoid_: Inference, hint, prompt instruction, implicit trust
+
+**Descriptive Overlay**:
+An Application Overlay containing retrieval or presentation metadata, such as labels and aliases, that cannot expand executable behavior.
+_Avoid_: Executable Semantic Overlay, Policy Metadata Overlay
+
+**Executable Semantic Overlay**:
+An Application Overlay that adds query meaning, such as a Population Selector, join mapping, projection contract, or Affordance, and therefore requires Semantic Qualification.
+_Avoid_: Descriptive Overlay, ontology hint, implicit inference
+
+**Policy Metadata Overlay**:
+Catalog-time tags and classifications owned by the application’s policy authority. It changes the Catalog Revision but does not itself enforce access or replace the independently revisioned Query Policy.
+_Avoid_: Shape constraint, Executable Semantic Overlay, Query Policy, authorization decision
+
+**Semantic Qualification**:
+A reviewed determination that one executable lens behavior is fit for an intended application scenario, with its derivation and fixture coverage recorded.
+_Avoid_: Shape Source Trust, confidence score, parse validity
 
 ## Catalog and planning
 
@@ -49,6 +65,14 @@ _Avoid_: Registry, index
 **Catalog Revision**:
 One immutable version of a Shape Catalog and all trusted inputs that determine its meaning.
 _Avoid_: Build timestamp, deployment version
+
+**Catalog-Local Key**:
+An opaque reference to a catalog item that is valid only within one Catalog Revision. Blank-node-backed shapes may receive this identity without any cross-revision promise.
+_Avoid_: Portable Logical Key, RDF blank-node label
+
+**Portable Logical Key**:
+A reference intended to identify the same logical catalog item across Catalog Revisions. Version 0.1 grants this identity only where an admitted IRI-backed declaration supports it.
+_Avoid_: Catalog-Local Key, revision digest
 
 **Shape Registry**:
 The lookup view over one Shape Catalog revision.
@@ -63,8 +87,28 @@ The directed relationships among Shape Lenses established by their Property Lens
 _Avoid_: Data graph, knowledge graph
 
 **Bound Query Plan**:
-A typed, schema-bound expression of a question that refers only to known lenses, selectors, operations, Value Contract Branches, and validated RDF terms.
+A typed, schema-bound graph request that refers only to known lenses, selectors, operations, Value Contract Branches, and validated RDF terms.
 _Avoid_: SPARQL, prompt, query string
+
+**Entity Variable**:
+One logical RDF node in a Bound Query Plan, with a binding but no single privileged contextual view or implicit population.
+_Avoid_: Shape Lens, Lens Use, class instance
+
+**Lens Use**:
+The application of one Shape Lens to one Entity Variable for a specific set of contextual property operations. An Entity Variable may have several Lens Uses without merging their Shape Lenses.
+_Avoid_: Composite lens, Entity Variable, universal class view
+
+**Selector Use**:
+The explicit application of one Population Selector to one Entity Variable. It is independently identified so population evidence never arrives implicitly through a Lens Use.
+_Avoid_: Lens Use, implicit target, Value Contract
+
+**Plan Atom**:
+One independently supportable selector, edge, filter, or projection occurrence in a Bound Query Plan.
+_Avoid_: SPARQL fragment, evidence item
+
+**Row Atom Set**:
+The mechanically derived set containing every Selector Use, edge, filter, and projection occurrence in a normalized SelectPlan for each positive row. Optional projections remain members even when unbound.
+_Avoid_: Relevant atoms, cited atoms, planner-selected support
 
 **Authorization Scope**:
 The trusted boundary describing which semantic operations and data a requester may use.
@@ -75,11 +119,11 @@ The safety ceiling that limits query forms, complexity, resource use, and eviden
 _Avoid_: Authorization Scope, planner instruction
 
 **Run Context**:
-The pinned catalog, authorization, policy, data scope, budget, and trace identity under which one question is handled.
+The pinned catalog, authorization, policy, data scope, budget, and trace identity under which one plan is executed or later question is handled.
 _Avoid_: Prompt context, global configuration
 
-**Answer Extent**:
-The user-requested breadth of an answer, such as a complete set or a stated number of examples, kept separate from execution resource ceilings.
+**Result Extent**:
+The caller- or user-requested breadth of query results, such as a complete set or a stated number of examples, kept separate from execution resource ceilings.
 _Avoid_: Page size, store row limit, planner preference
 
 ## Results and truth conditions
@@ -97,13 +141,21 @@ A typed observation that states both what the system observed and the conditions
 _Avoid_: Fact, citation
 
 **Evidence Packet**:
-The bounded, versioned collection of evidence and limitations supplied to answer rendering.
-_Avoid_: Model context, result set
+The bounded, versioned collection of evidence and limitations supplied to Query Outcome construction and any later answer rendering.
+_Avoid_: Model context, untyped result set
+
+**Row Support Certificate**:
+A row-specific, exact mapping from the Row Atom Set to witness evidence, deterministic derivations, or an explicit unbound state for an optional projection, together with the row’s Entity Variable bindings.
+_Avoid_: Evidence list, citation list, negative proof
 
 **Grounded Claim**:
 An answer statement linked to compatible evidence and labeled with the level of support validation applied to it.
 _Avoid_: Verified fact, citation-only claim
 
+**Query Outcome**:
+The typed result of executing a Bound Query Plan, such as selected rows, a Boolean result, no match, policy limited, unsupported, or failed. It makes no claim that the plan faithfully represents natural-language prose.
+_Avoid_: Answer string, Answer Outcome, exception
+
 **Answer Outcome**:
-The typed result of a question, such as answered, no match, ambiguous, policy limited, unsupported, or failed.
-_Avoid_: Answer string, exception
+The later typed result of interpreting and answering a question, linked to a validated Query Outcome and question-to-plan fidelity records.
+_Avoid_: Query Outcome, answer string, unchecked prose
