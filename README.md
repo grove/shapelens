@@ -50,7 +50,7 @@ Phase 0 tested two independent questions: whether representative SHACL graphs ca
 
 ShapeLens 0.1 is a packaged Python library. `ShapeQueryEngine` is deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the runtime contract.
 
-The next phase is not automatic. Structured planning starts only after its fidelity baselines and thresholds are resolved and the deterministic runtime remains stable.
+The next phase is not automatic. The first complete-plan Luna trial failed the independent Phase 2 gates. Caller-authored plans remain supported, and [`phase2/DECISION.md`](./phase2/DECISION.md) permits only a new constrained template-selection pilot while the deterministic runtime remains stable.
 
 ## Learn more
 
@@ -60,6 +60,10 @@ The next phase is not automatic. Structured planning starts only after its fidel
 - [Phase 0 experiment](./PHASE0-EXPERIMENT.md) sets out the validation protocol and decision gates.
 - [Phase 0 workspace](./phase0/README.md) contains the corpus templates, fixture conventions, report template, and validation commands.
 - [Phase 0 decision](./phase0/DECISION.md) reports every gate, raw denominator, limitation, and the approved next boundary.
+- [Phase 2 experiment](./PHASE2-EXPERIMENT.md) defines the benchmark that model planning must pass before implementation.
+- [Phase 2 workspace](./phase2/README.md) contains the benchmark labels, approved planner cards, safety set, and reproducible benchmark command.
+- [Phase 2 decision](./phase2/DECISION.md) reports the failed Luna trial, practical implications, GraphRAG fit, and constrained next proposal.
+- [Phase 3 readiness](./PHASE3-READINESS.md) fixes the entry gate and decision evidence required before remote work begins.
 - [Roadmap](./ROADMAP.md) describes the milestone-based path from validation to a deterministic runtime and later capabilities.
 - [Version 0.1 specification](./SPEC-0.1.md) is the normative behavior and conformance map.
 - [Security profile](./SECURITY.md) declares the supported trusted-local boundary.

@@ -1,0 +1,2679 @@
+{
+  "benchmark_revision": "sha256:875482ff07c9bc5878227129c44abd66af97c9a8d6f19084f31f3731fd9dbbd8",
+  "configuration": {
+    "catalog_revision": "sha256:2393f76e52bf4b0b4c9f70f2e9c36d08ef28079fcbf6eb1df5ee99d2a4644960",
+    "model": "gpt-5.6-luna",
+    "prompt_revision": "sha256:ce7321ba774bef4063100397b382598bc227935cb845822d06720b30b38f6fc4",
+    "card_revision": "sha256:2d94378077f6b27b4309bb1e246e98614e07ac14edca4a6ea3fa56aa885d1b70",
+    "provider_transmission": {
+      "allowed": [
+        "authoritative question text",
+        "catalog revision plus card key, kind, label, reviewed aliases, description, and executable catalog fields",
+        "generic retry notice"
+      ],
+      "local_only": [
+        "raw RDF data",
+        "semantic oracles and expected plans",
+        "expected results and plan digests",
+        "authorization metadata and policy reasons",
+        "evidence and source documents",
+        "non-approved labels"
+      ]
+    },
+    "price_source": {
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "checked_at": "2026-08-07"
+    },
+    "latency_machine": {
+      "system": "Darwin",
+      "release": "25.6.0",
+      "machine": "arm64",
+      "network": "Wi-Fi or wired network description",
+      "python": "3.14.6",
+      "rdflib": "7.6.0"
+    },
+    "raw_results_digest": "sha256:0a3552fca1f61f0529d596d89f8bd14c69a13d5ce44ae0b4e6b8da7fdc06ce85",
+    "direct_reviews_digest": "sha256:bd456b20f9abcbb183962d1cb7f16b6b683d17c7f3ef137f68b34635e3079415"
+  },
+  "metrics": {
+    "overall": {
+      "intent_extraction_recall": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "intent_restriction_precision": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "internal_coverage": {
+        "numerator": 12,
+        "denominator": 84,
+        "value": 0.14285714285714285
+      },
+      "lens_retrieval_recall": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "entity_accuracy": {
+        "numerator": 7,
+        "denominator": 99,
+        "value": 0.0707070707070707
+      },
+      "plan_validity": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "faithful_automation_coverage": {
+        "numerator": 0,
+        "denominator": 60,
+        "value": 0.0
+      },
+      "critical_faithful_coverage": {
+        "numerator": 0,
+        "denominator": 15,
+        "value": 0.0
+      },
+      "completed_plan_semantic_precision": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "unsupported_precision": {
+        "numerator": 18,
+        "denominator": 84,
+        "value": 0.21428571428571427
+      },
+      "unsupported_recall": {
+        "numerator": 18,
+        "denominator": 18,
+        "value": 1.0
+      },
+      "false_completion_count": 0,
+      "max_model_calls": 2,
+      "p50_latency_seconds": 8.5438472704991,
+      "p95_latency_seconds": 11.388156500004698,
+      "mean_cost_usd": 0.003863488095238095,
+      "candidate_context_token_reduction": 0.4180536735021594,
+      "direct_query_semantic_accuracy": {
+        "numerator": 37,
+        "denominator": 84,
+        "value": 0.44047619047619047
+      }
+    },
+    "by_run": {
+      "1": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 4,
+          "denominator": 28,
+          "value": 0.14285714285714285
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 3,
+          "denominator": 33,
+          "value": 0.09090909090909091
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 20,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 5,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 6,
+          "denominator": 28,
+          "value": 0.21428571428571427
+        },
+        "unsupported_recall": {
+          "numerator": 6,
+          "denominator": 6,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.273120812496927,
+        "p95_latency_seconds": 11.136077374991146,
+        "mean_cost_usd": 0.00388005,
+        "candidate_context_token_reduction": 0.43265379735814324,
+        "direct_query_semantic_accuracy": {
+          "numerator": 12,
+          "denominator": 28,
+          "value": 0.42857142857142855
+        }
+      },
+      "2": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 2,
+          "denominator": 28,
+          "value": 0.07142857142857142
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 33,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 20,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 5,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 6,
+          "denominator": 28,
+          "value": 0.21428571428571427
+        },
+        "unsupported_recall": {
+          "numerator": 6,
+          "denominator": 6,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.96671672899538,
+        "p95_latency_seconds": 11.353611833998002,
+        "mean_cost_usd": 0.0039286,
+        "candidate_context_token_reduction": 0.39923435039348876,
+        "direct_query_semantic_accuracy": {
+          "numerator": 12,
+          "denominator": 28,
+          "value": 0.42857142857142855
+        }
+      },
+      "3": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 6,
+          "denominator": 28,
+          "value": 0.21428571428571427
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 4,
+          "denominator": 33,
+          "value": 0.12121212121212122
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 20,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 5,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 6,
+          "denominator": 28,
+          "value": 0.21428571428571427
+        },
+        "unsupported_recall": {
+          "numerator": 6,
+          "denominator": 6,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.458700333503657,
+        "p95_latency_seconds": 12.478805624996312,
+        "mean_cost_usd": 0.0037818142857142857,
+        "candidate_context_token_reduction": 0.421630130473826,
+        "direct_query_semantic_accuracy": {
+          "numerator": 13,
+          "denominator": 28,
+          "value": 0.4642857142857143
+        }
+      }
+    },
+    "by_scenario": {
+      "delivery-staffing": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 33,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 48,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 24,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 6,
+          "denominator": 33,
+          "value": 0.18181818181818182
+        },
+        "unsupported_recall": {
+          "numerator": 6,
+          "denominator": 6,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.679330375001882,
+        "p95_latency_seconds": 11.751473708005506,
+        "mean_cost_usd": 0.004170618181818182,
+        "candidate_context_token_reduction": 0.4232585187076009,
+        "direct_query_semantic_accuracy": {
+          "numerator": 22,
+          "denominator": 33,
+          "value": 0.6666666666666666
+        }
+      },
+      "research-publication-catalog": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 8,
+          "denominator": 21,
+          "value": 0.38095238095238093
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 2,
+          "denominator": 12,
+          "value": 0.16666666666666666
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 12,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 9,
+          "denominator": 21,
+          "value": 0.42857142857142855
+        },
+        "unsupported_recall": {
+          "numerator": 9,
+          "denominator": 9,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.822698999996646,
+        "p95_latency_seconds": 11.136077374991146,
+        "mean_cost_usd": 0.003390352380952381,
+        "candidate_context_token_reduction": 0.39056409710179174,
+        "direct_query_semantic_accuracy": {
+          "numerator": 15,
+          "denominator": 21,
+          "value": 0.7142857142857143
+        }
+      },
+      "service-operations": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 4,
+          "denominator": 30,
+          "value": 0.13333333333333333
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 5,
+          "denominator": 39,
+          "value": 0.1282051282051282
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 24,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 12,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 30,
+          "value": 0.1
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 7.542332333003287,
+        "p95_latency_seconds": 11.388156500004698,
+        "mean_cost_usd": 0.00385684,
+        "candidate_context_token_reduction": 0.42786616300348956,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 30,
+          "value": 0.0
+        }
+      }
+    },
+    "by_question": {
+      "ops-q01": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 10.018029291997664,
+        "p95_latency_seconds": 10.540276125000673,
+        "mean_cost_usd": 0.0045348,
+        "candidate_context_token_reduction": 0.43596221441124783,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q02": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 7.619513083001948,
+        "p95_latency_seconds": 8.5557605829963,
+        "mean_cost_usd": 0.0036596,
+        "candidate_context_token_reduction": 0.4361538461538461,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q03": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 1,
+          "denominator": 3,
+          "value": 0.3333333333333333
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 1,
+          "denominator": 3,
+          "value": 0.3333333333333333
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 6.800429208000423,
+        "p95_latency_seconds": 7.80224749998888,
+        "mean_cost_usd": 0.0028751999999999996,
+        "candidate_context_token_reduction": 0.5300450400966714,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q04": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 7.0425795420014765,
+        "p95_latency_seconds": 7.394536833002348,
+        "mean_cost_usd": 0.0035784,
+        "candidate_context_token_reduction": 0.43697109572480497,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q05": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 9.447738584000035,
+        "p95_latency_seconds": 12.478805624996312,
+        "mean_cost_usd": 0.0043928,
+        "candidate_context_token_reduction": 0.4474233600703219,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q06": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 1,
+          "denominator": 3,
+          "value": 0.3333333333333333
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 9.64317279199895,
+        "p95_latency_seconds": 9.94049900000391,
+        "mean_cost_usd": 0.0044116,
+        "candidate_context_token_reduction": 0.44722679846238333,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "ops-q07": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 2,
+          "denominator": 3,
+          "value": 0.6666666666666666
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 4,
+          "denominator": 6,
+          "value": 0.6666666666666666
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 5.251575166999828,
+        "p95_latency_seconds": 6.3899346249963855,
+        "mean_cost_usd": 0.002984,
+        "candidate_context_token_reduction": 0.15428163130702433,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "research-q01": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 10.676601208993816,
+        "p95_latency_seconds": 11.136077374991146,
+        "mean_cost_usd": 0.0049004,
+        "candidate_context_token_reduction": 0.42105841018884493,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "research-q02": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.822698999996646,
+        "p95_latency_seconds": 9.577108583995141,
+        "mean_cost_usd": 0.004001599999999999,
+        "candidate_context_token_reduction": 0.43222759226713536,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "research-q03": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 9.257200624997495,
+        "p95_latency_seconds": 9.270147917006398,
+        "mean_cost_usd": 0.0044144,
+        "candidate_context_token_reduction": 0.4213822656850895,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "research-q04": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 1,
+        "p50_latency_seconds": 2.2943911659967853,
+        "p95_latency_seconds": 2.650518207999994,
+        "mean_cost_usd": 0.0014094,
+        "candidate_context_token_reduction": 0.4313811669047357,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "research-q05": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 10.916355542009114,
+        "p95_latency_seconds": 12.360320915991906,
+        "mean_cost_usd": 0.0049424000000000004,
+        "candidate_context_token_reduction": 0.3054670854657676,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "research-q06": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 1,
+        "p50_latency_seconds": 3.181852749999962,
+        "p95_latency_seconds": 3.7945101670047734,
+        "mean_cost_usd": 0.0014202000000000002,
+        "candidate_context_token_reduction": 0.5661191077903527,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "safety-ambiguous-payments": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 6.434254375009914,
+        "p95_latency_seconds": 6.737175000002026,
+        "mean_cost_usd": 0.0035491999999999998,
+        "candidate_context_token_reduction": 0.41512752858399293,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "safety-ambiguous-priya": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.844041874996037,
+        "p95_latency_seconds": 10.337391666005715,
+        "mean_cost_usd": 0.0038612,
+        "candidate_context_token_reduction": 0.4214748873502583,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "safety-mixed-absence": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 2,
+          "denominator": 3,
+          "value": 0.6666666666666666
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 2,
+          "denominator": 3,
+          "value": 0.6666666666666666
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 5.707907957999851,
+        "p95_latency_seconds": 6.3884494160010945,
+        "mean_cost_usd": 0.002644066666666667,
+        "candidate_context_token_reduction": 0.051693208859600936,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "safety-mixed-aggregate": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 7.817540000003646,
+        "p95_latency_seconds": 9.110734457994113,
+        "mean_cost_usd": 0.0040035999999999995,
+        "candidate_context_token_reduction": 0.3052950607251883,
+        "direct_query_semantic_accuracy": {
+          "numerator": 1,
+          "denominator": 3,
+          "value": 0.3333333333333333
+        }
+      },
+      "safety-partial-production": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 11.353611833998002,
+        "p95_latency_seconds": 11.388156500004698,
+        "mean_cost_usd": 0.0049504,
+        "candidate_context_token_reduction": 0.4472759226713533,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "safety-partial-staffing": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 10.35660004199599,
+        "p95_latency_seconds": 13.15534425000078,
+        "mean_cost_usd": 0.0047732,
+        "candidate_context_token_reduction": 0.4222954420647995,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "safety-unknown-project": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.028439792004065,
+        "p95_latency_seconds": 8.152763750011218,
+        "mean_cost_usd": 0.004004,
+        "candidate_context_token_reduction": 0.4214748873502583,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "safety-unknown-service": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "unsupported_recall": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 6.904682834006962,
+        "p95_latency_seconds": 7.2032547920098295,
+        "mean_cost_usd": 0.0036323999999999996,
+        "candidate_context_token_reduction": 0.4368750686737721,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "staffing-q01": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 10.70890691599925,
+        "p95_latency_seconds": 11.751473708005506,
+        "mean_cost_usd": 0.004952,
+        "candidate_context_token_reduction": 0.4223418277680141,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "staffing-q02": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.442147833004128,
+        "p95_latency_seconds": 9.842957583008683,
+        "mean_cost_usd": 0.0040876,
+        "candidate_context_token_reduction": 0.42152121345350624,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "staffing-q03": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.666340834010043,
+        "p95_latency_seconds": 9.255411917009042,
+        "mean_cost_usd": 0.0041351999999999995,
+        "candidate_context_token_reduction": 0.44860943168077383,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "staffing-q04": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 6.927080417008256,
+        "p95_latency_seconds": 7.192801750003127,
+        "mean_cost_usd": 0.0035976,
+        "candidate_context_token_reduction": 0.44851082536542475,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "staffing-q05": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.854533166988404,
+        "p95_latency_seconds": 9.881860915993457,
+        "mean_cost_usd": 0.0040116,
+        "candidate_context_token_reduction": 0.454945054945055,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      },
+      "staffing-q06": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.679330375001882,
+        "p95_latency_seconds": 9.811116666998714,
+        "mean_cost_usd": 0.0040208,
+        "candidate_context_token_reduction": 0.4214285714285714,
+        "direct_query_semantic_accuracy": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        }
+      },
+      "staffing-q07": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0
+        },
+        "unsupported_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 9.890841959000682,
+        "p95_latency_seconds": 10.839547666997532,
+        "mean_cost_usd": 0.00443,
+        "candidate_context_token_reduction": 0.44836299714348493,
+        "direct_query_semantic_accuracy": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        }
+      }
+    },
+    "by_set": {
+      "representative": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 10,
+          "denominator": 60,
+          "value": 0.16666666666666666
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 5,
+          "denominator": 66,
+          "value": 0.07575757575757576
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 54,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 9,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 6,
+          "denominator": 60,
+          "value": 0.1
+        },
+        "unsupported_recall": {
+          "numerator": 6,
+          "denominator": 6,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 8.672835604505963,
+        "p95_latency_seconds": 11.136077374991146,
+        "mean_cost_usd": 0.00383798,
+        "candidate_context_token_reduction": 0.4298960536487171,
+        "direct_query_semantic_accuracy": {
+          "numerator": 30,
+          "denominator": 60,
+          "value": 0.5
+        }
+      },
+      "safety": {
+        "intent_extraction_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "intent_restriction_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "internal_coverage": {
+          "numerator": 2,
+          "denominator": 24,
+          "value": 0.08333333333333333
+        },
+        "lens_retrieval_recall": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "entity_accuracy": {
+          "numerator": 2,
+          "denominator": 33,
+          "value": 0.06060606060606061
+        },
+        "plan_validity": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "faithful_automation_coverage": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "critical_faithful_coverage": {
+          "numerator": 0,
+          "denominator": 6,
+          "value": 0.0
+        },
+        "completed_plan_semantic_precision": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null
+        },
+        "unsupported_precision": {
+          "numerator": 12,
+          "denominator": 24,
+          "value": 0.5
+        },
+        "unsupported_recall": {
+          "numerator": 12,
+          "denominator": 12,
+          "value": 1.0
+        },
+        "false_completion_count": 0,
+        "max_model_calls": 2,
+        "p50_latency_seconds": 7.918311833003827,
+        "p95_latency_seconds": 11.388156500004698,
+        "mean_cost_usd": 0.0039272583333333335,
+        "candidate_context_token_reduction": 0.38790976647555886,
+        "direct_query_semantic_accuracy": {
+          "numerator": 7,
+          "denominator": 24,
+          "value": 0.2916666666666667
+        }
+      }
+    }
+  },
+  "baselines": {
+    "always_defer": {
+      "faithful_automation_coverage": {
+        "numerator": 0,
+        "denominator": 60,
+        "value": 0.0
+      },
+      "unsupported_precision": {
+        "numerator": 18,
+        "denominator": 84,
+        "value": 0.21428571428571427
+      },
+      "unsupported_recall": {
+        "numerator": 18,
+        "denominator": 18,
+        "value": 1.0
+      }
+    },
+    "flat_catalog": {
+      "completed_plan_semantic_precision": {
+        "numerator": 0,
+        "denominator": 0,
+        "value": null
+      },
+      "mean_input_tokens": 16902.904761904763
+    },
+    "direct_query": {
+      "semantic_accuracy": {
+        "numerator": 37,
+        "denominator": 84,
+        "value": 0.44047619047619047
+      },
+      "reviewed_attempts": 84
+    }
+  },
+  "failures_by_category": {
+    "attempt_over_latency_threshold": 19,
+    "direct_query_semantic_failure": 47,
+    "false_defer": 60,
+    "flat_catalog_false_defer": 60,
+    "internal_coverage_rejected": 72,
+    "wrong_disposition": 6
+  },
+  "gates": {
+    "overall": {
+      "intent_extraction_recall": false,
+      "intent_restriction_precision": false,
+      "internal_coverage": false,
+      "lens_retrieval_recall": false,
+      "entity_accuracy": false,
+      "plan_validity": false,
+      "faithful_automation_coverage": false,
+      "critical_faithful_coverage": false,
+      "completed_plan_semantic_precision": false,
+      "unsupported_precision": false,
+      "unsupported_recall": true,
+      "false_completion_count": true,
+      "model_calls": true,
+      "latency": false,
+      "cost": true
+    },
+    "run_1": {
+      "intent_extraction_recall": false,
+      "intent_restriction_precision": false,
+      "internal_coverage": false,
+      "lens_retrieval_recall": false,
+      "entity_accuracy": false,
+      "plan_validity": false,
+      "faithful_automation_coverage": false,
+      "critical_faithful_coverage": false,
+      "completed_plan_semantic_precision": false,
+      "unsupported_precision": false,
+      "unsupported_recall": true,
+      "false_completion_count": true,
+      "model_calls": true,
+      "latency": false,
+      "cost": true
+    },
+    "run_2": {
+      "intent_extraction_recall": false,
+      "intent_restriction_precision": false,
+      "internal_coverage": false,
+      "lens_retrieval_recall": false,
+      "entity_accuracy": false,
+      "plan_validity": false,
+      "faithful_automation_coverage": false,
+      "critical_faithful_coverage": false,
+      "completed_plan_semantic_precision": false,
+      "unsupported_precision": false,
+      "unsupported_recall": true,
+      "false_completion_count": true,
+      "model_calls": true,
+      "latency": false,
+      "cost": true
+    },
+    "run_3": {
+      "intent_extraction_recall": false,
+      "intent_restriction_precision": false,
+      "internal_coverage": false,
+      "lens_retrieval_recall": false,
+      "entity_accuracy": false,
+      "plan_validity": false,
+      "faithful_automation_coverage": false,
+      "critical_faithful_coverage": false,
+      "completed_plan_semantic_precision": false,
+      "unsupported_precision": false,
+      "unsupported_recall": true,
+      "false_completion_count": true,
+      "model_calls": true,
+      "latency": false,
+      "cost": true
+    }
+  },
+  "direct_query_review_complete": true,
+  "decision": "revise_and_repeat"
+}

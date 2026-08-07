@@ -1,0 +1,23 @@
+[
+  {"iri":"https://example.org/staffing/project-atlas","label":"Project Atlas","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/project-beacon","label":"Project Beacon","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/skill-ai","label":"Artificial intelligence","aliases":["artificial-intelligence"],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/skill-kubernetes","label":"Kubernetes","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/skill-cloud-architecture","label":"Cloud architecture","aliases":["cloud-architecture"],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/skill-cybersecurity","label":"Cybersecurity","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/employee-alice","label":"Alice Nguyen","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/employee-omar","label":"Omar Diallo","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.org/staffing/employee-priya","label":"Priya Shah","aliases":["Priya"],"provider_allowed":true},
+  {"iri":"https://example.test/ops/PaymentsApi","label":"Payments API","aliases":["Payments"],"provider_allowed":true},
+  {"iri":"https://example.test/ops/PaymentsTeam","label":"Payments team","aliases":["Payments"],"provider_allowed":true},
+  {"iri":"https://example.test/ops/CheckoutApi","label":"Checkout API","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.test/ops/CommerceTeam","label":"Commerce team","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.test/ops/Production","label":"Production","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.test/ops/PaymentsProduction","label":"Payments API production deployment","aliases":["production Payments API deployment"],"provider_allowed":true},
+  {"iri":"https://example.test/ops/Ledger","label":"Ledger","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.test/ops/FinanceTeam","label":"Finance team","aliases":[],"provider_allowed":true},
+  {"iri":"https://example.test/ops/Priya","label":"Priya Mehta","aliases":["Priya"],"provider_allowed":true},
+  {"iri":"https://catalog.example.org/ns/lee","label":"Ari Lee","aliases":["Ari Lee's"],"provider_allowed":true},
+  {"iri":"https://catalog.example.org/ns/journal-a","label":"Journal A","aliases":[],"provider_allowed":true},
+  {"iri":"https://catalog.example.org/ns/coast-data","label":"Coastal Data","aliases":["Coastal Data dataset"],"provider_allowed":true}
+]

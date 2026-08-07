@@ -1,7 +1,7 @@
 # ShapeLens roadmap
 
 **Status:** Execution guide for the current reference design  
-**Current phase:** Phase 1 complete — deterministic version 0.1 runtime
+**Current phase:** Phase 2 revision — complete-plan Luna trial stopped; constrained template-selection pilot proposed
 
 ## Direction
 
@@ -47,4 +47,6 @@ The sequence below is provisional. Phase 0 blocker frequency and application val
 
 ## Immediate next action
 
-Keep version 0.1 stable and use [`OPEN-QUESTIONS.md`](./OPEN-QUESTIONS.md) to resolve the planner benchmark and fidelity thresholds before Phase 2 begins. Do not add model planning to `ShapeQueryEngine`.
+Keep version 0.1 stable and retain caller-authored plans. Follow [`phase2/DECISION.md`](./phase2/DECISION.md): replace complete model-authored plans with reviewed template selection, rerun only the five-case pilot, and run a newly frozen full benchmark only if that pilot passes. Do not add model planning to `ShapeQueryEngine` or weaken its validator.
+
+The Phase 3 decision dossier is prepared in [`PHASE3-READINESS.md`](./PHASE3-READINESS.md), but its entry gate remains closed until Phase 2 publishes a passing `proceed` decision.

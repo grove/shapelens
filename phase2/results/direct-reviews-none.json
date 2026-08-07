@@ -1,0 +1,1014 @@
+{
+  "manifest_revision": "sha256:875482ff07c9bc5878227129c44abd66af97c9a8d6f19084f31f3731fd9dbbd8",
+  "results_digest": "sha256:0a3552fca1f61f0529d596d89f8bd14c69a13d5ce44ae0b4e6b8da7fdc06ce85",
+  "reviews": [
+    {
+      "case_id": "research-q02",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?publication ?title\nWHERE {\n  ?publication a <https://catalog.example.org/ns/Publication> ;\n               <https://catalog.example.org/ns/fundedBy> ?grant ;\n               <https://catalog.example.org/ns/title> ?title .\n  ?grant <https://catalog.example.org/ns/grantNumber> \"NORD-42\" .\n}",
+        "reason": "The approved cards provide publication selection, publication titles, the fundedBy relationship, and exact grant-number matching."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q04",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?project ?projectTitle WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> \"Alice Nguyen\" ;\n            <https://example.org/staffing/workedOn> ?project .\n  ?project a <https://example.org/staffing/Project> ;\n           <https://example.org/staffing/title> ?projectTitle .\n}",
+        "reason": "The approved employee staffing cards support matching an employee by display name, following workedOn assignments, selecting projects, and projecting project titles."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q01",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staff: <https://example.org/staffing/>\nSELECT DISTINCT ?employeeName\nWHERE {\n  ?employee a staff:Employee ;\n            staff:displayName ?employeeName ;\n            staff:workedOn ?project ;\n            staff:expertise ?skill .\n  ?project a staff:Project ;\n           staff:title \"Project Atlas\" .\n  ?skill a staff:Skill ;\n         staff:label \"artificial intelligence\" .\n}",
+        "reason": "The approved cards support selecting employees, matching their project assignment and project title, matching their expertise skill label, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-payments",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support querying services owned by a team, but they do not provide a selector or property for resolving the team name \"Payments\" to a team resource or for showing arbitrary \"everything\" owned by it."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q04",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?service WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/dependsOn> ?dependency . FILTER(CONTAINS(LCASE(STR(?dependency)), \"payments api\")) }",
+        "reason": "The approved service operations cards support selecting services and querying their direct service dependencies via ops:dependsOn; the Payments API name is matched as the dependency resource label or identifier."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q06",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support publication year, contributor, researcher, and department relationships, but they do not provide an approved aggregation operation or a department population selector needed to count 2025 publications per department."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q05",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?service WHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team .\n  ?team a ops:Team .\n  FILTER(CONTAINS(LCASE(STR(?team)), \"commerce\"))\n  ?service ops:hasDeployment ?deployment .\n  ?deployment a ops:Deployment ;\n              ops:environment \"production\" .\n}",
+        "reason": "The approved cards support selecting services, filtering by owning team, and requiring a production deployment."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-priya",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staffing: <https://example.org/staffing/>\nSELECT (EXISTS {\n  ?employee a staffing:Employee ;\n            staffing:displayName \"Priya\" ;\n            staffing:workedOn ?project .\n  ?project a staffing:Project ;\n           staffing:title \"Atlas\" .\n} AS ?staffed) WHERE {}",
+        "reason": "The approved cards support matching an employee by display name, relating the employee to a project via workedOn, and matching the project title."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q03",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?researcherName WHERE {\n  ?publication a <https://catalog.example.org/ns/Publication> ;\n               <https://catalog.example.org/ns/publishedIn> ?venue ;\n               <https://catalog.example.org/ns/contributor> ?researcher .\n  ?venue <https://catalog.example.org/ns/displayName> \"Journal A\" .\n  ?researcher a <https://catalog.example.org/ns/Researcher> ;\n              <https://catalog.example.org/ns/displayName> ?researcherName .\n}",
+        "reason": "The approved publication catalog cards support selecting publications, filtering by publication venue, following publication contributors, and projecting researcher display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q07",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE { ?employee a <https://example.org/staffing/Employee> ; <https://example.org/staffing/displayName> ?employeeName ; <https://example.org/staffing/expertise> ?cloudSkill ; <https://example.org/staffing/expertise> ?cyberSkill . ?cloudSkill a <https://example.org/staffing/Skill> ; <https://example.org/staffing/label> \"cloud-architecture\" . ?cyberSkill a <https://example.org/staffing/Skill> ; <https://example.org/staffing/label> \"cybersecurity\" . }",
+        "reason": "The approved cards support selecting employees, relating employees to skills via expertise, and matching skill labels. Two expertise patterns identify employees having both requested skills."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q07",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support service ownership by a team, but they do not provide a way to identify or match the specific service \"Ledger\" and team \"Finance\" as literals."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-service",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?runbook WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/serviceName> \"Inventory API\" ; <https://example.test/ops/runbook> ?runbook . }",
+        "reason": "The approved service operations cards support selecting services, matching a service name, and projecting its runbook."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-production",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards provide predicates for service ownership and deployments, but no approved card supplies a way to match a team by its name or label to the literal \"Commerce\" or an environment by its name or label to \"Production\"."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-aggregate",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ex: <https://example.org/staffing/>\nSELECT ?employeeName (COUNT(DISTINCT ?project) AS ?projectCount)\nWHERE {\n  ?employee a ex:Employee ;\n            ex:displayName ?employeeName ;\n            ex:workedOn ?atlasProject ;\n            ex:workedOn ?project .\n  ?atlasProject ex:title \"Project Atlas\" .\n}\nGROUP BY ?employeeName\nORDER BY ?employeeName",
+        "reason": "The approved cards support employee names, employee-to-project assignments, project titles, filtering for Project Atlas, and counting distinct projects per matching employee."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q06",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX st: <https://example.org/staffing/>\nSELECT ?employee ?project WHERE {\n  ?employee a st:Employee ;\n            st:displayName \"Priya Shah\" ;\n            st:workedOn ?project .\n  ?project a st:Project ;\n           st:title \"Project Atlas\" .\n}",
+        "reason": "The approved employee staffing cards support matching an employee by display name, relating the employee to a project via workedOn, and matching the project title."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q06",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?service ?team WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/hasDeployment> ?deployment ; <https://example.test/ops/ownedBy> ?team . ?deployment a <https://example.test/ops/Deployment> ; <https://example.test/ops/environment> \"production\" . FILTER(CONTAINS(LCASE(STR(?service)), \"payments\") || CONTAINS(LCASE(STR(?deployment)), \"payments\")) }",
+        "reason": "The approved cards support querying services, deployments, production environments, and owning teams. The query matches the Payments API deployment by its resource identifier and returns the responsible service and team."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q02",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?service WHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team .\n  ?team a ops:Team ;\n        ops:name \"Payments\" .\n}",
+        "reason": "The approved cards support selecting services and relating each service to its owning team. However, no approved property card provides a team name predicate, so the team label is represented using the likely but unapproved ops:name predicate."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-absence",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can identify 2025 publications, datasets, and existing open-access deposits, but explicitly cannot establish that a deposit is absent or still needed."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q04",
+      "run": 1,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can retrieve publications from 2025 and existing open-access deposits, but explicitly do not support proving that a deposit is absent or identifying publications that still need one."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q03",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE { ?employee a <https://example.org/staffing/Employee> ; <https://example.org/staffing/displayName> ?employeeName ; <https://example.org/staffing/expertise> ?skill . ?skill a <https://example.org/staffing/Skill> ; <https://example.org/staffing/label> \"Kubernetes\" . }",
+        "reason": "The approved cards support selecting employees, traversing employee expertise to skills, filtering the skill label to Kubernetes, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q01",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?contactName\nWHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team .\n  FILTER(CONTAINS(LCASE(STR(?service)), \"payments api\"))\n  ?team ops:onCallContact ?contact .\n  ?contact ops:displayName ?contactName .\n}",
+        "reason": "The approved cards support resolving a service to its owning team and that team's on-call contact. However, no service-name property is supplied, so the query uses a resource-string filter for \"Payments API\"; the contact name projection is not explicitly approved for the operations namespace."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-staffing",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName\nWHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> ?employeeName ;\n            <https://example.org/staffing/workedOn> ?project ;\n            <https://example.org/staffing/expertise> ?skill .\n  ?project <https://example.org/staffing/title> \"Project Atlas\" .\n  ?skill <https://example.org/staffing/label> \"artificial intelligence\" .\n}",
+        "reason": "The approved cards provide employee names, project assignments, project titles, employee expertise, and skill labels, which support the conjunction and exact label matches."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q05",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?skillLabel WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> \"Omar Diallo\" ;\n            <https://example.org/staffing/expertise> ?skill .\n  ?skill a <https://example.org/staffing/Skill> ;\n         <https://example.org/staffing/label> ?skillLabel .\n}",
+        "reason": "The approved cards support selecting an employee by display name, traversing employee expertise, and projecting the skill label."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q03",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?runbook WHERE {\n  ?service a ops:Service ;\n           ops:runbook ?runbook .\n  FILTER(CONTAINS(LCASE(STR(?service)), \"checkout api\"))\n}",
+        "reason": "The approved service-operations cards support selecting services and reading their runbooks. The service name is matched against the service IRI because no service-name property card was supplied."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q05",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ex: <https://catalog.example.org/ns/>\nSELECT DISTINCT ?publicationTitle ?contributorName\nWHERE {\n  ?publication a ex:Publication ;\n               ex:title ?publicationTitle ;\n               ex:usesDataset ?dataset ;\n               ex:contributor ?contributor .\n  ?dataset ?datasetLabelPredicate \"Coastal Data\" .\n  ?contributor a ex:Researcher ;\n               ex:displayName ?contributorName .\n}",
+        "reason": "The approved publication catalog supports selecting publications, matching their title, relating them to a dataset via usesDataset, and retrieving contributor researcher names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-project",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/workedOn> ?project ;\n            <https://example.org/staffing/displayName> ?employeeName .\n  ?project a <https://example.org/staffing/Project> ;\n           <https://example.org/staffing/title> \"Project Zephyr\" .\n}",
+        "reason": "The approved cards support selecting staffed employees, matching the project title, relating employees to projects with workedOn, and projecting employee display names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q01",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX pub: <https://catalog.example.org/ns/>\nSELECT ?title ?year ?venueName WHERE {\n  ?publication a pub:Publication ;\n               pub:title ?title ;\n               pub:publicationYear ?year ;\n               pub:publishedIn ?venue ;\n               pub:contributor ?researcher .\n  ?researcher a pub:Researcher ;\n              pub:displayName \"Ari Lee\" .\n  OPTIONAL { ?venue pub:displayName ?venueName . }\n}",
+        "reason": "The approved publication catalog supports selecting publications by contributor, matching the researcher display name, and projecting publication title, year, and venue."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q02",
+      "run": 1,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX s: <https://example.org/staffing/>\nSELECT ?employeeName WHERE {\n  ?employee a s:Employee ;\n            s:workedOn ?project ;\n            s:displayName ?employeeName .\n  ?project a s:Project ;\n           s:title \"Project Beacon\" .\n}",
+        "reason": "The approved cards support selecting staffed employees, relating employees to projects via workedOn, matching the project title, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q05",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT DISTINCT ?service\nWHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team ;\n           ops:hasDeployment ?deployment .\n  ?deployment a ops:Deployment ;\n              ops:environment \"production\" .\n  ?team a ops:Team .\n  FILTER(STR(?team) = \"Commerce\" || ?team = \"Commerce\")\n}",
+        "reason": "The approved cards support selecting services, filtering their deployments by the exact environment value \"production\", and relating services to owning teams. The team name is not represented by a supplied property, so the query matches the team resource directly by its label/value."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q03",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?researcherName WHERE { ?publication a <https://catalog.example.org/ns/Publication> ; <https://catalog.example.org/ns/publishedIn> ?venue ; <https://catalog.example.org/ns/contributor> ?researcher . ?venue ?venueLabelPredicate \"Journal A\" . ?researcher a <https://catalog.example.org/ns/Researcher> ; <https://catalog.example.org/ns/displayName> ?researcherName . }",
+        "reason": "The approved publication catalog supports filtering publications by venue and relating them to researchers, whose display names can be projected."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q01",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?contactName WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team .\n  ?service <https://example.org/staffing/title> \"Payments API\" .\n  ?team <https://example.test/ops/onCallContact> ?contact .\n  ?contact <https://example.org/staffing/displayName> ?contactName .\n}",
+        "reason": "The approved cards support selecting services by title, relating a service to its owning team, retrieving the team's on-call contact, and projecting the contact's display name."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q01",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?publication ?title ?year ?venue WHERE { ?publication a <https://catalog.example.org/ns/Publication> ; <https://catalog.example.org/ns/title> ?title ; <https://catalog.example.org/ns/publicationYear> ?year ; <https://catalog.example.org/ns/publishedIn> ?venue ; <https://catalog.example.org/ns/contributor> ?researcher . ?researcher a <https://catalog.example.org/ns/Researcher> ; <https://catalog.example.org/ns/displayName> \"Ari Lee\" . }",
+        "reason": "The approved publication catalog cards support selecting publications by contributor name and projecting title, publication year, and venue."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-payments",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?service WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/ownedBy> ?team . FILTER(CONTAINS(LCASE(STR(?team)), \"payments\")) }",
+        "reason": "The approved service operations cards support selecting services and filtering by their owning team."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-production",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?service WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team ;\n           <https://example.test/ops/hasDeployment> ?deployment .\n  ?team a <https://example.test/ops/Team> ;\n        ?teamLabel \"Commerce\" .\n  ?deployment a <https://example.test/ops/Deployment> ;\n              <https://example.test/ops/environment> \"Production\" .\n}",
+        "reason": "The approved cards support selecting services, relating them to an owning team and deployment, and filtering the team and environment by the requested exact values."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q06",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX s: <https://example.org/staffing/>\nSELECT ?employee ?project WHERE {\n  ?employee a s:Employee ;\n            s:displayName \"Priya Shah\" ;\n            s:workedOn ?project .\n  ?project a s:Project ;\n           s:title \"Project Atlas\" .\n}",
+        "reason": "The approved employee staffing cards support matching an employee display name and project title, then testing the employee-to-project workedOn relationship."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q07",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?service ?serviceLabel WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/ownedBy> ?team . ?team a <https://example.test/ops/Team> . FILTER(CONTAINS(LCASE(STR(?team)), \"finance\")) FILTER(CONTAINS(LCASE(STR(?service)), \"ledger\")) BIND(STR(?service) AS ?serviceLabel) }",
+        "reason": "The approved cards support querying services owned by teams. This query matches the team and service by their resource identifiers containing the requested names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q03",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName\nWHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> ?employeeName ;\n            <https://example.org/staffing/expertise> ?skill .\n  ?skill a <https://example.org/staffing/Skill> ;\n         <https://example.org/staffing/label> \"Kubernetes\" .\n}",
+        "reason": "The approved cards support selecting employees, traversing employee expertise to skills, matching the skill label Kubernetes, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q06",
+      "run": 2,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support publication year, contributor, researcher department, and population selection, but they do not provide a supported aggregation/count operation needed to count 2025 publications per department."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q04",
+      "run": 2,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support the direct dependency predicate, but do not provide a property for projecting a service's display name or an approved way to bind the object to the named service \"Payments API\"."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q06",
+      "run": 2,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support service-to-deployment and service-to-owning-team relationships, but they do not provide a property for matching a deployment to the specific Payments API deployment or a service/API name field to identify it."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-staffing",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ex: <https://example.org/staffing/>\nSELECT DISTINCT ?employeeName WHERE {\n  ?employee a ex:Employee ;\n            ex:displayName ?employeeName ;\n            ex:workedOn ?project ;\n            ex:expertise ?skill .\n  ?project a ex:Project ;\n           ex:title \"Project Atlas\" .\n  ?skill a ex:Skill ;\n         ex:label \"artificial intelligence\" .\n}",
+        "reason": "The approved cards support selecting employees, relating them to projects and skills, projecting employee names, and matching exact project and skill labels."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-project",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE { ?employee a <https://example.org/staffing/Employee> ; <https://example.org/staffing/workedOn> ?project ; <https://example.org/staffing/displayName> ?employeeName . ?project a <https://example.org/staffing/Project> ; <https://example.org/staffing/title> \"Project Zephyr\" . }",
+        "reason": "The approved cards support selecting staffed employees, matching the project title, relating employees through workedOn, and projecting employee display names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-service",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?runbook WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/runbook> ?runbook . ?service <https://example.test/ops/serviceName> \"Inventory API\" . }",
+        "reason": "The approved service operations cards support selecting services and projecting their runbooks. The service-name predicate is not explicitly supplied, so this query uses the apparent service-name predicate to identify Inventory API."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q01",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staff: <https://example.org/staffing/>\nSELECT DISTINCT ?employeeName WHERE {\n  ?employee a staff:Employee ;\n            staff:displayName ?employeeName ;\n            staff:workedOn ?project ;\n            staff:expertise ?skill .\n  ?project a staff:Project ;\n           staff:title \"Project Atlas\" .\n  ?skill a staff:Skill ;\n         staff:label \"artificial intelligence\" .\n}",
+        "reason": "The approved cards provide employee names, project assignments, expertise relationships, project titles, and skill labels, so the query can join employees working on Project Atlas with the exact skill label \"artificial intelligence\"."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-priya",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX s: <https://example.org/staffing/>\nSELECT ?employee ?project WHERE {\n  ?employee a s:Employee ;\n            s:displayName \"Priya\" ;\n            s:workedOn ?project .\n  ?project a s:Project ;\n           s:title \"Atlas\" .\n}",
+        "reason": "The approved employee staffing cards support matching an employee display name, relating the employee to a project via workedOn, and matching the project title."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-absence",
+      "run": 2,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can identify 2025 publications using the Coastal Data dataset and can read existing open-access deposits, but explicitly state that absence of a deposit is unsupported. Therefore they cannot determine which publications still need a deposit."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q04",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?projectTitle WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> \"Alice Nguyen\" ;\n            <https://example.org/staffing/workedOn> ?project .\n  ?project a <https://example.org/staffing/Project> ;\n           <https://example.org/staffing/title> ?projectTitle .\n}",
+        "reason": "The approved employee staffing cards support matching an employee by display name, following workedOn to projects, and projecting project titles."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q04",
+      "run": 2,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can filter 2025 publications and read existing open-access deposit relationships, but explicitly do not support proving that a deposit is absent or still needed."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q02",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?publication ?title\nWHERE {\n  ?publication a <https://catalog.example.org/ns/Publication> ;\n               <https://catalog.example.org/ns/fundedBy> ?grant ;\n               <https://catalog.example.org/ns/title> ?title .\n  ?grant <https://catalog.example.org/ns/grantNumber> \"NORD-42\" .\n}",
+        "reason": "The approved cards support selecting publications, matching their fundedBy grant, matching the exact grant number NORD-42, and projecting publication titles."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q07",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staff: <https://example.org/staffing/>\nSELECT DISTINCT ?employeeName WHERE {\n  ?employee a staff:Employee ;\n            staff:displayName ?employeeName ;\n            staff:expertise ?cloudSkill ;\n            staff:expertise ?cyberSkill .\n  ?cloudSkill a staff:Skill ;\n              staff:label \"cloud-architecture\" .\n  ?cyberSkill a staff:Skill ;\n              staff:label \"cybersecurity\" .\n}",
+        "reason": "The approved cards support selecting employees, projecting employee display names, relating employees to skills via expertise, and matching exact skill labels. The two expertise patterns conjunctively identify employees with both skills."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q05",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staffing: <https://example.org/staffing/>\nSELECT ?skillLabel WHERE {\n  ?employee a staffing:Employee ;\n            staffing:displayName \"Omar Diallo\" ;\n            staffing:expertise ?skill .\n  ?skill a staffing:Skill ;\n         staffing:label ?skillLabel .\n}",
+        "reason": "The approved cards support selecting an employee by display name, following employee expertise, and projecting the skill label."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q02",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staffing: <https://example.org/staffing/>\nSELECT ?employeeName WHERE {\n  ?project a staffing:Project ;\n           staffing:title \"Project Beacon\" ;\n           ^staffing:workedOn ?employee .\n  ?employee a staffing:Employee ;\n            staffing:displayName ?employeeName .\n}",
+        "reason": "The approved cards support matching the project title, traversing the inverse workedOn relationship to assigned employees, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q02",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?service WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team .\n  ?team a <https://example.test/ops/Team> ;\n        <https://example.test/ops/name> \"Payments\" .\n}",
+        "reason": "The approved cards support selecting services and filtering them by their owning team. However, no approved property card defines a team name predicate, so the query uses the plausible but unapproved predicate https://example.test/ops/name."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-aggregate",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staff: <https://example.org/staffing/>\nSELECT ?employeeName (COUNT(DISTINCT ?project) AS ?projectCount)\nWHERE {\n  ?employee a staff:Employee ;\n            staff:displayName ?employeeName ;\n            staff:workedOn ?atlasProject ;\n            staff:workedOn ?project .\n  ?atlasProject a staff:Project ;\n                staff:title \"Project Atlas\" .\n}\nGROUP BY ?employeeName\nORDER BY ?employeeName",
+        "reason": "The approved cards provide employee selection, employee display names, employee-to-project assignments, project titles, and SPARQL aggregation with COUNT. The query filters employees assigned to Project Atlas and counts each employee's distinct projects."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q05",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX cat: <https://catalog.example.org/ns/>\nSELECT DISTINCT ?publicationTitle ?contributorName\nWHERE {\n  ?publication a cat:Publication ;\n               cat:title ?publicationTitle ;\n               cat:usesDataset ?dataset ;\n               cat:contributor ?contributor .\n  ?dataset ?datasetLabelPredicate \"Coastal Data\" .\n  ?contributor a cat:Researcher ;\n               cat:displayName ?contributorName .\n}",
+        "reason": "The approved publication catalog supports selecting publications, matching their title, relating them to a dataset via usesDataset, and projecting contributor researcher names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q03",
+      "run": 2,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?runbook WHERE {\n  ?service a ops:Service ;\n           ops:runbook ?runbook .\n  FILTER(CONTAINS(LCASE(STR(?service)), \"checkout api\"))\n}",
+        "reason": "The approved service-operations cards support selecting services and retrieving their runbooks. The service name is matched as a string because no explicit service-name property card was supplied."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q01",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName\nWHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> ?employeeName ;\n            <https://example.org/staffing/workedOn> ?project ;\n            <https://example.org/staffing/expertise> ?skill .\n  ?project <https://example.org/staffing/title> \"Atlas\" .\n  ?skill <https://example.org/staffing/label> \"artificial intelligence\" .\n}",
+        "reason": "The approved cards support selecting employees, projecting employee names, filtering by project assignment and exact project title, and filtering by expertise and exact skill label."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q02",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?service WHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team .\n  ?team a ops:Team .\n  FILTER(LCASE(STR(?team)) = \"payments\" || LCASE(STR(?team)) = \"https://example.test/ops/payments\")\n}",
+        "reason": "The approved cards support selecting all services and filtering them by the service-owned-by-team relationship. The team name is not represented by an approved display-name property, so the query matches the Payments team by its IRI/string form."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-absence",
+      "run": 3,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can match 2025 publications and relate them to Coastal Data, but they explicitly do not support proving that an open-access deposit is absent or still needed."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q06",
+      "run": 3,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support publication-year filtering and researcher-department relationships, but they do not provide a supported aggregation/count operation for counting publications per department."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q01",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?publication ?title ?year ?venue WHERE { ?publication a <https://catalog.example.org/ns/Publication> ; <https://catalog.example.org/ns/title> ?title ; <https://catalog.example.org/ns/publicationYear> ?year ; <https://catalog.example.org/ns/publishedIn> ?venue ; <https://catalog.example.org/ns/contributor> ?researcher . ?researcher a <https://catalog.example.org/ns/Researcher> ; <https://catalog.example.org/ns/displayName> \"Ari Lee\" . }",
+        "reason": "The approved publication catalog cards support selecting publications by contributor name and projecting title, publication year, and venue."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-priya",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX st: <https://example.org/staffing/>\nSELECT ?employee ?employeeName WHERE {\n  ?employee a st:Employee ;\n            st:displayName ?employeeName ;\n            st:workedOn ?project .\n  ?project a st:Project ;\n           st:title \"Project Atlas\" .\n  FILTER(?employeeName = \"Priya\")\n}",
+        "reason": "The approved staffing cards support matching an employee by display name and checking the employee's workedOn relationship to a project identified by its title."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-project",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?employeeName WHERE { ?employee a <https://example.org/staffing/Employee> ; <https://example.org/staffing/workedOn> ?project ; <https://example.org/staffing/displayName> ?employeeName . ?project a <https://example.org/staffing/Project> ; <https://example.org/staffing/title> \"Project Zephyr\" . }",
+        "reason": "The approved cards support selecting employees, filtering their project assignments by project title, and projecting employee display names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q06",
+      "run": 3,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support linking a service to a deployment and an owning team, but they do not provide a property for identifying the deployment or service by the names \"production\" and \"Payments API\". An exact-name selector or matching property is required."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q03",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?runbook WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/runbook> ?runbook . FILTER(CONTAINS(LCASE(STR(?service)), \"checkout api\")) }",
+        "reason": "The approved service operations cards support selecting services and retrieving their runbooks."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q02",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?employee ?name WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/workedOn> ?project ;\n            <https://example.org/staffing/displayName> ?name .\n  ?project a <https://example.org/staffing/Project> ;\n            <https://example.org/staffing/title> \"Project Beacon\" .\n}",
+        "reason": "The approved cards support selecting staffed employees, relating employees to projects via workedOn, matching the project title, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-mixed-aggregate",
+      "run": 3,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards support identifying employees who worked on Project Atlas, but they do not provide an approved aggregation/count operation or a project-count field for each employee."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q04",
+      "run": 3,
+      "direct_query": {
+        "disposition": "unsupported",
+        "sparql": "",
+        "reason": "The approved cards can retrieve publications from 2025 and existing open-access deposits, but explicitly do not support proving absence. Therefore, identifying publications that still need a deposit requires an unsupported negation/absence operation."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q05",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX c: <https://catalog.example.org/ns/>\nSELECT DISTINCT ?publicationTitle ?contributorName\nWHERE {\n  ?publication a c:Publication ;\n               c:title ?publicationTitle ;\n               c:usesDataset ?dataset ;\n               c:contributor ?contributor .\n  ?dataset ?datasetLabelPredicate \"Coastal Data\" .\n  ?contributor a c:Researcher ;\n               c:displayName ?contributorName .\n}",
+        "reason": "The approved publication catalog supports selecting publications, matching a dataset relationship, projecting publication titles, following contributor relationships, and projecting researcher names."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q07",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?service ?team WHERE { ?service a <https://example.test/ops/Service> ; <https://example.test/ops/ownedBy> ?team . ?team a <https://example.test/ops/Team> . FILTER(CONTAINS(LCASE(STR(?service)), \"ledger\") && CONTAINS(LCASE(STR(?team)), \"finance\")) }",
+        "reason": "The approved service-operations cards support querying whether a service is owned by a team. The query filters for Ledger and Finance."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-unknown-service",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT ?runbook WHERE {\n  ?service a ops:Service ;\n           ops:runbook ?runbook .\n  FILTER(CONTAINS(LCASE(STR(?service)), \"inventory api\"))\n}",
+        "reason": "The approved service-operations cards support selecting services and projecting their runbooks. The query matches the Inventory API service by its resource string and returns its runbook."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-ambiguous-payments",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?service WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team .\n  ?team ?teamProperty \"Payments\" .\n}",
+        "reason": "The approved service-operations cards support selecting services and filtering by their owning team. No team display-name property is supplied, so the filter uses an unconstrained team property with the literal \"Payments\"."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-production",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?service WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team ;\n           <https://example.test/ops/hasDeployment> ?deployment .\n  ?deployment <https://example.test/ops/environment> \"Production\" .\n  ?team <http://www.w3.org/2000/01/rdf-schema#label> \"Commerce\" .\n}",
+        "reason": "The approved cards support selecting services, relating them to an owning team and deployment, and matching the team and deployment environment values."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q04",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?service ?serviceLabel WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/dependsOn> ?dependency .\n  VALUES ?dependencyLabel { \"Payments API\" }\n  BIND(\"Payments API\" AS ?dependencyName)\n  BIND(?service AS ?service)\n  OPTIONAL { ?service <https://example.test/ops/displayName> ?serviceLabel }\n  FILTER(CONTAINS(STR(?dependency), ?dependencyName) || ?dependency = ?dependencyName)\n}",
+        "reason": "The approved cards support selecting services and querying their direct service-to-service dependencies via ops:dependsOn. However, no approved identifier or name property is provided for matching the dependency to the literal \"Payments API\", so the generated query uses a literal-based placeholder match."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q02",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?publication ?title\nWHERE {\n  ?publication a <https://catalog.example.org/ns/Publication> ;\n               <https://catalog.example.org/ns/fundedBy> ?grant ;\n               <https://catalog.example.org/ns/title> ?title .\n  ?grant <https://catalog.example.org/ns/grantNumber> \"NORD-42\" .\n}",
+        "reason": "The approved cards support selecting publications, following publication fundedBy relationships to grants, matching the exact grantNumber literal NORD-42, and projecting publication titles."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q07",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> ?employeeName ;\n            <https://example.org/staffing/expertise> ?cloudSkill ;\n            <https://example.org/staffing/expertise> ?cyberSkill .\n  ?cloudSkill a <https://example.org/staffing/Skill> ;\n              <https://example.org/staffing/label> \"cloud-architecture\" .\n  ?cyberSkill a <https://example.org/staffing/Skill> ;\n               <https://example.org/staffing/label> \"cybersecurity\" .\n}",
+        "reason": "The approved cards support selecting employees, projecting employee display names, relating employees to expertise, and matching skill labels; the two expertise patterns are joined on the same employee."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q03",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX staffing: <https://example.org/staffing/>\nSELECT DISTINCT ?employeeName WHERE {\n  ?employee a staffing:Employee ;\n            staffing:displayName ?employeeName ;\n            staffing:expertise ?skill .\n  ?skill a staffing:Skill ;\n         staffing:label \"Kubernetes\" .\n}",
+        "reason": "The approved cards support selecting employees, relating employees to skills via expertise, matching the skill label Kubernetes, and projecting employee display names."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q01",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?contactName WHERE {\n  ?service a <https://example.test/ops/Service> ;\n           <https://example.test/ops/ownedBy> ?team .\n  FILTER(CONTAINS(LCASE(STR(?service)), \"payments api\"))\n  ?team <https://example.test/ops/onCallContact> ?contact .\n  ?contact <https://example.org/staffing/displayName> ?contactName .\n}",
+        "reason": "The approved cards support selecting services, relating a service to its owning team, retrieving the team's on-call contact, and projecting the contact's employee display name."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q04",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?projectTitle WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> \"Alice Nguyen\" ;\n            <https://example.org/staffing/workedOn> ?project .\n  ?project a <https://example.org/staffing/Project> ;\n           <https://example.org/staffing/title> ?projectTitle .\n}",
+        "reason": "The approved employee staffing cards support matching an employee by display name, following workedOn assignments, and projecting project titles."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "ops-q05",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX ops: <https://example.test/ops/>\nSELECT DISTINCT ?service WHERE {\n  ?service a ops:Service ;\n           ops:ownedBy ?team .\n  ?team a ops:Team ;\n        ?teamLabel \"Commerce\" .\n  ?service ops:hasDeployment ?deployment .\n  ?deployment a ops:Deployment ;\n               ops:environment \"production\" .\n}",
+        "reason": "The approved cards support selecting services, filtering ownership by a team, and requiring a production deployment."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "research-q03",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?researcherName WHERE {\n  ?publication a <https://catalog.example.org/ns/Publication> ;\n               <https://catalog.example.org/ns/publishedIn> ?venue ;\n               <https://catalog.example.org/ns/contributor> ?researcher .\n  ?venue <https://catalog.example.org/ns/displayName> \"Journal A\" .\n  ?researcher a <https://catalog.example.org/ns/Researcher> ;\n              <https://catalog.example.org/ns/displayName> ?researcherName .\n}",
+        "reason": "The approved publication catalog provides publication venue and contributor relationships, while the researcher lens provides researcher display names. The query matches publications published in Journal A and returns their researcher contributors."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q06",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "PREFIX s: <https://example.org/staffing/>\nSELECT ?employee ?project WHERE {\n  ?employee a s:Employee ;\n            s:displayName \"Priya Shah\" ;\n            s:workedOn ?project .\n  ?project a s:Project ;\n           s:title \"Project Atlas\" .\n}",
+        "reason": "The approved cards support matching an employee display name and relating the employee to a project via workedOn, with the project title matched exactly."
+      },
+      "semantic_correct": false,
+      "failure_category": "semantic_failure",
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "staffing-q05",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT ?skillLabel WHERE { ?employee a <https://example.org/staffing/Employee> ; <https://example.org/staffing/displayName> \"Omar Diallo\" ; <https://example.org/staffing/expertise> ?skill . ?skill a <https://example.org/staffing/Skill> ; <https://example.org/staffing/label> ?skillLabel . }",
+        "reason": "The approved cards support selecting an employee by display name, following the employee expertise relation, and projecting the skill label."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    },
+    {
+      "case_id": "safety-partial-staffing",
+      "run": 3,
+      "direct_query": {
+        "disposition": "supported",
+        "sparql": "SELECT DISTINCT ?employeeName WHERE {\n  ?employee a <https://example.org/staffing/Employee> ;\n            <https://example.org/staffing/displayName> ?employeeName ;\n            <https://example.org/staffing/workedOn> ?project ;\n            <https://example.org/staffing/expertise> ?skill .\n  ?project a <https://example.org/staffing/Project> ;\n            <https://example.org/staffing/title> \"Project Atlas\" .\n  ?skill a <https://example.org/staffing/Skill> ;\n         <https://example.org/staffing/label> \"artificial intelligence\" .\n}",
+        "reason": "The approved cards provide employee names, employee-to-project assignments, employee expertise, project titles, and skill labels, which support the conjunction of both conditions."
+      },
+      "semantic_correct": true,
+      "failure_category": null,
+      "reviewed_by": "User-authorized Codex review"
+    }
+  ]
+}

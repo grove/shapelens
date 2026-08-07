@@ -2,6 +2,8 @@
 
 Normative behavior is fixed in [SPEC-0.1.md](./SPEC-0.1.md). These questions remain intentionally unresolved.
 
+The [Phase 2 experiment](./PHASE2-EXPERIMENT.md) fixes conservative experiment controls for OQ-001, OQ-009, OQ-010, OQ-013, and OQ-017. They remain open as broader product decisions until the benchmark passes with tests and any accepted trade-off is recorded.
+
 | ID | Question | Resolve before |
 |---|---|---|
 | OQ-001 | Which planner baselines, fidelity labels, and thresholds establish value for model planning? | Phase 2 |

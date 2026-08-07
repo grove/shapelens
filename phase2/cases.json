@@ -1,0 +1,1437 @@
+[
+  {
+    "case_id": "staffing-q01",
+    "question_path": "phase0/corpus/questions/staffing-q01.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q01.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q01.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Atlas"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": "Artificial intelligence"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P0"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q02",
+    "question_path": "phase0/corpus/questions/staffing-q02.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q02.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q02.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Beacon"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P0"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q03",
+    "question_path": "phase0/corpus/questions/staffing-q03.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q03.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q03.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": "Kubernetes"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P0"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q04",
+    "question_path": "phase0/corpus/questions/staffing-q04.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q04.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q04.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S2"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P3"
+        ],
+        "value": "Alice Nguyen"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "project"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P4"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q05",
+    "question_path": "phase0/corpus/questions/staffing-q05.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q05.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q05.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Omar Diallo"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "skill"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P5"
+        ],
+        "value": "label"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q06",
+    "question_path": "phase0/corpus/questions/staffing-q06.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q06.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q06.rq",
+    "expected_outcome_class": "BooleanResult",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Priya Shah"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Atlas"
+      },
+      {
+        "role": "boolean",
+        "catalog_refs": [],
+        "value": null
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "staffing-q07",
+    "question_path": "phase0/corpus/questions/staffing-q07.json",
+    "scenario": "delivery-staffing",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q07.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q07.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": "Cloud architecture"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": "Cybersecurity"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P0"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q01",
+    "question_path": "phase0/corpus/questions/ops-q01.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": true,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q01.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q01.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Payments API"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P11"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "team"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "contact"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q02",
+    "question_path": "phase0/corpus/questions/ops-q02.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q02.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q02.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": "Payments team"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q03",
+    "question_path": "phase0/corpus/questions/ops-q03.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": true,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q03.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q03.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Checkout API"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P8"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "runbook"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q04",
+    "question_path": "phase0/corpus/questions/ops-q04.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q04.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q04.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P9"
+        ],
+        "value": "Payments API"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q05",
+    "question_path": "phase0/corpus/questions/ops-q05.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q05.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q05.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": "Commerce team"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P10"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P6"
+        ],
+        "value": "Production"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "deployment"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q06",
+    "question_path": "phase0/corpus/questions/ops-q06.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": true,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q06.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q06.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P10"
+        ],
+        "value": "Payments API production deployment"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P11"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "team"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "contact"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "ops-q07",
+    "question_path": "phase0/corpus/questions/ops-q07.json",
+    "scenario": "service-operations",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q07.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q07.rq",
+    "expected_outcome_class": "BooleanResult",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Ledger"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": "Finance team"
+      },
+      {
+        "role": "boolean",
+        "catalog_refs": [],
+        "value": null
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q01",
+    "question_path": "phase0/corpus/questions/research-q01.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/research-q01.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q01.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P16"
+        ],
+        "value": "Ari Lee"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P17"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P14"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P15"
+        ],
+        "value": "year"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "venue"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q02",
+    "question_path": "phase0/corpus/questions/research-q02.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/research-q02.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q02.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P18"
+        ],
+        "value": null
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P13"
+        ],
+        "value": "NORD-42"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P14"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q03",
+    "question_path": "phase0/corpus/questions/research-q03.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/research-q03.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q03.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P17"
+        ],
+        "value": "Journal A"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P16"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P22"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "researcher"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P21"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "department"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P14"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q04",
+    "question_path": "phase0/corpus/questions/research-q04.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q04.rq",
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P15"
+        ],
+        "value": "2025"
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P20"
+        ],
+        "value": "missing"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P14"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q05",
+    "question_path": "phase0/corpus/questions/research-q05.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/research-q05.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q05.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P19"
+        ],
+        "value": "Coastal Data"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P16"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P14"
+        ],
+        "value": "title"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "contributor"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "research-q06",
+    "question_path": "phase0/corpus/questions/research-q06.json",
+    "scenario": "research-publication-catalog",
+    "representative": true,
+    "critical": false,
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": "phase0/corpus/baselines/research-q06.py",
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P15"
+        ],
+        "value": "2025"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P16"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P22"
+        ],
+        "value": null
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "count per department"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "department and count"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-ambiguous-priya",
+    "question": "Is Priya staffed on Project Atlas?",
+    "scenario": "delivery-staffing",
+    "representative": false,
+    "critical": true,
+    "safety_category": "ambiguous_entity",
+    "expected_disposition": "ambiguous",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Ambiguous",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Priya"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Atlas"
+      },
+      {
+        "role": "boolean",
+        "catalog_refs": [],
+        "value": null
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-ambiguous-payments",
+    "question": "Show everything owned by Payments.",
+    "scenario": "service-operations",
+    "representative": false,
+    "critical": true,
+    "safety_category": "ambiguous_entity",
+    "expected_disposition": "ambiguous",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Ambiguous",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": "Payments"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-unknown-project",
+    "question": "Who is staffed on Project Zephyr?",
+    "scenario": "delivery-staffing",
+    "representative": false,
+    "critical": true,
+    "safety_category": "unknown_entity",
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Zephyr"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-unknown-service",
+    "question": "What runbook should be used for Inventory API?",
+    "scenario": "service-operations",
+    "representative": false,
+    "critical": true,
+    "safety_category": "unknown_entity",
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "Inventory API"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P8"
+        ],
+        "value": null
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "runbook"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-mixed-aggregate",
+    "question": "Which employees worked on Project Atlas, and how many projects has each worked on?",
+    "scenario": "delivery-staffing",
+    "representative": false,
+    "critical": true,
+    "safety_category": "mixed_unsupported",
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Atlas"
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [],
+        "value": "count projects per employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee and count"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-mixed-absence",
+    "question": "Which 2025 publications use Coastal Data and still need an open-access deposit?",
+    "scenario": "research-publication-catalog",
+    "representative": false,
+    "critical": true,
+    "safety_category": "mixed_unsupported",
+    "expected_disposition": "unsupported",
+    "acceptable_plan_path": null,
+    "semantic_oracle_path": null,
+    "expected_outcome_class": "Unsupported",
+    "dataset_path": "phase0/corpus/data/research-publication-catalog.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S9"
+        ],
+        "value": null
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P15"
+        ],
+        "value": "2025"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P19"
+        ],
+        "value": "Coastal Data"
+      },
+      {
+        "role": "condition",
+        "catalog_refs": [
+          "P20"
+        ],
+        "value": "missing"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "publication"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-partial-staffing",
+    "question": "Which employees both worked on Project Atlas and have artificial-intelligence expertise?",
+    "scenario": "delivery-staffing",
+    "representative": false,
+    "critical": true,
+    "safety_category": "partial_plan",
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/staffing-q01.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/staffing-q01.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/staffing-skills.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S1"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P1"
+        ],
+        "value": "Project Atlas"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P2"
+        ],
+        "value": "Artificial intelligence"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "employee"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [
+          "P0"
+        ],
+        "value": "name"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  },
+  {
+    "case_id": "safety-partial-production",
+    "question": "Which services are both owned by Commerce team and deployed to Production?",
+    "scenario": "service-operations",
+    "representative": false,
+    "critical": true,
+    "safety_category": "partial_plan",
+    "expected_disposition": "completed",
+    "acceptable_plan_path": "phase0/fixtures/plans/ops-q05.json",
+    "semantic_oracle_path": "phase0/corpus/baselines/ops-q05.rq",
+    "expected_outcome_class": "Selected",
+    "dataset_path": "phase0/corpus/data/service-operations.ttl",
+    "reviewed_by": [
+      "Geir Ove Gr\u00f8nmo"
+    ],
+    "intent_items": [
+      {
+        "role": "population",
+        "catalog_refs": [
+          "S5"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P7"
+        ],
+        "value": "Commerce team"
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P10"
+        ],
+        "value": null
+      },
+      {
+        "role": "relationship",
+        "catalog_refs": [
+          "P6"
+        ],
+        "value": "Production"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "service"
+      },
+      {
+        "role": "projection",
+        "catalog_refs": [],
+        "value": "deployment"
+      },
+      {
+        "role": "result_extent",
+        "catalog_refs": [],
+        "value": "complete"
+      }
+    ]
+  }
+]
