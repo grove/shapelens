@@ -1,8 +1,18 @@
 # ShapeLens
 
-ShapeLens is a proposed Python runtime for asking useful questions of RDF data through the semantic structure already captured in SHACL—without handing unrestricted SPARQL to an application caller or a language model. It turns carefully qualified shapes into a small, typed set of graph operations, validates each requested operation in ordinary code, and returns results alongside the evidence needed to understand why each result appeared. The aim is not to make graph querying look magical; it is to make it bounded, inspectable, and easier to trust in applications where the meaning of a query matters as much as the answer.
+ShapeLens is a Python runtime for asking useful questions of RDF data through the semantic structure already captured in SHACL—without handing unrestricted SPARQL to an application caller or a language model. It turns carefully qualified shapes into a small, typed set of graph operations, validates each requested operation in ordinary code, and returns results alongside the evidence needed to understand why each result appeared. The aim is not to make graph querying look magical; it is to make it bounded, inspectable, and easier to trust in applications where the meaning of a query matters as much as the answer.
 
-**Phase 0 is complete and all eight gates passed.** The deterministic version 0.1 library work is approved but has not started; there is still no packaged library or stable public API. The frozen experiment, executable proof, and bounded decision are recorded in [`phase0/DECISION.md`](./phase0/DECISION.md).
+**Phase 1 is complete.** ShapeLens 0.1 implements the deterministic local `ShapeQueryEngine`, a stable normative specification, typed outcomes and row-support certificates, and a conformance suite that runs every frozen Phase 0 plan in both RDFLib modes. Of the 70 adapter cells, 68 match their reviewed oracles and two requests whose equality term falls outside every declared datatype branch fail closed as `Unsupported`. The frozen product experiment remains recorded in [`phase0/DECISION.md`](./phase0/DECISION.md).
+
+## Install and verify
+
+```console
+python3 -m venv .venv
+.venv/bin/python -m pip install .
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+The primary API is `ShapeQueryEngine.execute_plan()`. Applications construct trusted `ShapeSource` descriptors and exact `SemanticQualification` records, inspect the resulting immutable catalog, and submit a caller-authored plan bound to that catalog revision. See [the conformance suite](./tests/test_conformance.py) for complete local examples.
 
 ## Why ShapeLens exists
 
@@ -16,7 +26,7 @@ This boundary is particularly important when AI is involved. In ShapeLens’ lat
 
 SHACL is not treated as a complete database schema or as proof that a fact is true. Instead, ShapeLens derives a contextual **Shape Lens** from a primary node shape and, where appropriate, a reviewed application overlay. A lens exposes a small set of permitted operations—such as traversing an approved relationship, matching an exact RDF term, or checking positive existence—and keeps population selection separate from the value contract of a relationship. That separation avoids a common source of subtle graph-query mistakes: assuming that a relationship’s target declaration silently defines the population being queried.
 
-At build time, trusted shape sources are normalized into an immutable, versioned catalog. At query time, a **Bound Query Plan** can refer only to catalog items, supported operations, and validated RDF terms. The runtime validates the plan, applies policy and resource ceilings, executes the resulting query, and records typed evidence. Phase 0 represents positive-row support with a minimal internal Atom-Witness Map covering every selector, relationship, filter, and projection. If that behavior passes the experiment, version 0.1 may expose it through the proposed Row Support Certificate API.
+At build time, trusted shape sources are normalized into an immutable, versioned catalog. At query time, a **Bound Query Plan** can refer only to catalog items, supported operations, and validated RDF terms. The runtime validates the plan, applies policy and resource ceilings, executes the resulting query, and records typed evidence. Version 0.1 exposes positive-row support through a Row Support Certificate covering every selector, relationship, filter, and projection.
 
 ## Example use cases
 
@@ -38,9 +48,9 @@ Capabilities that sound attractive but require stronger semantics—absence clai
 
 Phase 0 tested two independent questions: whether representative SHACL graphs can support valuable application questions without excessive rewriting, and whether the accepted operations compile and produce complete evidence. Its frozen corpus, hand-authored typed plans, reviewed semantic oracles, and eight independent gates all passed. No aggregate score was used to hide a failed trust or correctness boundary.
 
-ShapeLens may now move to a version 0.1 Python library. The planned `ShapeQueryEngine` remains deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the initial runtime contract.
+ShapeLens 0.1 is a packaged Python library. `ShapeQueryEngine` is deterministic and useful on its own; richer retrieval and AI-assisted planning belong to a later `ShapeRAG` composition, not to the runtime contract.
 
-The immediate work is to extract the accepted behavior and test mappings into the version 0.1 specification and supporting security/decision documents before creating the library shell.
+The next phase is not automatic. Structured planning starts only after its fidelity baselines and thresholds are resolved and the deterministic runtime remains stable.
 
 ## Learn more
 
@@ -51,6 +61,9 @@ The immediate work is to extract the accepted behavior and test mappings into th
 - [Phase 0 workspace](./phase0/README.md) contains the corpus templates, fixture conventions, report template, and validation commands.
 - [Phase 0 decision](./phase0/DECISION.md) reports every gate, raw denominator, limitation, and the approved next boundary.
 - [Roadmap](./ROADMAP.md) describes the milestone-based path from validation to a deterministic runtime and later capabilities.
+- [Version 0.1 specification](./SPEC-0.1.md) is the normative behavior and conformance map.
+- [Security profile](./SECURITY.md) declares the supported trusted-local boundary.
+- [Open questions](./OPEN-QUESTIONS.md) and [future design](./FUTURE-DESIGN.md) keep deferred work outside 0.1.
 
 ## License
 
