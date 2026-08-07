@@ -1,0 +1,4 @@
+include CONTEXT.md FUTURE-DESIGN.md OPEN-QUESTIONS.md PHASE0-EXPERIMENT.md ROADMAP.md SECURITY.md SHAPELENS_DESIGN.md SPEC-0.1.md VISION.md requirements.txt
+recursive-include docs *.md
+recursive-include phase0 *.json *.md *.py *.rq *.ttl *.txt
+recursive-include tests *.py
