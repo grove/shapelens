@@ -1,5 +1,13 @@
 # ShapeLens
 
+## Project at a glance
+
+ShapeLens helps applications ask reliable questions of linked data. Instead of allowing a person or AI system to create any query it wants, ShapeLens exposes a reviewed set of safe operations and records the data that supports each result. The goal is to make answers easier to trust, inspect, and explain.
+
+The core local engine is working and covered by automated tests. Today, an application must provide a precise, structured description of the question it wants answered; ShapeLens checks that description and either runs it safely or explains that it is unsupported. An experiment allowing a small AI model to create these descriptions from ordinary language was not reliable enough, so that feature is not enabled.
+
+The proposed next step is a much simpler AI experiment: let the model choose from reviewed question templates and fill in names or values, while regular code builds and checks the actual query. This will be tested on five cases before any larger benchmark is run. Broader features such as remote data stores, document retrieval, and a complete GraphRAG system remain future work.
+
 ShapeLens is a Python runtime for asking useful questions of RDF data through the semantic structure already captured in SHACL—without handing unrestricted SPARQL to an application caller or a language model. It turns carefully qualified shapes into a small, typed set of graph operations, validates each requested operation in ordinary code, and returns results alongside the evidence needed to understand why each result appeared. The aim is not to make graph querying look magical; it is to make it bounded, inspectable, and easier to trust in applications where the meaning of a query matters as much as the answer.
 
 **Phase 1 is complete.** ShapeLens 0.1 implements the deterministic local `ShapeQueryEngine`, a stable normative specification, typed outcomes and row-support certificates, and a conformance suite that runs every frozen Phase 0 plan in both RDFLib modes. Of the 70 adapter cells, 68 match their reviewed oracles and two requests whose equality term falls outside every declared datatype branch fail closed as `Unsupported`. The frozen product experiment remains recorded in [`phase0/DECISION.md`](./phase0/DECISION.md).
